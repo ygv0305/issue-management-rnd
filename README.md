@@ -50,13 +50,26 @@ Before you begin, ensure you have the following installed on your machine:
    npm run dev
    ```
 
+   If the code runs without error (ask Jack if you have any error), you can **Ctrl (or Cmd on Mac) + Click** [http://localhost:5173/](http://localhost:5173/) to open the sample React app in a browser. When you are done, in the terminal, press `q + enter` to terminate the app.
+
 3. **Backend Setup:**
    Open a separate terminal and navigate to the `backend` directory:
+
    ```bash
    cd backend
    npm install
    npm run dev
    ```
+
+   If the code runs without error (ask Jack if you have any error), you will see `"Running on port 3000"`. Press **Ctrl (or Cmd on Mac) + C** to terminate the server.
+
+4. **Start Developing:**
+   Open another terminal and ensure you are in the `issue-management-rnd` root folder (not `backend` or `frontend`).
+   Run the following command to create a new branch:
+   ```bash
+   git checkout -b your-feature-name
+   ```
+   Replace `your-feature-name` with a descriptive name for your task. You are now ready to start making changes to the code!
 
 ---
 
