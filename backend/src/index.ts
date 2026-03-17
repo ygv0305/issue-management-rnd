@@ -11,6 +11,10 @@ import rootRoute from './routes/index.js';
 // Custom modules
 import { databaseConnect, databaseDisconnect } from './lib/mongoose.js';
 
+// DNS fix
+import dns from 'node:dns/promises';
+dns.setServers(['1.1.1.1']); // Cloudflare DNS
+
 const app = express();
 
 // CORS
