@@ -9,7 +9,7 @@ export default function Auth() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError('');
 
@@ -23,12 +23,45 @@ export default function Auth() {
       return;
     }
 
-    // Since there is no backend server yet, authenticate with any non-empty values
-    if (authMode === 'login') {
-      localStorage.setItem('isAuthenticated', 'true');
-      navigate('/home');
-    } else {
-      alert('Check your email');
+    if (authMode === 'signup' && !email.endsWith('@aut.ac.nz')) {
+      setError('You must register with a valid @aut.ac.nz address.');
+      return;
+    }
+
+    try {
+      if (authMode === 'login') {
+        // Mock login for now
+        localStorage.setItem('isAuthenticated', 'true');
+        navigate('/home');
+      } else if (authMode === 'signup') {
+        const res = await fetch('http://localhost:3000/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Registration failed');
+        alert(data.message || 'Check your email for the verification link.');
+        setAuthMode('login'); // Switch back to login page
+      } else if (authMode === 'reset') {
+        const res = await fetch(
+          'http://localhost:3000/api/auth/forgot-password',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          },
+        );
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Password reset failed');
+        alert(
+          data.message ||
+            'If an account exists, a reset link has been sent to your email.',
+        );
+        setAuthMode('login');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
     }
   };
 

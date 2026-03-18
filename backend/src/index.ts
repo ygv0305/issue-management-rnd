@@ -22,7 +22,7 @@ const devMode = true;
 const corsOptions: CorsOptions = {
   origin(requestOrigin, callback) {
     if (devMode === true) {
-      console.log(requestOrigin);
+      // console.log(requestOrigin);
       callback(null, true);
     } else {
       console.log('Dev mode is false. Please configure CORS.');
