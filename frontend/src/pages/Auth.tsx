@@ -38,7 +38,7 @@ export default function Auth() {
         const data = await res.json();
         console.log(data.message.user_data);
         if(!data.message.user_data) {
-          throw new Error(data.message || 'Login failed');
+          setError("Wrong user or password.");
         }else{
           navigate('/home');
         }
