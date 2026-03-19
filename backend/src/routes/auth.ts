@@ -60,7 +60,9 @@ router.post('/set-password',
 );
 
 router.post('/login', async (req, res) => {
-  res.json({ message: await authenticateUser(req.body.email, req.body.password) });
+  res.json({ 
+    message: await authenticateUser(req.body.email, req.body.password) 
+  });
 });
 
 export default router;
