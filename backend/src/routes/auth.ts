@@ -14,26 +14,37 @@ import authenticateUser from '../controllers/auth/login.js';
 
 const router = Router();
 
-router.post(
-  '/register',
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .isLength({ max: 50 })
-    .withMessage('Email must be less than 50 characters')
-    .isEmail()
-    .withMessage('Invalid email address')
-    // Ensure only domain ends with @aut.ac.nz
-    .custom((value) => {
-      if (!value.endsWith('@aut.ac.nz')) {
-        throw new Error('You must register with a valid @aut.ac.nz address');
-      }
-      return true;
-    }),
-  validationError,
-  register,
-);
+// router.post(
+//   '/register',
+//   body('email')
+//     .trim()
+//     .notEmpty()
+//     .withMessage('Email is required')
+//     .isLength({ max: 50 })
+//     .withMessage('Email must be less than 50 characters')
+//     .isEmail()
+//     .withMessage('Invalid email address')
+//     // Ensure only domain ends with @aut.ac.nz
+//     .custom((value) => {
+//       if (!value.endsWith('@aut.ac.nz')) {
+//         throw new Error('You must register with a valid @aut.ac.nz address');
+//       }
+//       return true;
+//     }),
+//   validationError,
+//   register,
+// );
+
+router.post('/register', (req, res) => {
+  var email = req.body.email;
+  register(email).then((success) => {
+    if (success) {
+      res.json({ message: 'Verification email sent. Please check your inbox.' });
+    } else {
+      res.status(400).json({ message: 'Registration failed. Email may already be registered or invalid.' });
+    }
+  })
+});
 
 router.post(
   '/forgot-password',
