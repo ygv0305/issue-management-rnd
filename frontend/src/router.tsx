@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import CreatePassword from './pages/CreatePassword';
 
 // Components
-import ProtectedRoute from './components/ProtectedRoute';
+//import ProtectedRoute from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +23,6 @@ export const router = createBrowserRouter([
     element: <CreatePassword />,
   },
   {
-    element: <ProtectedRoute />,
     children: [
       {
         path: '/home',

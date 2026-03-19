@@ -6,9 +6,11 @@ import { body } from 'express-validator';
 import register from '../controllers/auth/register.js';
 import forgotPassword from '../controllers/auth/forgotPassword.js';
 import setPassword from '../controllers/auth/setPassword.js';
-
+import login from '../controllers/auth/login.js';
 // Middlewares
 import validationError from '../middlewares/validationError.js';
+import user from '../models/user.js';
+import authenticateUser from '../controllers/auth/login.js';
 
 const router = Router();
 
@@ -45,8 +47,7 @@ router.post(
   forgotPassword,
 );
 
-router.post(
-  '/set-password',
+router.post('/set-password',
   body('email').isEmail().withMessage('Invalid email address'),
   body('token').notEmpty().withMessage('Token is required'),
   body('password')
@@ -57,5 +58,9 @@ router.post(
   validationError,
   setPassword,
 );
+
+router.post('/login', async (req, res) => {
+  res.json({ message: await authenticateUser(req.body.email, req.body.password) });
+});
 
 export default router;
