@@ -30,9 +30,18 @@ export default function Auth() {
 
     try {
       if (authMode === 'login') {
-        // Mock login for now
-        localStorage.setItem('isAuthenticated', 'true');
-        navigate('/home');
+        const res = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        console.log(data.message.user_data);
+        if(!data.message.user_data) {
+          throw new Error(data.message || 'Login failed');
+        }else{
+          navigate('/home');
+        }
       } else if (authMode === 'signup') {
         const res = await fetch('http://localhost:3000/api/auth/register', {
           method: 'POST',
