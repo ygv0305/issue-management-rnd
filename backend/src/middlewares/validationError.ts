@@ -11,6 +11,7 @@ const validationError = (req: Request, res: Response, next: NextFunction) => {
       code: 'ValidationError',
       errors: errors.mapped(),
     });
+    return;
   }
   next();
 };

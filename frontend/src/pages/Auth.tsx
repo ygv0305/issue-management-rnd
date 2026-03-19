@@ -2,36 +2,65 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+type AuthMode = 'login' | 'signup' | 'reset';
+
 export default function Auth() {
-  const [authMode, setAuthMode] = useState('login');
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const authModeChange = (mode: AuthMode) => {
+    setAuthMode(mode);
+    setError('');
+    setEmail('');
+    setPassword('');
+  };
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setError('');
+    setIsLoading(true);
 
     if (!email.trim()) {
       setError('Email cannot be empty.');
+      setIsLoading(false);
       return;
     }
 
     if (authMode === 'login' && !password.trim()) {
       setError('Password cannot be empty.');
+      setIsLoading(false);
       return;
     }
 
-    if (authMode === 'signup' && !email.endsWith('@aut.ac.nz')) {
-      setError('You must register with a valid @aut.ac.nz address.');
+    if (!email.endsWith('@autuni.ac.nz')) {
+      setError('You must use a valid @autuni.ac.nz address.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (authMode === 'login' && password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      setIsLoading(false);
       return;
     }
 
     try {
       if (authMode === 'login') {
-        // Mock login for now
-        localStorage.setItem('isAuthenticated', 'true');
+        const res = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Login failed');
+
+        localStorage.setItem('accessToken', data.accessToken);
         navigate('/home');
       } else if (authMode === 'signup') {
         const res = await fetch('http://localhost:3000/api/auth/register', {
@@ -42,7 +71,7 @@ export default function Auth() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Registration failed');
         alert(data.message || 'Check your email for the verification link.');
-        setAuthMode('login'); // Switch back to login page
+        authModeChange('login'); // Switch back to login page
       } else if (authMode === 'reset') {
         const res = await fetch(
           'http://localhost:3000/api/auth/forgot-password',
@@ -58,10 +87,12 @@ export default function Auth() {
           data.message ||
             'If an account exists, a reset link has been sent to your email.',
         );
-        setAuthMode('login');
+        authModeChange('login');
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (error: any) {
+      setError(error.message || 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,12 +143,14 @@ export default function Auth() {
             </div>
           )}
 
-          <button type="submit" className="auth-submit">
-            {authMode === 'login'
-              ? 'Log In'
-              : authMode === 'signup'
-                ? 'Sign Up'
-                : 'Send'}
+          <button type="submit" className="auth-submit" disabled={isLoading}>
+            {isLoading
+              ? 'Processing...'
+              : authMode === 'login'
+                ? 'Log In'
+                : authMode === 'signup'
+                  ? 'Sign Up'
+                  : 'Send'}
           </button>
         </form>
 
@@ -125,14 +158,14 @@ export default function Auth() {
           <div className="auth-toggle-login">
             <button
               type="button"
-              onClick={() => setAuthMode('signup')}
+              onClick={() => authModeChange('signup')}
               className="toggle-btn"
             >
               Create Account
             </button>
             <button
               type="button"
-              onClick={() => setAuthMode('reset')}
+              onClick={() => authModeChange('reset')}
               className="toggle-btn"
             >
               Forgot Password?
@@ -144,7 +177,7 @@ export default function Auth() {
               {authMode === 'signup' ? 'Already have an account?' : 'Back to'}{' '}
               <button
                 type="button"
-                onClick={() => setAuthMode('login')}
+                onClick={() => authModeChange('login')}
                 className="toggle-btn"
               >
                 Log in

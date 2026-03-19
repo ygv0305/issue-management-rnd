@@ -1,3 +1,4 @@
+// Node modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
@@ -10,6 +11,7 @@ export default function CreatePassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,15 +22,19 @@ export default function CreatePassword() {
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setError('');
+    setIsLoading(true);
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters long.');
+      setIsLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
+      setIsLoading(false);
       return;
     }
 
@@ -45,16 +51,18 @@ export default function CreatePassword() {
       }
 
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred while setting the password.');
+      navigate('/');
+    } catch (error: any) {
+      setError(
+        error.message || 'An error occurred while setting the password.',
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (!token || !email) {
-    return null; // or a loading spinner
+    return null;
   }
 
   // Determine if it looks like a reset or create flow based on URL path, but the backend handles it generically.
@@ -111,8 +119,8 @@ export default function CreatePassword() {
               />
             </div>
 
-            <button type="submit" className="auth-submit">
-              Save
+            <button type="submit" className="auth-submit" disabled={isLoading}>
+              {isLoading ? 'Saving...' : 'Save'}
             </button>
           </form>
         )}

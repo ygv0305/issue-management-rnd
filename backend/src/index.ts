@@ -1,6 +1,7 @@
 // Node modules
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Types
 import type { CorsOptions } from 'cors';
@@ -28,12 +29,14 @@ const corsOptions: CorsOptions = {
       console.log('Dev mode is false. Please configure CORS.');
     }
   },
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
 // Allow JSON and URL-encoded req body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const PORT = 3000;
 (async () => {

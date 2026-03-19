@@ -1,11 +1,12 @@
 import { Schema, model, Types } from 'mongoose';
 
-interface IRToken {
+interface IRefreshToken {
   token: string;
   userId: Types.ObjectId;
+  expiresAt: Date;
 }
 
-const tokenSchema = new Schema<IRToken>({
+const refreshTokenSchema = new Schema<IRefreshToken>({
   token: {
     type: String,
     required: [true, 'Token is required'],
@@ -14,6 +15,11 @@ const tokenSchema = new Schema<IRToken>({
     type: Schema.Types.ObjectId,
     required: [true, 'User ID is required'],
   },
+  expiresAt: {
+    type: Date,
+    required: true,
+    expires: 0,
+  },
 });
 
-export default model<IRToken>('RToken', tokenSchema);
+export default model<IRefreshToken>('RefreshToken', refreshTokenSchema);

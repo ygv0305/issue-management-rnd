@@ -26,7 +26,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
 
     // Generate token
     const token = crypto.randomBytes(32).toString('hex');
-    
+
     // Save token (upsert to overwrite if they try to register again)
     await VerificationToken.findOneAndUpdate(
       { email, type: 'Register' },
@@ -36,7 +36,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
         type: 'Register',
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' },
     );
 
     // Send email
@@ -46,7 +46,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
       'Complete Your Registration - AUT R&D Issue Management',
       `<p>Thank you for signing up! Click the link below to set your password and complete your registration:</p>
        <p><a href="${createLink}">Create Password</a></p>
-       <p>This link will expire in 24 hours.</p>`
+       <p>This link will expire in 24 hours.</p>`,
     );
 
     res.status(200).json({

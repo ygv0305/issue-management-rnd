@@ -1,10 +1,14 @@
 // Types
 import type { Request, Response } from 'express';
+
+// Node modules
 import crypto from 'crypto';
 
 // Models
 import User from '../../models/user.js';
 import VerificationToken from '../../models/verification-token.js';
+
+// Utils
 import { sendEmail } from '../../utils/email.js';
 
 interface ForgotPasswordData {

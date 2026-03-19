@@ -23,7 +23,6 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
       await User.create({
         email,
         password,
-        isSetupComplete: true,
       });
     } else if (verificationToken.type === 'Reset') {
       // User exists, just update their password
