@@ -2,6 +2,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+// Services
+import AuthService from '../services/authServices';
+
 type AuthMode = 'login' | 'signup' | 'reset';
 
 export default function Auth() {
@@ -51,38 +54,15 @@ export default function Auth() {
 
     try {
       if (authMode === 'login') {
-        const res = await fetch('http://localhost:3000/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-          credentials: 'include',
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Login failed');
-
+        const data = await AuthService.login({ email, password });
         localStorage.setItem('accessToken', data.accessToken);
         navigate('/home');
       } else if (authMode === 'signup') {
-        const res = await fetch('http://localhost:3000/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Registration failed');
+        const data = await AuthService.register({ email });
         alert(data.message || 'Check your email for the verification link.');
         authModeChange('login'); // Switch back to login page
       } else if (authMode === 'reset') {
-        const res = await fetch(
-          'http://localhost:3000/api/auth/forgot-password',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-          },
-        );
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Password reset failed');
+        const data = await AuthService.forgotPassword({ email });
         alert(
           data.message ||
             'If an account exists, a reset link has been sent to your email.',
@@ -90,7 +70,11 @@ export default function Auth() {
         authModeChange('login');
       }
     } catch (error: any) {
-      setError(error.message || 'An unexpected error occurred');
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'An unexpected error occurred';
+      setError(message);
     } finally {
       setIsLoading(false);
     }

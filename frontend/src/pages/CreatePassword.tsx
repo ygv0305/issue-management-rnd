@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
+// Services
+import AuthService from '../services/authServices';
+
 export default function CreatePassword() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -39,23 +42,17 @@ export default function CreatePassword() {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/set-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, token, password }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Failed to set password');
-      }
+      if (!email || !token) throw new Error('Missing email or token.');
+      await AuthService.setPassword({ email, token, password });
 
       setSuccess(true);
-      navigate('/');
+      setTimeout(() => navigate('/'), 2000); // Give user time to see success message
     } catch (error: any) {
-      setError(
-        error.message || 'An error occurred while setting the password.',
-      );
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'An error occurred while setting the password.';
+      setError(message);
     } finally {
       setIsLoading(false);
     }

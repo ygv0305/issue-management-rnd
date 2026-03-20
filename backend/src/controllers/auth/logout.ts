@@ -1,18 +1,14 @@
 // Types
 import type { Request, Response } from 'express';
 
-// Models
-import RefreshToken from '../../models/refresh-token.js';
-
 // Custom modules
+import * as logoutService from '../../services/auth/logoutService.js';
 import config from '../../config/env.js';
 
 const logout = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
   try {
-    if (refreshToken) {
-      await RefreshToken.deleteOne({ token: refreshToken });
-    }
+    await logoutService.revokeRefreshToken(refreshToken);
 
     const devMode = config.NODE_ENV === 'development';
     res.clearCookie('refreshToken', {
@@ -33,4 +29,4 @@ const logout = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default logout;
+export default [logout];

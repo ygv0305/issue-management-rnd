@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const apiAuth = axios.create({
   baseURL: 'http://localhost:3000/api',
-  // withCredentials: true, // allows cookies (refreshToken) to be sent automatically
+  withCredentials: true, // allows cookies (refreshToken) to be sent automatically
 });
 
 // Request Interceptor: Attach access token except for auth route without a token

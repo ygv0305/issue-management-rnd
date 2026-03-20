@@ -1,15 +1,31 @@
 // Types
 import type { Request, Response } from 'express';
 
-// Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verification-token.js';
+// Node modules
+import { body } from 'express-validator';
+
+// Custom modules
+import * as setPasswordService from '../../services/auth/setPasswordService.js';
+import validationError from '../../middlewares/validationError.js';
+
+export const setPasswordRules = [
+  body('email').isEmail().withMessage('Invalid email address'),
+  body('token').notEmpty().withMessage('Token is required'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long'),
+];
 
 const setPassword = async (req: Request, res: Response): Promise<void> => {
   const { email, token, password } = req.body;
   try {
     // Check if token exists and is valid
-    const verificationToken = await VerificationToken.findOne({ email, token });
+    const verificationToken = await setPasswordService.verifyToken(
+      email,
+      token,
+    );
     if (!verificationToken) {
       res.status(400).json({
         code: 'InvalidToken',
@@ -20,13 +36,10 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
 
     if (verificationToken.type === 'Register') {
       // Create the user for the first time
-      await User.create({
-        email,
-        password,
-      });
+      await setPasswordService.createUser(email, password);
     } else if (verificationToken.type === 'Reset') {
       // User exists, just update their password
-      const user = await User.findOne({ email });
+      const user = await setPasswordService.updatePassword(email, password);
       if (!user) {
         res.status(404).json({
           code: 'UserNotFound',
@@ -34,12 +47,10 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
         });
         return;
       }
-      user.password = password;
-      await user.save();
     }
 
     // Delete token so it can't be reused
-    await VerificationToken.deleteOne({ _id: verificationToken._id });
+    await setPasswordService.deleteToken(verificationToken._id);
 
     res.status(200).json({
       message: 'Password has been set successfully',
@@ -53,4 +64,4 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default setPassword;
+export default [setPasswordRules, validationError, setPassword];

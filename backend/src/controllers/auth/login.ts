@@ -2,20 +2,28 @@
 import type { Request, Response } from 'express';
 
 // Node modules
-import bcrypt from 'bcrypt';
-
-// Models
-import User from '../../models/user.js';
-import RefreshToken from '../../models/refresh-token.js';
+import { body } from 'express-validator';
 
 // Custom modules
-import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
+import * as loginService from '../../services/auth/loginService.js';
+import validationError from '../../middlewares/validationError.js';
 import config from '../../config/env.js';
+
+export const loginRules = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Invalid email address'),
+  body('password').notEmpty().withMessage('Password is required'),
+];
 
 const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email }).select('+password');
+    const user = await loginService.verifyUser(email, password);
+
     if (!user) {
       res.status(401).json({
         code: 'Unauthorized',
@@ -24,24 +32,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      res.status(401).json({
-        code: 'Unauthorized',
-        message: 'Invalid email or password',
-      });
-      return;
-    }
-
-    const accessToken = genAccessToken(user._id);
-    const refreshToken = genRefreshToken(user._id);
-
-    // Save refresh token
-    await RefreshToken.create({
-      userId: user._id,
-      token: refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    const { accessToken, refreshToken } = await loginService.createSession(
+      user._id,
+    );
 
     // Send HTTP-Only cookie
     const devMode = config.NODE_ENV === 'development';
@@ -50,7 +43,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
       secure: !devMode,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      // path: '',
     });
 
     res.status(200).json({
@@ -71,4 +63,4 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default login;
+export default [loginRules, validationError, login];

@@ -1,15 +1,15 @@
 // Node modules
 import { useNavigate } from 'react-router';
 
-// Custom modules
-import apiAuth from '../lib/axiosAuth';
+// Services
+import AuthService from '../services/authServices';
 
 export default function Home() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await apiAuth.post('/auth/logout');
+      await AuthService.logout();
     } catch (error) {
       alert('Logout error');
       console.error('Logout error', error);

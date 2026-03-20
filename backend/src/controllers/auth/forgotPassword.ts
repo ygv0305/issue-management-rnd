@@ -2,14 +2,20 @@
 import type { Request, Response } from 'express';
 
 // Node modules
-import crypto from 'crypto';
+import { body } from 'express-validator';
 
-// Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verification-token.js';
+// Custom modules
+import * as forgotPasswordService from '../../services/auth/forgotPasswordService.js';
+import validationError from '../../middlewares/validationError.js';
 
-// Utils
-import { sendEmail } from '../../utils/email.js';
+export const forgotPasswordRules = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Invalid email address'),
+];
 
 interface ForgotPasswordData {
   email: string;
@@ -18,33 +24,18 @@ interface ForgotPasswordData {
 const forgotPassword = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body as ForgotPasswordData;
   try {
-    const user = await User.findOne({ email });
+    const user = await forgotPasswordService.findUserByEmail(email);
     if (!user) {
       // Don't reveal that the user doesn't exist for security
       res.status(200).json({ message: 'A password reset link has been sent.' });
       return;
     }
 
-    // Generate token
-    const token = crypto.randomBytes(32).toString('hex');
-
-    // Save token
-    await VerificationToken.create({
-      email,
-      token,
-      type: 'Reset',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    });
+    // Generate and save token
+    const token = await forgotPasswordService.generateAndSaveResetToken(email);
 
     // Send email
-    const resetLink = `http://localhost:5173/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-    await sendEmail(
-      email,
-      'Reset Your Password - AUT R&D Issue Management',
-      `<p>You requested a password reset. Click the link below to set a new password:</p>
-       <p><a href="${resetLink}">Reset Password</a></p>
-       <p>This link will expire in 24 hours.</p>`,
-    );
+    await forgotPasswordService.sendResetEmail(email, token);
 
     res.status(200).json({ message: 'A password reset link has been sent.' });
   } catch (error) {
@@ -56,4 +47,4 @@ const forgotPassword = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default forgotPassword;
+export default [forgotPasswordRules, validationError, forgotPassword];

@@ -1,15 +1,21 @@
 // Types
 import type { Request, Response } from 'express';
 
-// Models
-import RefreshToken from '../../models/refresh-token.js';
+// Node modules
+import { cookie } from 'express-validator';
+import jwt from 'jsonwebtoken';
 
 // Custom modules
-import { genAccessToken, verifyRefreshToken } from '../../lib/jwt.js';
-import type { Types } from 'mongoose';
+import * as tokenService from '../../services/auth/tokenService.js';
+import validationError from '../../middlewares/validationError.js';
 
-// Node modules
-import jwt from 'jsonwebtoken';
+export const renewTokenRules = [
+  cookie('refreshToken')
+    .notEmpty()
+    .withMessage('Refresh token required')
+    .isJWT()
+    .withMessage('Invalid refresh token'),
+];
 
 const renewToken = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
@@ -22,26 +28,15 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    // Verify token
-    const decoded = verifyRefreshToken(refreshToken) as {
-      userId: Types.ObjectId;
-    };
+    const accessToken = await tokenService.verifyAndRenewToken(refreshToken);
 
-    // Verify token exists in database
-    const tokenDoc = await RefreshToken.findOne({
-      token: refreshToken,
-      userId: decoded.userId,
-    });
-    if (!tokenDoc) {
+    if (!accessToken) {
       res.status(401).json({
         code: 'Unauthorized',
         message: 'Invalid refresh token',
       });
       return;
     }
-
-    // Generate new accessToken
-    const accessToken = genAccessToken(decoded.userId);
 
     res.status(200).json({
       accessToken,
@@ -56,7 +51,7 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
         message: 'Refresh token invalid or expired',
       });
       // Delete from database if expired
-      await RefreshToken.deleteOne({ token: refreshToken });
+      await tokenService.removeRefreshToken(refreshToken);
       return;
     }
 
@@ -68,4 +63,4 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default renewToken;
+export default [renewTokenRules, validationError, renewToken];
