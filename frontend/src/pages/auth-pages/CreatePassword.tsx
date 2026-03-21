@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 // Services
-import AuthService from '../../services/authServices';
+import AuthService from '../../services/authService';
 
 // CSS + Assets
 import './auth.css';

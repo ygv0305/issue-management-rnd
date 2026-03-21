@@ -1,6 +1,6 @@
 // Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verificationToken.js';
+import User from '../../models/userSchema.js';
+import VerificationToken from '../../models/verificationTokenSchema.js';
 
 export const verifyToken = async (email: string, token: string) => {
   return await VerificationToken.findOne({ email, token });

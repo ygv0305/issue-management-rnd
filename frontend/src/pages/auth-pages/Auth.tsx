@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // Services
-import AuthService from '../../services/authServices';
+import AuthService from '../../services/authService';
+
+// Context
+import { useUser } from '../../lib/context/UserContext';
 
 // CSS + Assets
 import './auth.css';
@@ -20,24 +23,15 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { user, loading: userLoading, checkAuth } = useUser();
   const navigate = useNavigate();
 
-  // Auto login
+  // Redirect if already logged in
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      (async () => {
-        try {
-          const data = await AuthService.autoLogin();
-          if (data.success) {
-            navigate('/home');
-          }
-        } catch (error) {
-          console.log('Auto login failed. Please log in again');
-        }
-      })();
+    if (!userLoading && user) {
+      navigate('/home');
     }
-  });
+  }, [user, userLoading, navigate]);
 
   const authModeChange = (mode: AuthMode) => {
     setAuthMode(mode);
@@ -80,7 +74,7 @@ export default function Auth() {
       if (authMode === 'login') {
         const data = await AuthService.login({ email, password });
         localStorage.setItem('accessToken', data.accessToken!);
-        navigate('/home');
+        await checkAuth();
       } else if (authMode === 'signup') {
         const data = await AuthService.register({ email });
         alert(data.message || 'Check your email for the verification link.');

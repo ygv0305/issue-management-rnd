@@ -1,8 +1,7 @@
 // Node modules
 import nodemailer from 'nodemailer';
 
-// Since this is for dev testing we will use Ethereal Email.
-// It creates a test account automatically.
+// Use Ethereal Email for dev which creates a test account automatically.
 let transporter: nodemailer.Transporter;
 
 export const initEmailTransporter = async () => {

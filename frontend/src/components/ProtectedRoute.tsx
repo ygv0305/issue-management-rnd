@@ -1,10 +1,15 @@
 // Node modules
 import { Navigate, Outlet } from 'react-router';
 
-export default function ProtectedRoute() {
-  const token = localStorage.getItem('accessToken');
+// Context
+import { useUser } from '../lib/context/UserContext';
 
-  if (!token) {
+export default function ProtectedRoute() {
+  const { user, loading } = useUser();
+
+  if (loading) return <div>Loading...</div>;
+
+  if (!user) {
     return <Navigate to="/" replace />;
   }
 

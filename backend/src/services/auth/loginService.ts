@@ -2,8 +2,8 @@
 import bcrypt from 'bcrypt';
 
 // Models
-import User from '../../models/user.js';
-import RefreshToken from '../../models/refreshToken.js';
+import User from '../../models/userSchema.js';
+import RefreshToken from '../../models/refreshTokenSchema.js';
 
 // Custom modules
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';

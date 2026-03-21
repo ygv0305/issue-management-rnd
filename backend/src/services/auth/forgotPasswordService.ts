@@ -2,11 +2,11 @@
 import crypto from 'crypto';
 
 // Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verificationToken.js';
+import User from '../../models/userSchema.js';
+import VerificationToken from '../../models/verificationTokenSchema.js';
 
 // Utils
-import { sendEmail } from '../../utils/email.js';
+import { sendEmail } from '../../utils/emailService.js';
 
 export const findUserByEmail = async (email: string) => {
   return await User.findOne({ email });

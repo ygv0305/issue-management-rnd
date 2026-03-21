@@ -2,7 +2,7 @@
 import type { Request, Response } from 'express';
 
 // Models
-import User from '../../models/user.js';
+import User from '../../models/userSchema.js';
 
 const autoLogin = async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
@@ -19,11 +19,7 @@ const autoLogin = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
       message: 'Login successful',
       success: true,
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-      },
+      user,
     });
   } catch (error) {
     res.status(500).json({

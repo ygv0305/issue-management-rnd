@@ -1,5 +1,5 @@
 // Models
-import RefreshToken from '../../models/refreshToken.js';
+import RefreshToken from '../../models/refreshTokenSchema.js';
 
 export const revokeRefreshToken = async (refreshToken: string) => {
   if (refreshToken) {

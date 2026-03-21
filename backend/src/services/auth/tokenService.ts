@@ -1,8 +1,10 @@
 // Models
-import RefreshToken from '../../models/refreshToken.js';
+import RefreshToken from '../../models/refreshTokenSchema.js';
 
 // Custom modules
 import { genAccessToken, verifyRefreshToken } from '../../lib/jwt.js';
+
+// Types
 import type { Types } from 'mongoose';
 
 export const verifyAndRenewToken = async (refreshToken: string) => {

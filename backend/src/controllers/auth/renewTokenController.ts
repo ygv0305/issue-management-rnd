@@ -5,8 +5,10 @@ import type { Request, Response } from 'express';
 import { cookie } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
-// Custom modules
+// Services
 import * as tokenService from '../../services/auth/tokenService.js';
+
+// Middlewares
 import validationError from '../../middlewares/validationError.js';
 
 export const renewTokenRules = [

@@ -4,8 +4,10 @@ import type { Request, Response } from 'express';
 // Node modules
 import { body } from 'express-validator';
 
-// Custom modules
+// Services
 import * as registerService from '../../services/auth/registerService.js';
+
+// Middlewares
 import validationError from '../../middlewares/validationError.js';
 
 export const registerRules = [

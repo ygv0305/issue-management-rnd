@@ -1,6 +1,6 @@
-// Custom modules
-import api from '../lib/axios';
-import apiAuth from '../lib/axiosAuth';
+// API
+import api from '../lib/api/axios';
+import apiAuth from '../lib/api/axiosAuth';
 
 // Types
 import type {

@@ -1,8 +1,10 @@
 // Types
 import type { Request, Response } from 'express';
 
-// Custom modules
+// Services
 import * as logoutService from '../../services/auth/logoutService.js';
+
+// Custom modules
 import config from '../../config/env.js';
 
 const logout = async (req: Request, res: Response): Promise<void> => {
