@@ -10,7 +10,7 @@ import type {
   SetPasswordCredentials,
   AuthResponse,
   BaseResponse,
-} from '../types/auth';
+} from '../types/authTypes';
 
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {

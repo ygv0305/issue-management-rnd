@@ -2,9 +2,9 @@
 import { createBrowserRouter } from 'react-router';
 
 // Pages
-import Auth from './pages/Auth';
+import Auth from './pages/auth-pages/Auth';
 import Home from './pages/Home';
-import CreatePassword from './pages/CreatePassword';
+import CreatePassword from './pages/auth-pages/CreatePassword';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
