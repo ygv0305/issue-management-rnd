@@ -20,6 +20,11 @@ class AuthService {
     return response.data;
   }
 
+  async autoLogin(): Promise<AuthResponse> {
+    const response = await apiAuth.post<AuthResponse>('/auth/auto-login');
+    return response.data;
+  }
+
   async register(credentials: RegisterCredentials): Promise<BaseResponse> {
     const response = await api.post<BaseResponse>(
       '/auth/register',

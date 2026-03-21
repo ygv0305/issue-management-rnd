@@ -1,5 +1,5 @@
 // Node modules
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // Services
@@ -21,6 +21,23 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Auto login
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      (async () => {
+        try {
+          const data = await AuthService.autoLogin();
+          if (data.success) {
+            navigate('/home');
+          }
+        } catch (error) {
+          console.log('Auto login failed. Please log in again');
+        }
+      })();
+    }
+  });
 
   const authModeChange = (mode: AuthMode) => {
     setAuthMode(mode);
@@ -62,7 +79,7 @@ export default function Auth() {
     try {
       if (authMode === 'login') {
         const data = await AuthService.login({ email, password });
-        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('accessToken', data.accessToken!);
         navigate('/home');
       } else if (authMode === 'signup') {
         const data = await AuthService.register({ email });

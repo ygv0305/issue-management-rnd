@@ -19,7 +19,8 @@ export interface SetPasswordCredentials {
 
 export interface AuthResponse {
   message?: string;
-  accessToken: string;
+  success?: boolean;
+  accessToken?: string;
 }
 
 export interface BaseResponse {

@@ -8,6 +8,7 @@ import setPassword from '../controllers/auth/setPassword.js';
 import login from '../controllers/auth/login.js';
 import logout from '../controllers/auth/logout.js';
 import renewToken from '../controllers/auth/renewToken.js';
+import autoLogin from '../controllers/auth/autoLogin.js';
 
 // Middlewares
 import authenticate from '../middlewares/authenticate.js';
@@ -20,5 +21,6 @@ router.post('/renew-token', ...renewToken);
 router.post('/register', ...register);
 router.post('/forgot-password', ...forgotPassword);
 router.post('/set-password', ...setPassword);
+router.post('/auto-login', authenticate, autoLogin);
 
 export default router;
