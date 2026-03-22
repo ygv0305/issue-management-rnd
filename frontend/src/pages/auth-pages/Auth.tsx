@@ -72,7 +72,7 @@ export default function Auth() {
 
     try {
       if (authMode === 'login') {
-        const data = await AuthService.login({ email, password });
+        const data = await AuthService.requestLogin({ email, password });
         localStorage.setItem('accessToken', data.accessToken!);
         await checkAuth();
       } else if (authMode === 'signup') {

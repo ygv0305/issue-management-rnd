@@ -13,10 +13,14 @@ import type {
 } from '../types/authTypes';
 
 class AuthService {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', credentials, {
-      withCredentials: true,
-    });
+  async requestLogin(credentials: LoginCredentials): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>(
+      '/auth/request-login',
+      credentials,
+      {
+        withCredentials: true,
+      },
+    );
     return response.data;
   }
 

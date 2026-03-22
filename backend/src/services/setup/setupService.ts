@@ -30,8 +30,27 @@ export const projectRules = (data: Pick<SetupData, 'role' | 'projectIds'>) => {
   return '';
 };
 
+const handleProjectAssignments = (
+  data: Pick<SetupData, 'role' | 'projectIds'>,
+) => {
+  const { role, projectIds } = data;
+
+  let validProjectIds: Types.ObjectId[] = [];
+  if (projectIds && projectIds.length > 0) {
+    if (role === 'Student') {
+      validProjectIds = [new Types.ObjectId(projectIds[0])];
+    } else if (['Supervisor', 'Client'].includes(role)) {
+      validProjectIds = projectIds
+        .slice(0, 5)
+        .map((id) => new Types.ObjectId(id));
+    }
+    return validProjectIds;
+  }
+  return null;
+};
+
 export const setupProfile = async (data: SetupData): Promise<IUser | null> => {
-  const { userId, fullName, role, projectIds } = data;
+  const { userId, fullName, role } = data;
 
   const updateData: any = {
     fullName,
@@ -47,15 +66,8 @@ export const setupProfile = async (data: SetupData): Promise<IUser | null> => {
   }
 
   // Handle project assignments
-  let validProjectIds: Types.ObjectId[] = [];
-  if (projectIds && projectIds.length > 0) {
-    if (role === 'Student') {
-      validProjectIds = [new Types.ObjectId(projectIds[0])];
-    } else if (['Supervisor', 'Client'].includes(role)) {
-      validProjectIds = projectIds
-        .slice(0, 5)
-        .map((id) => new Types.ObjectId(id));
-    }
+  const validProjectIds = handleProjectAssignments(data);
+  if (validProjectIds) {
     updateData.project = validProjectIds;
   }
 
@@ -67,7 +79,7 @@ export const setupProfile = async (data: SetupData): Promise<IUser | null> => {
   if (!user) throw new Error('User not found');
 
   // Update Project.members
-  if (validProjectIds.length > 0) {
+  if (validProjectIds!.length > 0) {
     await Project.updateMany(
       { _id: { $in: validProjectIds } },
       { $addToSet: { members: new Types.ObjectId(userId) } },

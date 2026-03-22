@@ -42,6 +42,7 @@ const setupController = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Setup error:', error);
     res.status(500).json({
+      code: 'ServerError',
       success: false,
       message: error.message || 'Server error during setup',
     });

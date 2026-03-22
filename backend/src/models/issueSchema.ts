@@ -4,7 +4,7 @@ import { Schema, Types, model } from 'mongoose';
 export interface IIssue {
   subject: string;
   description: string;
-  type: string; // Configurable drop-down
+  type: Schema.Types.ObjectId;
   status:
     | 'New'
     | 'Assigned'
@@ -52,9 +52,9 @@ const issueSchema = new Schema<IIssue>(
       maxLength: [1000, 'Description must be less than 1000 characters'],
     },
     type: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'Issue type is required'],
-      maxLength: [50, 'Issue type must be less than 50 characters'],
+      ref: 'IssueType',
     },
     status: {
       type: String,

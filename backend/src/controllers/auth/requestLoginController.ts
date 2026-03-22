@@ -5,15 +5,13 @@ import type { Request, Response } from 'express';
 import { body } from 'express-validator';
 
 // Services
-import * as loginService from '../../services/auth/loginService.js';
-
-// Middlewares
-import validationError from '../../middlewares/validationError.js';
+import * as requestLoginService from '../../services/auth/requestLoginService.js';
 
 // Custom modules
+import validationError from '../../middlewares/validationError.js';
 import config from '../../config/env.js';
 
-export const loginRules = [
+export const requestLoginRules = [
   body('email')
     .trim()
     .notEmpty()
@@ -23,10 +21,10 @@ export const loginRules = [
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
-const login = async (req: Request, res: Response): Promise<void> => {
+const requestLogin = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
-    const user = await loginService.verifyUser(email, password);
+    const user = await requestLoginService.verifyUser(email, password);
 
     if (!user) {
       res.status(401).json({
@@ -36,9 +34,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const { accessToken, refreshToken } = await loginService.createSession(
-      user._id,
-    );
+    const { accessToken, refreshToken } =
+      await requestLoginService.createSession(user._id);
 
     // Send HTTP-Only cookie
     const devMode = config.NODE_ENV === 'development';
@@ -62,4 +59,4 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default [loginRules, validationError, login];
+export default [requestLoginRules, validationError, requestLogin];

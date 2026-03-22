@@ -7,6 +7,16 @@ import './setupModal.css';
 // Services
 import SetupService from '../../services/setupService';
 
+// Handlers
+import {
+  handleNextStep1,
+  handleNextStep2,
+  handleNextStep3,
+  handlePreviousStep,
+  handleProjectToggle,
+  submitSetup as submitSetupHandler,
+} from './stepsHandler';
+
 // Types
 import type { ProjectData } from '../../types/authTypes';
 import type { User } from '../../types/authTypes';
@@ -38,75 +48,15 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
     fetchProjects();
   }, []);
 
-  const handleNextStep1 = () => {
-    if (!fullName.trim()) {
-      setError('Full name is required.');
-      return;
-    }
-    setError('');
-    setStep(2);
-  };
-
-  const handleNextStep2 = () => {
-    if (['PaperLeader', 'Admin'].includes(role)) {
-      submitSetup(); // Skip project selection
-    } else {
-      setStep(3);
-    }
-  };
-
-  const handleProjectToggle = (id: string) => {
-    setProjectIds((prev) => {
-      if (prev.includes(id)) return prev.filter((p) => p !== id);
-
-      if (role === 'Student' && prev.length >= 1) {
-        // Replace if just 1 project allowed for Student
-        return [id];
-      }
-      if (['Supervisor', 'Client'].includes(role) && prev.length >= 5) {
-        return prev; // Ignore
-      }
-      return [...prev, id];
-    });
-  };
-
-  const handleNextStep3 = () => {
-    if (role === 'Student' && projectIds.length !== 1) {
-      setError('You must select exactly one project.');
-      return;
-    }
-    if (
-      ['Supervisor', 'Client'].includes(role) &&
-      (projectIds.length === 0 || projectIds.length > 5)
-    ) {
-      setError('You must select between 1 and 5 projects.');
-      return;
-    }
-    setError('');
-    submitSetup();
-  };
-
-  const submitSetup = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await SetupService.setupProfile({
-        fullName,
-        role,
-        projectIds,
-      });
-      if (response.success && response.user) {
-        onComplete(response.user);
-      } else {
-        setError(response.message || 'Setup failed. Please try again.');
-        setLoading(false);
-      }
-    } catch (error: any) {
-      console.error(error);
-      setError(error.response?.data?.message || 'Error completing setup.');
-      setLoading(false);
-    }
-  };
+  const onSubmitSetup = () =>
+    submitSetupHandler(
+      fullName,
+      role,
+      projectIds,
+      setLoading,
+      setError,
+      onComplete,
+    );
 
   return (
     <div className="setup-modal-overlay">
@@ -125,7 +75,10 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
               placeholder="Enter your full name"
               className="setup-input"
             />
-            <button onClick={handleNextStep1} className="setup-btn">
+            <button
+              onClick={() => handleNextStep1(fullName, setError, setStep)}
+              className="setup-btn"
+            >
               Next
             </button>
           </div>
@@ -145,13 +98,23 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
               <option value="PaperLeader">Paper Leader</option>
               <option value="Admin">Admin</option>
             </select>
-            <button
-              onClick={handleNextStep2}
-              className="setup-btn"
-              disabled={loading}
-            >
-              {loading ? 'Submitting...' : 'Next'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <button
+                onClick={() => handlePreviousStep(step, setStep, setError)}
+                className="setup-btn"
+                style={{ backgroundColor: '#6c757d' }}
+                disabled={loading}
+              >
+                Back
+              </button>
+              <button
+                onClick={() => handleNextStep2(role, setStep, onSubmitSetup)}
+                className="setup-btn"
+                disabled={loading}
+              >
+                {loading ? 'Submitting...' : 'Next'}
+              </button>
+            </div>
           </div>
         )}
 
@@ -173,7 +136,9 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
                       <input
                         type="checkbox"
                         checked={projectIds.includes(p._id)}
-                        onChange={() => handleProjectToggle(p._id)}
+                        onChange={() =>
+                          handleProjectToggle(p._id, role, setProjectIds)
+                        }
                       />{' '}
                       {p.name}
                     </label>
@@ -181,13 +146,25 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
                 ))
               )}
             </div>
-            <button
-              onClick={handleNextStep3}
-              className="setup-btn"
-              disabled={loading}
-            >
-              {loading ? 'Submitting...' : 'Finish Setup'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <button
+                onClick={() => handlePreviousStep(step, setStep, setError)}
+                className="setup-btn"
+                style={{ backgroundColor: '#6c757d' }}
+                disabled={loading}
+              >
+                Back
+              </button>
+              <button
+                onClick={() =>
+                  handleNextStep3(role, projectIds, setError, onSubmitSetup)
+                }
+                className="setup-btn"
+                disabled={loading}
+              >
+                {loading ? 'Submitting...' : 'Finish Setup'}
+              </button>
+            </div>
           </div>
         )}
       </div>
