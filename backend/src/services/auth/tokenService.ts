@@ -17,7 +17,9 @@ export const verifyAndRenewToken = async (refreshToken: string) => {
   const tokenDoc = await RefreshToken.findOne({
     token: refreshToken,
     userId: decoded.userId,
-  });
+  })
+    .lean()
+    .exec();
   if (!tokenDoc) return null;
 
   // Generate new accessToken

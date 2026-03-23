@@ -9,7 +9,7 @@ import VerificationToken from '../../models/verificationTokenSchema.js';
 import { sendEmail } from '../../utils/emailService.js';
 
 export const checkUserExists = async (email: string) => {
-  return await User.findOne({ email });
+  return await User.findOne({ email }).lean().exec();
 };
 
 export const generateAndSaveToken = async (

@@ -7,7 +7,7 @@ export interface IUser {
   password: string;
   role: 'Student' | 'Supervisor' | 'PaperLeader' | 'Admin' | 'Client';
   fullName: string;
-  project: Types.ObjectId[];
+  project: Types.ObjectId;
   isSetupComplete: boolean;
   approvalStatus: 'Pending' | 'Approved' | 'Rejected' | 'NotRequired';
 }
@@ -30,7 +30,14 @@ const userSchema = new Schema<IUser>(
     role: {
       type: String,
       enum: {
-        values: ['Student', 'Supervisor', 'PaperLeader', 'Admin', 'Client'],
+        values: [
+          'Student',
+          'Supervisor',
+          'Moderator',
+          'PaperLeader',
+          'Admin',
+          'Client',
+        ],
         message: '{VALUE} role is not supported',
       },
       default: 'Student',
@@ -39,12 +46,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       maxLength: [50, 'Full name must be less than 50 characters'],
     },
-    project: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Project',
-      },
-    ],
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: 'Project',
+    },
     isSetupComplete: {
       type: Boolean,
       default: false,

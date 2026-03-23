@@ -21,7 +21,7 @@ export interface SetPasswordCredentials {
 export interface SetupProfileData {
   fullName: string;
   role: string;
-  projectIds?: string[];
+  projectId?: string;
 }
 
 // Response

@@ -3,7 +3,7 @@ import User from '../../models/userSchema.js';
 import VerificationToken from '../../models/verificationTokenSchema.js';
 
 export const verifyToken = async (email: string, token: string) => {
-  return await VerificationToken.findOne({ email, token });
+  return await VerificationToken.findOne({ email, token }).lean().exec();
 };
 
 export const createUser = async (email: string, password: any) => {
@@ -11,7 +11,7 @@ export const createUser = async (email: string, password: any) => {
 };
 
 export const updatePassword = async (email: string, password: any) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).exec();
   if (!user) return null;
 
   user.password = password;

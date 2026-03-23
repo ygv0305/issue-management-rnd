@@ -25,7 +25,6 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
     const user = await requestLoginService.verifyUser(email, password);
-
     if (!user) {
       res.status(401).json({
         code: 'Unauthorized',

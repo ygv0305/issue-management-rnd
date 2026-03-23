@@ -13,7 +13,6 @@ import {
   handleNextStep2,
   handleNextStep3,
   handlePreviousStep,
-  handleProjectToggle,
   submitSetup as submitSetupHandler,
 } from './stepsHandler';
 
@@ -29,7 +28,7 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState('Student');
-  const [projectIds, setProjectIds] = useState<string[]>([]);
+  const [projectId, setProjectId] = useState('');
   const [availableProjects, setAvailableProjects] = useState<ProjectData[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,7 +51,7 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
     submitSetupHandler(
       fullName,
       role,
-      projectIds,
+      projectId,
       setLoading,
       setError,
       onComplete,
@@ -94,6 +93,7 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
             >
               <option value="Student">Student</option>
               <option value="Supervisor">Supervisor</option>
+              <option value="Moderator">Moderator</option>
               <option value="Client">Client</option>
               <option value="PaperLeader">Paper Leader</option>
               <option value="Admin">Admin</option>
@@ -122,30 +122,24 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
           <div>
             <label>Select Project(s):</label>
             <p className="project-helper-text">
-              {role === 'Student'
-                ? 'Select exactly 1 project.'
-                : 'Select up to 5 projects.'}
+              Select a project that you work on
             </p>
-            <div className="project-list">
-              {availableProjects.length === 0 ? (
-                <p>No projects available.</p>
-              ) : (
+            <select
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="setup-input"
+            >
+              <option value="">Select a project</option>
+              {availableProjects.length > 0 ? (
                 availableProjects.map((p) => (
-                  <div key={p._id} className="project-item">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={projectIds.includes(p._id)}
-                        onChange={() =>
-                          handleProjectToggle(p._id, role, setProjectIds)
-                        }
-                      />{' '}
-                      {p.name}
-                    </label>
-                  </div>
+                  <option key={p._id} value={p._id}>
+                    {p.name}
+                  </option>
                 ))
+              ) : (
+                <option disabled>No projects available.</option>
               )}
-            </div>
+            </select>
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               <button
                 onClick={() => handlePreviousStep(step, setStep, setError)}
@@ -157,7 +151,7 @@ export default function SetupModal({ onComplete }: SetupModalProps) {
               </button>
               <button
                 onClick={() =>
-                  handleNextStep3(role, projectIds, setError, onSubmitSetup)
+                  handleNextStep3(projectId, setError, onSubmitSetup)
                 }
                 className="setup-btn"
                 disabled={loading}

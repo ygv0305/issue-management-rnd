@@ -9,7 +9,7 @@ import RefreshToken from '../../models/refreshTokenSchema.js';
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
 
 export const verifyUser = async (email: string, password?: string) => {
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password').lean().exec();
   if (!user) return null;
 
   if (password) {

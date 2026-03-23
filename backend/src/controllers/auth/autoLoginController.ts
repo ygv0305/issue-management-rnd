@@ -7,7 +7,7 @@ import User from '../../models/userSchema.js';
 const autoLogin = async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).lean().exec();
     if (!user) {
       res.status(401).json({
         code: 'Unauthorized',

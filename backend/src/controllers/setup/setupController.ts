@@ -1,17 +1,37 @@
 // Types
 import type { Request, Response } from 'express';
+import { Types } from 'mongoose';
 
 // Services
-import {
-  setupProfile,
-  projectRules,
-} from '../../services/setup/setupService.js';
+import { setupProfile } from '../../services/setup/setupService.js';
 
 // Node modules
 import { body } from 'express-validator';
 
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
+
+export interface SetupData {
+  userId: Types.ObjectId;
+  fullName: string;
+  role:
+    | 'Student'
+    | 'Supervisor'
+    | 'Moderator'
+    | 'PaperLeader'
+    | 'Admin'
+    | 'Client';
+  projectId?: Types.ObjectId;
+}
+
+const projectRules = (data: Pick<SetupData, 'role' | 'projectId'>) => {
+  const { role, projectId } = data;
+
+  if (role === 'Student' && !projectId) {
+    return 'Student must work in a project';
+  }
+  return '';
+};
 
 export const setupRules = [
   body('fullName').trim().notEmpty().withMessage('Full name is required'),
@@ -20,22 +40,23 @@ export const setupRules = [
 
 const setupController = async (req: Request, res: Response) => {
   try {
-    const { fullName, role, projectIds } = req.body;
+    const { fullName, role, projectId } = req.body;
     const userId = req.userId;
 
-    const checkProjects = projectRules({ role, projectIds });
-    if (checkProjects !== '') {
+    const checkProject = projectRules({ role, projectId });
+    if (checkProject !== '') {
       res.status(400).json({
         success: false,
-        message: checkProjects,
+        message: checkProject,
       });
+      return;
     }
 
     const user = await setupProfile({
       userId,
       fullName,
       role,
-      projectIds,
+      ...(projectId && { projectId }),
     });
 
     res.status(200).json({ success: true, message: 'Setup complete', user });
