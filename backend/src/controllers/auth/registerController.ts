@@ -36,7 +36,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body as RegisterData;
   try {
     // Check if user already exists
-    const existingUser = await registerService.checkUserExists(email);
+    const existingUser = await registerService.checkUserExist(email);
     if (existingUser) {
       res.status(400).json({
         code: 'UserExists',

@@ -45,7 +45,13 @@ export interface GetProjectsResponse {
 export interface User {
   _id: string;
   email: string;
-  role: 'Student' | 'Supervisor' | 'PaperLeader' | 'Admin' | 'Client';
+  role:
+    | 'Student'
+    | 'Supervisor'
+    | 'Moderator'
+    | 'PaperLeader'
+    | 'Admin'
+    | 'Client';
   fullName?: string;
   project?: string[];
   isSetupComplete: boolean;

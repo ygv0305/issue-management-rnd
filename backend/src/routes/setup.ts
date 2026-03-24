@@ -5,12 +5,9 @@ import { Router } from 'express';
 import { getProjects } from '../controllers/setup/getProjectsController.js';
 import setup from '../controllers/setup/setupController.js';
 
-// Middlewares
-import authenticate from '../middlewares/authenticateToken.js';
-
 const router = Router();
 
-router.get('/projects', authenticate, getProjects);
-router.post('/submit', authenticate, ...setup);
+router.get('/projects', getProjects);
+router.post('/submit', ...setup);
 
 export default router;

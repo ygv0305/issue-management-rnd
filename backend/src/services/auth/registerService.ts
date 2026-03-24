@@ -8,7 +8,7 @@ import VerificationToken from '../../models/verificationTokenSchema.js';
 // Utils
 import { sendEmail } from '../../utils/emailService.js';
 
-export const checkUserExists = async (email: string) => {
+export const checkUserExist = async (email: string) => {
   return await User.findOne({ email }).lean().exec();
 };
 

@@ -8,7 +8,7 @@ import { verifyAccessToken } from '../lib/jwt.js';
 import type { Request, Response, NextFunction } from 'express';
 import type { Types } from 'mongoose';
 
-const authenticate = (req: Request, res: Response, next: NextFunction) => {
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   // If there is no Bearer token, respond with 401 Unauthorised
@@ -51,4 +51,4 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default authenticate;
+export default authenticateToken;

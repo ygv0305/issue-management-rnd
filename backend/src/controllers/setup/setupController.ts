@@ -34,7 +34,12 @@ const projectRules = (data: Pick<SetupData, 'role' | 'projectId'>) => {
 };
 
 export const setupRules = [
-  body('fullName').trim().notEmpty().withMessage('Full name is required'),
+  body('fullName')
+    .trim()
+    .notEmpty()
+    .withMessage('Full name is required')
+    .isLength({ max: 50 })
+    .withMessage('Full name must be less than 50 characters'),
   body('role').notEmpty().withMessage('Role is required'),
 ];
 

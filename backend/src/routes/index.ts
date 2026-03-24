@@ -4,6 +4,11 @@ import { Router } from 'express';
 // Routes
 import authRoutes from './auth.js';
 import setupRoutes from './setup.js';
+import adminRoutes from './admin.js';
+
+// Middlewares
+import authenticateToken from '../middlewares/authenticateToken.js';
+import authoriseRole from '../middlewares/authoriseRole.js';
 
 const router = Router();
 
@@ -15,6 +20,7 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', authRoutes);
-router.use('/setup', setupRoutes);
+router.use('/setup', authenticateToken, setupRoutes);
+router.use('/admin', authenticateToken, authoriseRole(['Admin']), adminRoutes);
 
 export default router;
