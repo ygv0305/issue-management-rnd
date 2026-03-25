@@ -90,23 +90,23 @@
   gap: 1.25rem;
 }
 
-.form-group {
+.form-group-auth {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
 
-.form-group label {
+.form-group-auth label {
   display: flex;
   align-items: center;
 }
 
-.form-group label img {
+.form-group-auth label img {
   width: 30px;
 }
 
-.form-group input {
+.form-group-auth input {
   padding: 0.75rem 1rem;
   background-color: white;
   border: none;
@@ -118,7 +118,7 @@
   flex: 1;
 }
 
-.form-group input:focus {
+.form-group-auth input:focus {
   border: 1px solid var(--border-focus);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }

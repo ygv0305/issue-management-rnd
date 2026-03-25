@@ -34,28 +34,29 @@ export default function Home() {
         <SetupModal onComplete={handleSetupComplete} />
       )}
 
-      <div className="home-content">
-        <h1>Welcome, {user.fullName || user.email}!</h1>
-        <p>You have successfully logged in. This is a protected route.</p>
+      {user.isSetupComplete &&
+        (user.approvalStatus === 'Pending' ||
+          user.approvalStatus === 'Rejected') && (
+          <div className="home-content">
+            <h1>Account Pending Approval</h1>
+            <p>
+              Your account status is currently{' '}
+              <strong>{user.approvalStatus}</strong>.
+            </p>
+            <p>
+              You must wait for an administrator to approve your account before
+              you can access the system.
+            </p>
 
-        <div className="profile-info-card">
-          <h3>User Profile Info</h3>
-          <p>
-            <strong>Role:</strong> {user!.role}
-          </p>
-          <p>
-            <strong>Setup Complete:</strong>{' '}
-            {user.isSetupComplete ? 'Yes' : 'No'}
-          </p>
-          <p>
-            <strong>Approval Status:</strong> {user.approvalStatus}
-          </p>
-        </div>
-
-        <button onClick={handleLogout} className="logout-btn">
-          Log Out
-        </button>
-      </div>
+            <button
+              onClick={handleLogout}
+              className="logout-btn"
+              style={{ marginTop: '2rem' }}
+            >
+              Log Out
+            </button>
+          </div>
+        )}
     </div>
   );
 }

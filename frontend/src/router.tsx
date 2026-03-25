@@ -8,9 +8,14 @@ import { UserProvider } from './lib/context/UserContext';
 import Auth from './pages/auth-pages/Auth';
 import Home from './pages/home/Home';
 import CreatePassword from './pages/auth-pages/CreatePassword';
+import IssueView from './pages/issue-view/IssueView';
+import CreateIssue from './pages/create-issue/CreateIssue';
+import Project from './pages/project/Project';
+import AccountManage from './pages/account-manage/AccountManage';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/layout/Layout';
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +43,27 @@ export const router = createBrowserRouter([
           {
             path: '/home',
             element: <Home />,
+          },
+          {
+            element: <Layout />,
+            children: [
+              {
+                path: '/issues',
+                element: <IssueView />,
+              },
+              {
+                path: '/create-issue',
+                element: <CreateIssue />,
+              },
+              {
+                path: '/projects',
+                element: <Project />,
+              },
+              {
+                path: '/accounts',
+                element: <AccountManage />,
+              },
+            ],
           },
         ],
       },

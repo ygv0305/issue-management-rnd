@@ -1,0 +1,64 @@
+.account-manage-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.account-manage-container h2 {
+  margin-bottom: 2rem;
+  color: #343a40;
+  font-size: 1.8rem;
+}
+
+.account-section {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+
+.account-section h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #495057;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #f1f3f5;
+  padding-bottom: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-approve {
+  background-color: #38d9a9;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-approve:hover {
+  background-color: #20c997;
+}
+
+.btn-reject {
+  background-color: #ff8787;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reject:hover {
+  background-color: #fa5252;
+}

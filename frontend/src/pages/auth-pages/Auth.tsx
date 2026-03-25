@@ -125,7 +125,7 @@ export default function Auth() {
           {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
+            <div className="form-group-auth">
               <label htmlFor="email">
                 <img src={emailIcon} alt="" />
               </label>
@@ -140,7 +140,7 @@ export default function Auth() {
             </div>
 
             {authMode === 'login' && (
-              <div className="form-group">
+              <div className="form-group-auth">
                 <label htmlFor="password">
                   <img src={passwordIcon} alt="" />
                 </label>

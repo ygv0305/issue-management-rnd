@@ -101,7 +101,7 @@ export default function CreatePassword() {
 
           {!success && (
             <form onSubmit={handleSubmit} className="auth-form">
-              <div className="form-group">
+              <div className="form-group-auth">
                 <label htmlFor="password">
                   <img src={passwordIcon} alt="" />
                 </label>
@@ -115,7 +115,7 @@ export default function CreatePassword() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group-auth">
                 <label htmlFor="confirmPassword">
                   <img src={passwordIcon} alt="" />
                 </label>
