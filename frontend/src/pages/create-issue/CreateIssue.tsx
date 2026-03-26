@@ -1,18 +1,39 @@
 // Node modules
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+
+// Services
+import coreService from '../../services/coreService';
+
+// Types
+import type { IssueTypeData } from '../../types/issueTypes';
 
 // Styles
 import './createIssue.css';
 
 export default function CreateIssue() {
+  const navigate = useNavigate();
+  const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
   const [formData, setFormData] = useState({
     issueType: '',
     subject: '',
-    impactLevel: '',
-    urgencyLevel: '',
     description: '',
-    tags: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const res = await coreService.getIssueTypes();
+        if (res.success) {
+          setIssueTypes(res.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch issue types:', error);
+      }
+    };
+    fetchTypes();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -22,9 +43,23 @@ export default function CreateIssue() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Mock Issue Submitted Successfully!');
+    setSubmitting(true);
+    try {
+      await coreService.createIssue({
+        subject: formData.subject,
+        description: formData.description,
+        type: formData.issueType,
+      });
+      alert('Issue Submitted Successfully!');
+      navigate('/issues');
+    } catch (error) {
+      console.error('Failed to submit issue:', error);
+      alert('Failed to submit issue. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -46,10 +81,11 @@ export default function CreateIssue() {
               required
             >
               <option value="">Select Type</option>
-              <option value="Bug">Bug</option>
-              <option value="Feature">Feature</option>
-              <option value="Enhancement">Enhancement</option>
-              <option value="Task">Task</option>
+              {issueTypes.map((type) => (
+                <option key={type._id} value={type._id}>
+                  {type.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -70,48 +106,6 @@ export default function CreateIssue() {
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="impactLevel">
-              Impact Level <span className="required">*</span>
-            </label>
-            <select
-              id="impactLevel"
-              name="impactLevel"
-              value={formData.impactLevel}
-              onChange={handleChange}
-              className="form-control"
-              required
-            >
-              <option value="">Select Impact</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-              <option value="Critical">Critical</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="urgencyLevel">
-              Urgency Level <span className="required">*</span>
-            </label>
-            <select
-              id="urgencyLevel"
-              name="urgencyLevel"
-              value={formData.urgencyLevel}
-              onChange={handleChange}
-              className="form-control"
-              required
-            >
-              <option value="">Select Urgency</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-              <option value="Critical">Critical</option>
-            </select>
-          </div>
-        </div>
-
         <div className="form-group">
           <label htmlFor="description">
             Description <span className="required">*</span>
@@ -127,32 +121,6 @@ export default function CreateIssue() {
           />
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="tags">Tags</label>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
-              value={formData.tags}
-              onChange={handleChange}
-              className="form-control"
-              placeholder="Comma separated user tags e.g. @sahara"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="attachments">Attachments</label>
-            <input
-              type="file"
-              id="attachments"
-              name="attachments"
-              className="form-control"
-              multiple
-            />
-          </div>
-        </div>
-
         <div className="form-actions">
           <button
             type="button"
@@ -161,8 +129,12 @@ export default function CreateIssue() {
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
-            Submit Issue
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting}
+          >
+            {submitting ? 'Submitting...' : 'Submit Issue'}
           </button>
         </div>
       </form>

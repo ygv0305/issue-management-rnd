@@ -5,18 +5,10 @@ export interface IIssue {
   subject: string;
   description: string;
   type: Schema.Types.ObjectId;
-  status:
-    | 'New'
-    | 'Assigned'
-    | 'InProgress'
-    | 'Resolved'
-    | 'Rejected'
-    | 'ReOpen'
-    | 'Closed';
+  status: 'New' | 'InProgress' | 'Resolved' | 'Rejected' | 'ReOpen' | 'Closed';
   author: Types.ObjectId;
-  authorType: 'Individual' | 'ProjectGroup';
-  projectGroup: Types.ObjectId; // Null if Individual
   assignedTo: Types.ObjectId; // Paper Leader assigned
+  userTags: Types.ObjectId;
   attachments: {
     url: string;
     publicId: string;
@@ -29,7 +21,6 @@ export interface IIssue {
   history: {
     status:
       | 'New'
-      | 'Assigned'
       | 'InProgress'
       | 'Resolved'
       | 'Rejected'
@@ -61,7 +52,6 @@ const issueSchema = new Schema<IIssue>(
       enum: {
         values: [
           'New',
-          'Assigned',
           'InProgress',
           'Resolved',
           'Rejected',
@@ -77,19 +67,11 @@ const issueSchema = new Schema<IIssue>(
       ref: 'User',
       required: true,
     },
-    authorType: {
-      type: String,
-      enum: {
-        values: ['Individual', 'ProjectGroup'],
-        message: '{VALUE} is not supported',
-      },
-      required: [true, 'Author type is required'],
-    },
-    projectGroup: {
-      type: Schema.Types.ObjectId,
-      ref: 'Project',
-    },
     assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    userTags: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
@@ -130,7 +112,6 @@ const issueSchema = new Schema<IIssue>(
           enum: {
             values: [
               'New',
-              'Assigned',
               'InProgress',
               'Resolved',
               'Rejected',

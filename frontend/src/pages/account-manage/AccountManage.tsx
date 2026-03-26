@@ -1,39 +1,65 @@
 // Node modules
+import { useEffect, useState } from 'react';
 
 // RBAC
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
+// Services
+import adminService from '../../services/adminService';
+
+// Types
+import type { PendingUser } from '../../types/issueTypes';
+
 // Styles
 import './accountManage.css';
 
-const MOCK_PENDING_USERS = [
-  {
-    id: 'USR-101',
-    email: 'student1@aut.ac.nz',
-    fullName: 'John Doe',
-    role: 'Student',
-    requestedAt: '2026-03-24',
-  },
-  {
-    id: 'USR-102',
-    email: 'supervisor1@aut.ac.nz',
-    fullName: 'Jane Smith',
-    role: 'Supervisor',
-    requestedAt: '2026-03-25',
-  },
-];
-
 function AccountManage() {
-  const handleApprove = (userId: string) => {
-    alert(`Approving user: ${userId}`);
-  };
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleReject = (userId: string) => {
-    if (window.confirm(`Are you sure you want to reject user ${userId}?`)) {
-      alert(`User ${userId} rejected.`);
+  const fetchUsers = async () => {
+    try {
+      const res = await adminService.getPendingUsers();
+      if (res.success) {
+        setPendingUsers(res.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch pending users:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleApprove = async (userId: string) => {
+    try {
+      await adminService.approveUser(userId, 'Approved');
+      alert('User approved successfully!');
+      fetchUsers();
+    } catch (error) {
+      console.error('Failed to approve user:', error);
+      alert('Failed to approve user.');
+    }
+  };
+
+  const handleReject = async (userId: string) => {
+    if (window.confirm('Are you sure you want to reject this user?')) {
+      try {
+        await adminService.approveUser(userId, 'Rejected');
+        alert('User rejected.');
+        fetchUsers();
+      } catch (error) {
+        console.error('Failed to reject user:', error);
+        alert('Failed to reject user.');
+      }
+    }
+  };
+
+  if (loading) return <div className="account-manage-container">Loading users...</div>;
 
   return (
     <div className="account-manage-container">
@@ -42,7 +68,7 @@ function AccountManage() {
       <div className="account-section">
         <h3>Pending Approvals</h3>
 
-        {MOCK_PENDING_USERS.length > 0 ? (
+        {pendingUsers.length > 0 ? (
           <table className="data-table">
             <thead>
               <tr>
@@ -55,24 +81,24 @@ function AccountManage() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_PENDING_USERS.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
+              {pendingUsers.map((user) => (
+                <tr key={user._id}>
+                  <td>{user._id.slice(-6).toUpperCase()}</td>
                   <td>{user.fullName}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>{user.requestedAt}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td>
                     <div className="action-buttons">
                       <button
                         className="btn-approve"
-                        onClick={() => handleApprove(user.id)}
+                        onClick={() => handleApprove(user._id)}
                       >
                         Approve
                       </button>
                       <button
                         className="btn-reject"
-                        onClick={() => handleReject(user.id)}
+                        onClick={() => handleReject(user._id)}
                       >
                         Reject
                       </button>

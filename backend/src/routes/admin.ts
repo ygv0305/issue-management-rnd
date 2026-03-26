@@ -2,10 +2,12 @@
 import { Router } from 'express';
 
 // Controllers
-import createProject from '../controllers/admin/createProjectController.js';
+import getPendingUser from '../controllers/admin/getPendingUserController.js';
+import approveUser from '../controllers/admin/approveUserController.js';
 
 const router = Router();
 
-router.post('/create-project', ...createProject);
+router.get('/pending-user', ...getPendingUser);
+router.post('/approve-user', ...approveUser);
 
 export default router;

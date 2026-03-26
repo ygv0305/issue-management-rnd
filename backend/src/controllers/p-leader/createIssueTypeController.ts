@@ -1,0 +1,57 @@
+// Types
+import type { Request, Response } from 'express';
+
+// Services
+import {
+  checkIssueTypeExist,
+  createIssueTypeDb,
+} from '../../services/p-leader/createIssueTypeService.js';
+
+// Node modules
+import { body } from 'express-validator';
+
+// Middlewares
+import validationError from '../../middlewares/validationError.js';
+
+export const createIssueTypeRules = [
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Issue type name is required')
+    .isLength({ max: 50 })
+    .withMessage('Issue type name must be less than 50 characters'),
+];
+
+interface CreateIssueTypeData {
+  name: string;
+}
+
+const createIssueType = async (req: Request, res: Response): Promise<void> => {
+  const { name } = req.body as CreateIssueTypeData;
+
+  try {
+    const existingType = await checkIssueTypeExist(name);
+    if (existingType) {
+      res.status(400).json({
+        code: 'IssueTypeExists',
+        message: 'Issue type with this name already exists',
+      });
+      return;
+    }
+
+    await createIssueTypeDb(name);
+
+    res.status(201).json({
+      success: true,
+      message: 'A new issue type has been created successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 'ServerError',
+      message: 'Internal server error',
+      error: error,
+    });
+  }
+};
+
+export default [createIssueTypeRules, validationError, createIssueType];

@@ -5,7 +5,7 @@ import type { Request, Response } from 'express';
 import {
   checkProjectExist,
   createProjectDb,
-} from '../../services/admin/createProjectService.js';
+} from '../../services/p-leader/createProjectService.js';
 
 // Node modules
 import { body } from 'express-validator';

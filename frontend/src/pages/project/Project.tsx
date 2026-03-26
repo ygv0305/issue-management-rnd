@@ -1,45 +1,75 @@
 // Node modules
+import { useEffect, useState } from 'react';
 
 // RBAC
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
+// Services
+import pLeaderService from '../../services/pLeaderService';
+import coreService from '../../services/coreService';
+
+// Types
+import type { ProjectData, IssueTypeData } from '../../types/issueTypes';
+
 // Styles
 import './project.css';
 
-const MOCK_PROJECTS = [
-  {
-    id: 'PRJ-1',
-    name: 'Frontend Refactor',
-    description:
-      'Refactoring React components to use modern hooks and context.',
-  },
-  {
-    id: 'PRJ-2',
-    name: 'Backend API V2',
-    description:
-      'Upgrading the legacy backend to a newer Express based structure.',
-  },
-];
-
-const MOCK_ISSUE_TYPES = [
-  { id: 'IT-1', name: 'Bug', description: 'A software bug or defect.' },
-  { id: 'IT-2', name: 'Feature', description: 'A new feature request.' },
-  {
-    id: 'IT-3',
-    name: 'Enhancement',
-    description: 'An improvement to an existing feature.',
-  },
-];
-
 function Project() {
-  const handleNewProject = () => {
-    alert('New Project modal would open here.');
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    try {
+      const typesRes = await coreService.getIssueTypes();
+      if (typesRes.success) {
+        setIssueTypes(typesRes.data);
+      }
+
+      const projectsRes = await pLeaderService.getProjects();
+      if (projectsRes.success) {
+        setProjects(projectsRes.projects);
+      }
+    } catch (error) {
+      console.error('Failed to fetch project data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNewIssueType = () => {
-    alert('New Issue Type modal would open here.');
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleNewProject = async () => {
+    const name = prompt('Enter new project name:');
+    if (name) {
+      try {
+        await pLeaderService.createProject(name);
+        alert('Project created!');
+        fetchData();
+      } catch (error) {
+        alert('Failed to create project.');
+      }
+    }
   };
+
+  const handleNewIssueType = async () => {
+    const name = prompt('Enter new issue type name:');
+    if (name) {
+      try {
+        await pLeaderService.createIssueType(name);
+        alert('Issue type created!');
+        fetchData();
+      } catch (error) {
+        alert('Failed to create issue type.');
+      }
+    }
+  };
+
+  if (loading)
+    return <div className="project-page-container">Loading data...</div>;
 
   return (
     <div className="project-page-container">
@@ -57,15 +87,13 @@ function Project() {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            {MOCK_PROJECTS.map((project) => (
-              <tr key={project.id}>
-                <td>{project.id}</td>
+            {projects.map((project) => (
+              <tr key={project._id}>
+                <td>{project._id.slice(-6).toUpperCase()}</td>
                 <td>{project.name}</td>
-                <td>{project.description}</td>
               </tr>
             ))}
           </tbody>
@@ -84,15 +112,13 @@ function Project() {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            {MOCK_ISSUE_TYPES.map((type) => (
-              <tr key={type.id}>
-                <td>{type.id}</td>
+            {issueTypes.map((type) => (
+              <tr key={type._id}>
+                <td>{type._id.slice(-6).toUpperCase()}</td>
                 <td>{type.name}</td>
-                <td>{type.description}</td>
               </tr>
             ))}
           </tbody>
@@ -102,5 +128,4 @@ function Project() {
   );
 }
 
-// Ensure only PaperLeader (or roles with VIEW_PROJECT permission) can access this page
 export default withPermission(Project, PERMISSIONS.VIEW_PROJECT);
