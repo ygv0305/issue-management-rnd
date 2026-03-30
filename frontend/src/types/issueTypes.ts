@@ -15,6 +15,7 @@ export interface IssueData {
   subject: string;
   description: string;
   type: IssueTypeData;
+  priority: string;
   author: User;
   status: string;
   createdAt: string;
@@ -25,6 +26,7 @@ export interface CreateIssueData {
   subject: string;
   description: string;
   type: string;
+  priority: string;
   attachments?: { url: string; publicId: string }[];
 }
 

@@ -35,14 +35,25 @@
 .issue-table th,
 .issue-table td {
   padding: 1rem;
-  text-align: center;
   border-bottom: 1px solid #e9ecef;
+  text-align: center;
 }
 
-.issue-table th:nth-child(2),
-.issue-table td:nth-child(2) {
-  text-align: left;
-  width: 40%;
+.priority-col span {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.priority-col {
+  width: 5%;
+}
+.id-col {
+  width: 10%;
+}
+.normal-col {
+  width: 17%;
 }
 
 .issue-table th {

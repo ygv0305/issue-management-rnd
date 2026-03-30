@@ -46,7 +46,7 @@ export const createIssueRules = [
 
 const createIssue = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { subject, description, type, attachments } = req.body;
+    const { subject, description, type, priority, attachments } = req.body;
     const author = req.userId;
 
     if (!author) {
@@ -61,6 +61,7 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
       subject,
       description,
       type,
+      priority,
       author,
       attachments: attachments || [],
     });

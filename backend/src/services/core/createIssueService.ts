@@ -15,6 +15,7 @@ interface CreateIssueInput {
   subject: string;
   description: string;
   type: string | Types.ObjectId;
+  priority: string;
   author: string | Types.ObjectId;
   attachments?: { url: string; publicId: string }[];
 }

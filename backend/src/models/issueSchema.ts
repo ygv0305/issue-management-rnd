@@ -6,6 +6,7 @@ export interface IIssue {
   description: string;
   type: Schema.Types.ObjectId;
   status: 'New' | 'InProgress' | 'Resolved' | 'Rejected' | 'ReOpen' | 'Closed';
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
   author: Types.ObjectId;
   assignedTo: Types.ObjectId; // Paper Leader assigned
   userTags: Types.ObjectId;
@@ -61,6 +62,14 @@ const issueSchema = new Schema<IIssue>(
         message: '{VALUE} status is not supported',
       },
       default: 'New',
+    },
+    priority: {
+      type: String,
+      enum: {
+        values: ['Low', 'Medium', 'High', 'Critical'],
+        message: '{VALUE} priority is not supported',
+      },
+      required: [true, 'Issue priority is required'],
     },
     author: {
       type: Schema.Types.ObjectId,
