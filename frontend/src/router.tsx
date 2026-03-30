@@ -8,7 +8,8 @@ import { UserProvider } from './lib/context/UserContext';
 import Auth from './pages/auth-pages/Auth';
 import Home from './pages/home/Home';
 import CreatePassword from './pages/auth-pages/CreatePassword';
-import IssueView from './pages/issue-view/IssueView';
+import MyIssueView from './pages/issue-view/MyIssueView';
+import AllIssueView from './pages/issue-view/AllIssueView';
 import CreateIssue from './pages/create-issue/CreateIssue';
 import Project from './pages/project/Project';
 import AccountManage from './pages/account-manage/AccountManage';
@@ -48,8 +49,12 @@ export const router = createBrowserRouter([
             element: <Layout />,
             children: [
               {
-                path: '/issues',
-                element: <IssueView />,
+                path: '/my-issues',
+                element: <MyIssueView />,
+              },
+              {
+                path: '/all-issues',
+                element: <AllIssueView />,
               },
               {
                 path: '/create-issue',

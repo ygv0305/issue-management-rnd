@@ -103,3 +103,10 @@ textarea.form-control {
 .btn-primary:hover {
   background-color: #228be6;
 }
+
+.char-count {
+  font-size: 0.8rem;
+  color: #868e96;
+  text-align: right;
+  margin-top: 0.25rem;
+}

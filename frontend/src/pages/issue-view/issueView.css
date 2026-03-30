@@ -35,8 +35,14 @@
 .issue-table th,
 .issue-table td {
   padding: 1rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #e9ecef;
+}
+
+.issue-table th:nth-child(2),
+.issue-table td:nth-child(2) {
+  text-align: left;
+  width: 40%;
 }
 
 .issue-table th {
@@ -59,12 +65,12 @@
   font-weight: 600;
 }
 
-.status-open {
+.status-new {
   background-color: #e3fafc;
   color: #0c8599;
 }
 
-.status-in-progress {
+.status-inprogress {
   background-color: #fff3bf;
   color: #f08c00;
 }

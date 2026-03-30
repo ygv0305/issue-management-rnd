@@ -21,7 +21,7 @@ export default function ProtectedRoute() {
 
   // If approved/notrequired account staying on Home, redirect them to dashboard
   if (isApproved && location.pathname === '/home') {
-    return <Navigate to="/issues" replace />;
+    return <Navigate to="/my-issues" replace />;
   }
 
   // If pending/rejected account trying to access other pages, redirect them to Home

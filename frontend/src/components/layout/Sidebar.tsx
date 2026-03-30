@@ -22,17 +22,28 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar-container">
-      <div className="sidebar-brand">IMS</div>
+      <div className="sidebar-brand">Issue Management</div>
 
       <nav className="sidebar-nav">
         <NavLink
-          to="/issues"
+          to="/my-issues"
           className={({ isActive }) =>
             isActive ? 'sidebar-link active' : 'sidebar-link'
           }
         >
-          Issues
+          My Issues
         </NavLink>
+
+        {hasPermission(user, PERMISSIONS.VIEW_ALL_ISSUE) && (
+          <NavLink
+            to="/all-issues"
+            className={({ isActive }) =>
+              isActive ? 'sidebar-link active' : 'sidebar-link'
+            }
+          >
+            All Issues
+          </NavLink>
+        )}
 
         <NavLink
           to="/create-issue"

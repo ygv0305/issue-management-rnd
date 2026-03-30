@@ -43,8 +43,19 @@ export default function CreateIssue() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    // Field validation
+    if (formData.subject.length > 50) {
+      alert('Subject cannot exceed 50 characters.');
+      return;
+    }
+    if (formData.description.length > 1000) {
+      alert('Description cannot exceed 1000 characters.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       await coreService.createIssue({
@@ -101,8 +112,12 @@ export default function CreateIssue() {
               onChange={handleChange}
               className="form-control"
               placeholder="Brief summary of the issue"
+              maxLength={50}
               required
             />
+            <div className="char-count">
+              {formData.subject.length} / 50 characters
+            </div>
           </div>
         </div>
 
@@ -117,8 +132,12 @@ export default function CreateIssue() {
             onChange={handleChange}
             className="form-control"
             placeholder="Detailed description of the issue..."
+            maxLength={1000}
             required
           />
+          <div className="char-count">
+            {formData.description.length} / 1000 characters
+          </div>
         </div>
 
         <div className="form-actions">
