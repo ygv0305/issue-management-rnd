@@ -10,20 +10,8 @@ import type { IssueData } from '../../types/issueTypes';
 // Styles
 import './issueView.css';
 
-const getPriorityColor = (priority?: string) => {
-  switch (priority?.toLowerCase()) {
-    case 'critical':
-      return '#ff3707';
-    case 'high':
-      return '#ffa716';
-    case 'medium':
-      return '#4169e1';
-    case 'low':
-      return '#808080';
-    default:
-      return '#808080';
-  }
-};
+// Utils
+import getPriorityColor from '../../utils/getPriorityColor';
 
 export default function MyIssueView() {
   const [myIssues, setMyIssues] = useState<IssueData[]>([]);
@@ -32,12 +20,12 @@ export default function MyIssueView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const myIssuesRes = await coreService.getMyIssues();
-        if (myIssuesRes.success) {
-          setMyIssues(myIssuesRes.data);
+        const res = await coreService.getMyIssues();
+        if (res.success) {
+          setMyIssues(res.data);
         }
       } catch (error) {
-        console.error('Failed to fetch issues:', error);
+        console.error('Failed to fetch issues, ', error);
       } finally {
         setLoading(false);
       }

@@ -54,7 +54,7 @@ export default function Sidebar() {
           Create Issue
         </NavLink>
 
-        {hasPermission(user, PERMISSIONS.VIEW_PROJECT) && (
+        {hasPermission(user, PERMISSIONS.CREATE_PROJECT) && (
           <NavLink
             to="/projects"
             className={({ isActive }) =>

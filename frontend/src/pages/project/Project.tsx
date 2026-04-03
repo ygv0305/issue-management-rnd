@@ -1,5 +1,5 @@
 // Node modules
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // RBAC
 import withPermission from '../../lib/rbac/withPermission';
@@ -7,10 +7,10 @@ import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
 // Services
 import pLeaderService from '../../services/pLeaderService';
-import coreService from '../../services/coreService';
 
 // Types
-import type { ProjectData, IssueTypeData } from '../../types/issueTypes';
+import type { IssueTypeData } from '../../types/issueTypes';
+import type { ProjectData } from '../../types/projectTypes';
 
 // Styles
 import './project.css';
@@ -20,35 +20,41 @@ function Project() {
   const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  useEffect(() => {
     try {
-      const typesRes = await coreService.getIssueTypes();
-      if (typesRes.success) {
-        setIssueTypes(typesRes.data);
+      const parsedProjects = JSON.parse(localStorage.getItem('projects')!);
+      if (parsedProjects) {
+        setProjects(parsedProjects);
       }
 
-      const projectsRes = await pLeaderService.getProjects();
-      if (projectsRes.success) {
-        setProjects(projectsRes.projects);
+      const parsedIssueTypes = JSON.parse(localStorage.getItem('issueTypes')!);
+      if (parsedIssueTypes) {
+        setIssueTypes(parsedIssueTypes);
       }
     } catch (error) {
-      console.error('Failed to fetch project data:', error);
+      console.error('Error reading projects or issue types, ', error);
+      setProjects([]);
+      setIssueTypes([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchData();
   }, []);
+
+  if (loading) {
+    return <div className="issue-view-container">Loading ...</div>;
+  }
 
   const handleNewProject = async () => {
     const name = prompt('Enter new project name:');
     if (name) {
       try {
-        await pLeaderService.createProject(name);
+        const res = await pLeaderService.createProject(name);
         alert('Project created!');
-        fetchData();
+        if (res.success && res.data) {
+          const updatedProjects = [...projects, res.data];
+          setProjects(updatedProjects);
+          localStorage.setItem('projects', JSON.stringify(updatedProjects));
+        }
       } catch (error) {
         alert('Failed to create project.');
       }
@@ -59,17 +65,18 @@ function Project() {
     const name = prompt('Enter new issue type name:');
     if (name) {
       try {
-        await pLeaderService.createIssueType(name);
+        const res = await pLeaderService.createIssueType(name);
         alert('Issue type created!');
-        fetchData();
+        if (res.success && res.data) {
+          const updatedIssueTypes = [...issueTypes, res.data];
+          setIssueTypes(updatedIssueTypes);
+          localStorage.setItem('issueTypes', JSON.stringify(updatedIssueTypes));
+        }
       } catch (error) {
         alert('Failed to create issue type.');
       }
     }
   };
-
-  if (loading)
-    return <div className="project-page-container">Loading data...</div>;
 
   return (
     <div className="project-page-container">

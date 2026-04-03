@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Services
-import AuthService from '../../services/authService';
+import authService from '../../services/authService';
 
 // Types
 import type { User } from '../../types/authTypes';
@@ -26,14 +26,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
-        const response = await AuthService.autoLogin();
+        const response = await authService.autoLogin();
         if (response.success && response.user) {
           setUser(response.user);
         } else {
           setUser(null);
         }
       } catch (error) {
-        console.error('Auto login failed', error);
+        console.error('Auto login failed, ', error);
         setUser(null);
       }
     } else {
@@ -48,7 +48,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await AuthService.logout();
+      await authService.logout();
     } catch (error) {
       console.error('Logout error', error);
     } finally {

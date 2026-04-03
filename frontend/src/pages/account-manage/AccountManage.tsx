@@ -1,5 +1,5 @@
 // Node modules
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Services
 import adminService from '../../services/adminService';
@@ -9,14 +9,8 @@ import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
 // Types
-import type {
-  SystemRoles,
-  ProjectData,
-  WhitelistUserData,
-} from '../../types/authTypes';
-
-// Fetching projects
-import pLeaderService from '../../services/pLeaderService';
+import type { SystemRoles, WhitelistUserData } from '../../types/authTypes';
+import type { ProjectData } from '../../types/projectTypes';
 
 // CSS
 import './accountManage.css';
@@ -36,20 +30,25 @@ function AccountManage() {
   } | null>(null);
 
   const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await pLeaderService.getProjects();
-        if (res.success) {
-          setProjects(res.projects);
-        }
-      } catch (error) {
-        console.error('Failed to fetch projects:', error);
+    try {
+      const parsed = JSON.parse(localStorage.getItem('projects')!);
+      if (parsed) {
+        setProjects(parsed);
       }
-    };
-    fetchProjects();
+    } catch (error) {
+      console.error('Error reading projects, ', error);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  if (loading) {
+    return <div className="issue-view-container">Loading ...</div>;
+  }
 
   const roles: SystemRoles[] = [
     'Student',
@@ -125,7 +124,7 @@ function AccountManage() {
   return (
     <div className="account-manage-container">
       <h2>Whitelist New Account</h2>
-      <p className="subtitle">Pre-approve users to join the platform.</p>
+      <p className="subtitle">Pre-approve users to IMS.</p>
 
       {statusMessage && (
         <div className={`alert alert-${statusMessage.type}`}>

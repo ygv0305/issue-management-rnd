@@ -6,7 +6,7 @@ const apiAuth = axios.create({
   withCredentials: true, // allows cookies (refreshToken) to be sent automatically
 });
 
-// Request Interceptor: Attach access token except for auth route without a token
+// Request Interceptor: Attach access token
 apiAuth.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');

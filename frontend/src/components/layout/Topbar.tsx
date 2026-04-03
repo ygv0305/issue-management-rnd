@@ -1,12 +1,8 @@
-// Node modules
-
 // Context
 import { useUser } from '../../lib/context/UserContext';
 
-// Assets
+// Assets + Styles
 import autLogo from '../../assets/images/aut-logo.jpg';
-
-// Styles
 import './topbar.css';
 
 export default function Topbar() {

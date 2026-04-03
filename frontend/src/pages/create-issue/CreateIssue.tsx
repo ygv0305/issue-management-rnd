@@ -22,20 +22,25 @@ export default function CreateIssue() {
     impactLevel: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTypes = async () => {
-      try {
-        const res = await coreService.getIssueTypes();
-        if (res.success) {
-          setIssueTypes(res.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch issue types:', error);
+    try {
+      const parsed = JSON.parse(localStorage.getItem('issueTypes')!);
+      if (parsed) {
+        setIssueTypes(parsed);
       }
-    };
-    fetchTypes();
+    } catch (error) {
+      console.error('Error reading issue types, ', error);
+      setIssueTypes([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  if (loading) {
+    return <div className="issue-view-container">Loading ...</div>;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -93,7 +98,7 @@ export default function CreateIssue() {
         type: formData.issueType,
         priority: priority,
       });
-      alert('Issue Submitted Successfully!');
+      alert('Issue submitted successfully!');
       navigate('/my-issues');
     } catch (error) {
       console.error('Failed to submit issue:', error);

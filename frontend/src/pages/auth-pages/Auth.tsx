@@ -8,7 +8,7 @@ import AuthService from '../../services/authService';
 // Context
 import { useUser } from '../../lib/context/UserContext';
 
-// CSS + Assets
+// Styles + Assets
 import './auth.css';
 import authBg from '../../assets/images/auth-bg.webp';
 import autLogo from '../../assets/images/aut-logo.jpg';
@@ -72,19 +72,16 @@ export default function Auth() {
 
     try {
       if (authMode === 'login') {
-        const data = await AuthService.requestLogin({ email, password });
-        localStorage.setItem('accessToken', data.accessToken!);
+        const res = await AuthService.requestLogin({ email, password });
+        localStorage.setItem('accessToken', res.accessToken!);
         await checkAuth();
       } else if (authMode === 'signup') {
-        const data = await AuthService.register({ email });
-        alert(data.message || 'Check your email for the verification link.');
+        const res = await AuthService.register({ email });
+        alert(res.message || 'Check your email for the verification link.');
         authModeChange('login'); // Switch back to login page
       } else if (authMode === 'reset') {
-        const data = await AuthService.forgotPassword({ email });
-        alert(
-          data.message ||
-            'If an account exists, a reset link has been sent to your email.',
-        );
+        const res = await AuthService.forgotPassword({ email });
+        alert(res.message || 'A reset link has been sent to your email.');
         authModeChange('login');
       }
     } catch (error: any) {

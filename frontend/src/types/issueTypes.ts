@@ -1,9 +1,43 @@
+// Types
 import type { User } from './authTypes';
 
-export interface ProjectData {
-  _id: string;
-  name: string;
+// Request
+export interface CreateIssueData {
+  subject: string;
+  description: string;
+  type: string;
+  priority: string;
+  attachments?: { url: string; publicId: string }[];
 }
+
+// Response
+export interface GetIssuesResponse {
+  message: string;
+  success: boolean;
+  data: IssueData[];
+}
+
+export interface GetIssueTypesResponse {
+  success: boolean;
+  message: string;
+  data: IssueTypeData[];
+}
+
+export interface CreateIssueTypeResponse {
+  success: boolean;
+  message: string;
+  data: IssueTypeData;
+}
+
+// Data models
+export type IssueStatus =
+  | 'New'
+  | 'InProgress'
+  | 'Resolved'
+  | 'ReOpen'
+  | 'Closed';
+
+export type IssuePriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
 export interface IssueTypeData {
   _id: string;
@@ -15,41 +49,9 @@ export interface IssueData {
   subject: string;
   description: string;
   type: IssueTypeData;
-  priority: string;
+  status: IssueStatus;
+  priority: IssuePriority;
   author: User;
-  status: string;
   createdAt: string;
   assignedTo?: User;
-}
-
-export interface CreateIssueData {
-  subject: string;
-  description: string;
-  type: string;
-  priority: string;
-  attachments?: { url: string; publicId: string }[];
-}
-
-export interface GetIssuesResponse {
-  success: boolean;
-  data: IssueData[];
-}
-
-export interface GetIssueTypesResponse {
-  success: boolean;
-  data: IssueTypeData[];
-}
-
-export interface PendingUser {
-  _id: string;
-  fullName: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  approvalStatus: string;
-}
-
-export interface GetPendingUsersResponse {
-  success: boolean;
-  data: PendingUser[];
 }

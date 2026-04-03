@@ -2,7 +2,11 @@
 import apiAuth from '../lib/api/axiosAuth';
 
 // Types
-import type { GetIssuesResponse } from '../types/issueTypes';
+import type {
+  GetIssuesResponse,
+  CreateIssueTypeResponse
+} from '../types/issueTypes';
+import type { GetProjectsResponse, CreateProjectResponse } from '../types/projectTypes';
 
 class PLeaderService {
   async getAllIssues(): Promise<GetIssuesResponse> {
@@ -12,17 +16,17 @@ class PLeaderService {
     return response.data;
   }
 
-  async getProjects(): Promise<any> {
+  async getProjects(): Promise<GetProjectsResponse> {
     const response = await apiAuth.get('/p-leader/projects');
     return response.data;
   }
 
-  async createProject(name: string): Promise<any> {
+  async createProject(name: string): Promise<CreateProjectResponse> {
     const response = await apiAuth.post('/p-leader/create-project', { name });
     return response.data;
   }
 
-  async createIssueType(name: string): Promise<any> {
+  async createIssueType(name: string): Promise<CreateIssueTypeResponse> {
     const response = await apiAuth.post('/p-leader/create-issuetype', { name });
     return response.data;
   }

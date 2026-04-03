@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 // Services
 import AuthService from '../../services/authService';
 
-// CSS + Assets
+// Styles + Assets
 import './auth.css';
 import authBg from '../../assets/images/auth-bg.webp';
 import autLogo from '../../assets/images/aut-logo.jpg';
@@ -50,14 +50,13 @@ export default function CreatePassword() {
     try {
       if (!email || !token) throw new Error('Missing email or token.');
       await AuthService.setPassword({ email, token, password });
-
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
     } catch (error: any) {
       const message =
         error.response?.data?.message ||
         error.message ||
-        'An error occurred while setting the password.';
+        'An unexpected error occurred';
       setError(message);
     } finally {
       setIsLoading(false);

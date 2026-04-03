@@ -8,10 +8,6 @@ export interface RegisterCredentials {
   email: string;
 }
 
-export interface ForgotPasswordCredentials {
-  email: string;
-}
-
 export interface SetPasswordCredentials {
   email: string;
   token: string;
@@ -27,19 +23,15 @@ export interface WhitelistUserData {
 
 // Response
 export interface AuthResponse {
-  message?: string;
-  success?: boolean;
+  message: string;
+  success: boolean;
   accessToken?: string;
   user?: User;
 }
 
 export interface BaseResponse {
   message: string;
-}
-
-export interface GetProjectsResponse {
-  success: boolean;
-  projects: ProjectData[];
+  success?: boolean;
 }
 
 export interface WhitelistUserResponse {
@@ -62,9 +54,4 @@ export interface User {
   role: SystemRoles;
   fullName: string;
   project?: string;
-}
-
-export interface ProjectData {
-  _id: string;
-  name: string;
 }

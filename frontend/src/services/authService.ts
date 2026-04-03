@@ -3,34 +3,30 @@ import api from '../lib/api/axios';
 import apiAuth from '../lib/api/axiosAuth';
 
 // Types
-import type {
-  LoginCredentials,
-  RegisterCredentials,
-  ForgotPasswordCredentials,
-  SetPasswordCredentials,
-  AuthResponse,
-  BaseResponse,
-} from '../types/authTypes';
+import type * as AuthTypes from '../types/authTypes';
 
 class AuthService {
-  async requestLogin(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>(
+  async requestLogin(
+    credentials: AuthTypes.LoginCredentials,
+  ): Promise<AuthTypes.AuthResponse> {
+    const response = await api.post<AuthTypes.AuthResponse>(
       '/auth/request-login',
       credentials,
-      {
-        withCredentials: true,
-      },
+      { withCredentials: true },
     );
     return response.data;
   }
 
-  async autoLogin(): Promise<AuthResponse> {
-    const response = await apiAuth.post<AuthResponse>('/auth/auto-login');
+  async autoLogin(): Promise<AuthTypes.AuthResponse> {
+    const response =
+      await apiAuth.post<AuthTypes.AuthResponse>('/auth/auto-login');
     return response.data;
   }
 
-  async register(credentials: RegisterCredentials): Promise<BaseResponse> {
-    const response = await api.post<BaseResponse>(
+  async register(
+    credentials: AuthTypes.RegisterCredentials,
+  ): Promise<AuthTypes.AuthResponse> {
+    const response = await api.post<AuthTypes.AuthResponse>(
       '/auth/register',
       credentials,
     );
@@ -38,9 +34,9 @@ class AuthService {
   }
 
   async forgotPassword(
-    credentials: ForgotPasswordCredentials,
-  ): Promise<BaseResponse> {
-    const response = await api.post<BaseResponse>(
+    credentials: AuthTypes.RegisterCredentials,
+  ): Promise<AuthTypes.BaseResponse> {
+    const response = await api.post<AuthTypes.BaseResponse>(
       '/auth/forgot-password',
       credentials,
     );
@@ -48,9 +44,9 @@ class AuthService {
   }
 
   async setPassword(
-    credentials: SetPasswordCredentials,
-  ): Promise<BaseResponse> {
-    const response = await api.post<BaseResponse>(
+    credentials: AuthTypes.SetPasswordCredentials,
+  ): Promise<AuthTypes.AuthResponse> {
+    const response = await api.post<AuthTypes.AuthResponse>(
       '/auth/set-password',
       credentials,
     );

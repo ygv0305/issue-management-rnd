@@ -41,11 +41,12 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await createProjectDb(name);
+    const project = await createProjectDb(name);
 
     res.status(201).json({
       success: true,
       message: 'A new project has been created successfully',
+      data: project,
     });
   } catch (error) {
     console.error('Error creating new project', error);

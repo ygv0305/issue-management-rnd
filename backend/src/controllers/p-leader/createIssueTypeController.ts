@@ -40,11 +40,12 @@ const createIssueType = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await createIssueTypeDb(name);
+    const issueType = await createIssueTypeDb(name);
 
     res.status(201).json({
       success: true,
       message: 'A new issue type has been created successfully',
+      data: issueType,
     });
   } catch (error) {
     console.error('Error creating new issue type, ', error);
