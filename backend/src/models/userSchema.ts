@@ -2,14 +2,20 @@
 import { Schema, Types, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
+export enum SystemRoles {
+  Student = 'Student',
+  Supervisor = 'Supervisor',
+  PaperLeader = 'PaperLeader',
+  Admin = 'Admin',
+  Client = 'Client',
+}
+
 export interface IUser {
   email: string;
   password: string;
-  role: 'Student' | 'Supervisor' | 'PaperLeader' | 'Admin' | 'Client';
+  role: SystemRoles;
   fullName: string;
-  project: Types.ObjectId;
-  isSetupComplete: boolean;
-  approvalStatus: 'Pending' | 'Approved' | 'Rejected' | 'NotRequired';
+  project?: Types.ObjectId;
 }
 
 const userSchema = new Schema<IUser>(
@@ -22,25 +28,13 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       select: false,
       maxLength: [50, 'Password must be less than 50 characters'],
-      minLength: [8, 'Password must be at least 8 characters long'],
     },
     role: {
       type: String,
-      enum: {
-        values: [
-          'Student',
-          'Supervisor',
-          'Moderator',
-          'PaperLeader',
-          'Admin',
-          'Client',
-        ],
-        message: '{VALUE} role is not supported',
-      },
-      default: 'Student',
+      enum: Object.values(SystemRoles),
+      default: SystemRoles.Student,
     },
     fullName: {
       type: String,
@@ -49,15 +43,6 @@ const userSchema = new Schema<IUser>(
     project: {
       type: Schema.Types.ObjectId,
       ref: 'Project',
-    },
-    isSetupComplete: {
-      type: Boolean,
-      default: false,
-    },
-    approvalStatus: {
-      type: String,
-      enum: ['Pending', 'Approved', 'Rejected', 'NotRequired'],
-      default: 'NotRequired', // Default for Students
     },
   },
   { timestamps: true },

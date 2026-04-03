@@ -6,7 +6,6 @@ import { UserProvider } from './lib/context/UserContext';
 
 // Pages
 import Auth from './pages/auth-pages/Auth';
-import Home from './pages/home/Home';
 import CreatePassword from './pages/auth-pages/CreatePassword';
 import MyIssueView from './pages/issue-view/MyIssueView';
 import AllIssueView from './pages/issue-view/AllIssueView';
@@ -42,10 +41,6 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            path: '/home',
-            element: <Home />,
-          },
-          {
             element: <Layout />,
             children: [
               {
@@ -65,7 +60,7 @@ export const router = createBrowserRouter([
                 element: <Project />,
               },
               {
-                path: '/accounts',
+                path: '/account-manage',
                 element: <AccountManage />,
               },
             ],

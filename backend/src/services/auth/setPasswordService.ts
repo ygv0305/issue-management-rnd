@@ -6,8 +6,8 @@ export const verifyToken = async (email: string, token: string) => {
   return await VerificationToken.findOne({ email, token }).lean().exec();
 };
 
-export const createUser = async (email: string, password: any) => {
-  return await User.create({ email, password });
+export const createAdmin = async (email: string, password: any) => {
+  return await User.create({ email, password, role: 'Admin' });
 };
 
 export const updatePassword = async (email: string, password: any) => {

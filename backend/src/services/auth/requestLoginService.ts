@@ -8,13 +8,15 @@ import RefreshToken from '../../models/refreshTokenSchema.js';
 // Custom modules
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
 
-export const verifyUser = async (email: string, password?: string) => {
+export const verifyUser = async (email: string, password: string) => {
   const user = await User.findOne({ email }).select('+password').lean().exec();
   if (!user) return null;
 
-  if (password) {
+  if (user.password) {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return null;
+  } else {
+    return null;
   }
 
   return user;

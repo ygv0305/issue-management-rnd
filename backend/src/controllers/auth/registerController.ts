@@ -10,6 +10,9 @@ import * as registerService from '../../services/auth/registerService.js';
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
+// Config
+import config from '../../config/env.js';
+
 export const registerRules = [
   body('email')
     .trim()
@@ -35,18 +38,18 @@ interface RegisterData {
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body as RegisterData;
   try {
-    // Check if user already exists
+    // Check if user exists
     const existingUser = await registerService.checkUserExist(email);
-    if (existingUser) {
-      res.status(400).json({
-        code: 'UserExists',
-        message: 'Account with this email already exists',
+    if (!existingUser && email !== config.ADMIN_MAIL) {
+      res.status(404).json({
+        code: 'UserNotFound',
+        message: 'Account with this email does not exist',
       });
       return;
     }
 
     // Generate and save token
-    const token = await registerService.generateAndSaveToken(email, 'Register');
+    const token = await registerService.generateAndSaveToken(email);
 
     // Send email
     await registerService.sendVerificationEmail(email, token);

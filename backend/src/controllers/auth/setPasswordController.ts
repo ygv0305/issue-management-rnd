@@ -10,6 +10,9 @@ import * as setPasswordService from '../../services/auth/setPasswordService.js';
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
+// Config
+import config from '../../config/env.js';
+
 export const setPasswordRules = [
   body('email').isEmail().withMessage('Invalid email address'),
   body('token').notEmpty().withMessage('Token is required'),
@@ -36,10 +39,10 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (verificationToken.type === 'Register') {
-      // Create the user for the first time
-      await setPasswordService.createUser(email, password);
-    } else if (verificationToken.type === 'Reset') {
+    if (email === config.ADMIN_MAIL) {
+      // Create Admin account
+      await setPasswordService.createAdmin(email, password);
+    } else {
       // User exists, just update their password
       const user = await setPasswordService.updatePassword(email, password);
       if (!user) {

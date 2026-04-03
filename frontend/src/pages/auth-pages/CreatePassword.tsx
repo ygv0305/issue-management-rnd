@@ -68,7 +68,7 @@ export default function CreatePassword() {
     return null;
   }
 
-  // Determine if it looks like a reset or create flow based on URL path, but the backend handles it generically.
+  // Determine if it looks like a reset or create flow based on URL path
   const isReset = window.location.pathname.includes('reset-password');
 
   return (
@@ -110,7 +110,7 @@ export default function CreatePassword() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   required
                 />
               </div>
@@ -124,7 +124,7 @@ export default function CreatePassword() {
                   id="confirmPassword"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Confirm your password"
                   required
                 />
               </div>

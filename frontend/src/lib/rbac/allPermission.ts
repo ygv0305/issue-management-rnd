@@ -13,8 +13,7 @@ export const PERMISSIONS = {
   VIEW_MY_ISSUE: 'view:ownIssue',
 
   // ADMIN
-  VIEW_PENDING_USER: 'view:pendingUser',
-  APPROVE_USER: 'approve:user',
+  WHITELIST_USER: 'whitelist:user',
 
   // PAPERLEADER
   VIEW_ALL_ISSUE: 'view:allIssue',
@@ -38,10 +37,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.VIEW_PROJECT,
     PERMISSIONS.VIEW_ISSUETYPE,
   ],
-  [ROLES.ADMIN]: [
-    ...BASE,
-    PERMISSIONS.VIEW_PENDING_USER,
-    PERMISSIONS.APPROVE_USER,
-  ],
+  [ROLES.ADMIN]: [...BASE, PERMISSIONS.WHITELIST_USER],
   [ROLES.CLIENT]: [...BASE],
 };

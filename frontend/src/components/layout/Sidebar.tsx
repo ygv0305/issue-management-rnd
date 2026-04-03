@@ -61,13 +61,13 @@ export default function Sidebar() {
               isActive ? 'sidebar-link active' : 'sidebar-link'
             }
           >
-            Projects
+            Projects & Types
           </NavLink>
         )}
 
-        {hasPermission(user, PERMISSIONS.APPROVE_USER) && (
+        {hasPermission(user, PERMISSIONS.WHITELIST_USER) && (
           <NavLink
-            to="/accounts"
+            to="/account-manage"
             className={({ isActive }) =>
               isActive ? 'sidebar-link active' : 'sidebar-link'
             }

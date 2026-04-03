@@ -6,12 +6,14 @@ import type { GetIssuesResponse } from '../types/issueTypes';
 
 class PLeaderService {
   async getAllIssues(): Promise<GetIssuesResponse> {
-    const response = await apiAuth.get<GetIssuesResponse>('/p-leader/all-issues');
+    const response = await apiAuth.get<GetIssuesResponse>(
+      '/p-leader/all-issues',
+    );
     return response.data;
   }
 
   async getProjects(): Promise<any> {
-    const response = await apiAuth.get('/setup/projects');
+    const response = await apiAuth.get('/p-leader/projects');
     return response.data;
   }
 

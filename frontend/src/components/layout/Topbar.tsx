@@ -18,7 +18,7 @@ export default function Topbar() {
 
   const handleProfileClick = () => {
     alert(
-      `My Profile:\nName: ${user?.fullName || user?.email}\nRole: ${user?.role}\nStatus: ${user?.approvalStatus}`,
+      `My Profile\n\nName: ${user?.fullName || user?.email}\nRole: ${user?.role}`,
     );
   };
 

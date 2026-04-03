@@ -29,7 +29,7 @@ export default function Auth() {
   // Redirect if already logged in
   useEffect(() => {
     if (!userLoading && user) {
-      navigate('/home');
+      navigate('/my-issues');
     }
   }, [user, userLoading, navigate]);
 
@@ -88,11 +88,20 @@ export default function Auth() {
         authModeChange('login');
       }
     } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        'An unexpected error occurred';
-      setError(message);
+      if (
+        authMode === 'signup' &&
+        error.response?.data?.code === 'UserNotFound'
+      ) {
+        alert(
+          'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
+        );
+      } else {
+        const message =
+          error.response?.data?.message ||
+          error.message ||
+          'An unexpected error occurred';
+        setError(message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +158,7 @@ export default function Auth() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                 />
               </div>
             )}

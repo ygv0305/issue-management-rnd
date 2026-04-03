@@ -1,7 +1,7 @@
 // Request
 export interface LoginCredentials {
   email: string;
-  password?: string;
+  password: string;
 }
 
 export interface RegisterCredentials {
@@ -15,12 +15,13 @@ export interface ForgotPasswordCredentials {
 export interface SetPasswordCredentials {
   email: string;
   token: string;
-  password?: string;
+  password: string;
 }
 
-export interface SetupProfileData {
+export interface WhitelistUserData {
+  email: string;
+  role: SystemRoles;
   fullName: string;
-  role: string;
   projectId?: string;
 }
 
@@ -41,21 +42,26 @@ export interface GetProjectsResponse {
   projects: ProjectData[];
 }
 
+export interface WhitelistUserResponse {
+  success: boolean;
+  message: string;
+}
+
 // Data models
+export type SystemRoles =
+  | 'Student'
+  | 'Supervisor'
+  | 'Moderator'
+  | 'PaperLeader'
+  | 'Admin'
+  | 'Client';
+
 export interface User {
   _id: string;
   email: string;
-  role:
-    | 'Student'
-    | 'Supervisor'
-    | 'Moderator'
-    | 'PaperLeader'
-    | 'Admin'
-    | 'Client';
-  fullName?: string;
-  project?: string[];
-  isSetupComplete: boolean;
-  approvalStatus: 'Pending' | 'Approved' | 'Rejected' | 'NotRequired';
+  role: SystemRoles;
+  fullName: string;
+  project?: string;
 }
 
 export interface ProjectData {

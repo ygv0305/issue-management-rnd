@@ -3,10 +3,9 @@ import { Router } from 'express';
 
 // Routes
 import authRoutes from './auth.js';
-import setupRoutes from './setup.js';
 import pLeaderRoutes from './pLeader.js';
-import adminRoutes from './admin.js';
 import coreBaseRoutes from './coreBase.js';
+import adminRoutes from './admin.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
@@ -22,12 +21,11 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', authRoutes);
-router.use('/setup', authenticateToken, setupRoutes);
 router.use('/core-base', authenticateToken, coreBaseRoutes);
 router.use(
   '/p-leader',
   authenticateToken,
-  authoriseRole(['PaperLeader']),
+  authoriseRole(['PaperLeader', 'Admin']),
   pLeaderRoutes,
 );
 router.use('/admin', authenticateToken, authoriseRole(['Admin']), adminRoutes);
