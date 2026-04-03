@@ -8,8 +8,9 @@ const validationError = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).json({
-      code: 'ValidationError',
+      code: 'RequestValidationError',
       errors: errors.mapped(),
+      success: false,
     });
     return;
   }

@@ -1,7 +1,7 @@
 // Models
 import RefreshToken from '../../models/refreshTokenSchema.js';
 
-// Custom modules
+// Lib
 import { genAccessToken, verifyRefreshToken } from '../../lib/jwt.js';
 
 // Types

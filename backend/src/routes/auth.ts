@@ -16,7 +16,7 @@ import authenticateToken from '../middlewares/authenticateToken.js';
 const router = Router();
 
 router.post('/request-login', ...requestLogin);
-router.post('/logout', authenticateToken, ...logout);
+router.post('/logout', authenticateToken, logout);
 router.post('/renew-token', ...renewToken);
 router.post('/register', ...register);
 router.post('/forgot-password', ...forgotPassword);

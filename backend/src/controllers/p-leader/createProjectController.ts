@@ -36,6 +36,7 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({
         code: 'ProjectExists',
         message: 'Project with this name already exists',
+        success: false,
       });
       return;
     }
@@ -47,10 +48,11 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
       message: 'A new project has been created successfully',
     });
   } catch (error) {
+    console.error('Error creating new project', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };

@@ -15,6 +15,9 @@ import { SystemRoles } from '../../models/userSchema.js';
 import User from '../../models/userSchema.js';
 import Project from '../../models/projectSchema.js';
 
+// Utils
+import { validateReqEmail } from '../../utils/validateReqEmail.js';
+
 export interface SetupData {
   fullName: string;
   role: SystemRoles;
@@ -31,21 +34,6 @@ const projectRules = (data: Pick<SetupData, 'role' | 'projectId'>) => {
 };
 
 export const setUserRules = [
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .isLength({ max: 50 })
-    .withMessage('Email must be less than 50 characters')
-    .isEmail()
-    .withMessage('Invalid email address')
-    // Ensure only domain ends with @autuni.ac.nz
-    .custom((value) => {
-      if (!value.endsWith('@autuni.ac.nz')) {
-        throw new Error('You must register with a valid @autuni.ac.nz address');
-      }
-      return true;
-    }),
   body('role')
     .notEmpty()
     .withMessage('User role is required')
@@ -65,8 +53,9 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
     const checkProject = projectRules({ role, projectId });
     if (checkProject !== '') {
       res.status(400).json({
-        success: false,
+        code: 'BadRequest',
         message: checkProject,
+        success: false,
       });
       return;
     }
@@ -89,10 +78,10 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
     console.error('Error white-listing user:', error);
     res.status(500).json({
       code: 'ServerError',
-      success: false,
       message: 'Internal server error',
+      success: false,
     });
   }
 };
 
-export default [setUserRules, validationError, whitelistUser];
+export default [validateReqEmail, setUserRules, validationError, whitelistUser];

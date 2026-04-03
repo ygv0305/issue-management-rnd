@@ -13,14 +13,16 @@ import validationError from '../../middlewares/validationError.js';
 // Config
 import config from '../../config/env.js';
 
+// Utils
+import { validateReqEmail } from '../../utils/validateReqEmail.js';
+
 export const setPasswordRules = [
-  body('email').isEmail().withMessage('Invalid email address'),
   body('token').notEmpty().withMessage('Token is required'),
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long'),
+    .isLength({ min: 8, max: 50 })
+    .withMessage('Password must be between 8 and 50 characters long'),
 ];
 
 const setPassword = async (req: Request, res: Response): Promise<void> => {
@@ -34,7 +36,8 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
     if (!verificationToken) {
       res.status(400).json({
         code: 'InvalidToken',
-        message: 'The token is invalid or has expired',
+        message: 'The verification token is invalid or has expired',
+        success: false,
       });
       return;
     }
@@ -48,7 +51,8 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
       if (!user) {
         res.status(404).json({
           code: 'UserNotFound',
-          message: 'User does not exist anymore',
+          message: 'User does not exist',
+          success: false,
         });
         return;
       }
@@ -59,14 +63,21 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({
       message: 'Password has been set successfully',
+      success: true,
     });
   } catch (error) {
+    console.error('Error setting user password, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: true,
     });
   }
 };
 
-export default [setPasswordRules, validationError, setPassword];
+export default [
+  validateReqEmail,
+  setPasswordRules,
+  validationError,
+  setPassword,
+];

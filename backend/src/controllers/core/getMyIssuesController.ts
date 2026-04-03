@@ -7,11 +7,11 @@ import { fetchMyIssues } from '../../services/core/getMyIssuesService.js';
 const getMyIssues = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.userId;
-
     if (!userId) {
       res.status(401).json({
-        code: 'Unauthorized',
+        code: 'AuthError',
         message: 'User is not authenticated',
+        success: false,
       });
       return;
     }
@@ -24,12 +24,13 @@ const getMyIssues = async (req: Request, res: Response): Promise<void> => {
       data: myIssues,
     });
   } catch (error) {
+    console.error('Error fetching my issues, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };
 
-export default [getMyIssues];
+export default getMyIssues;

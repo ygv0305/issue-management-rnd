@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import User from '../../models/userSchema.js';
 import RefreshToken from '../../models/refreshTokenSchema.js';
 
-// Custom modules
+// Lib
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
 
 export const verifyUser = async (email: string, password: string) => {

@@ -10,8 +10,9 @@ const autoLogin = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findById(userId).lean().exec();
     if (!user) {
       res.status(401).json({
-        code: 'Unauthorized',
+        code: 'AuthError',
         message: 'Invalid login token',
+        success: false,
       });
       return;
     }
@@ -22,10 +23,11 @@ const autoLogin = async (req: Request, res: Response): Promise<void> => {
       user,
     });
   } catch (error) {
+    console.error('Error handling auto log in, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };

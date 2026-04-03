@@ -33,8 +33,9 @@ const createIssueType = async (req: Request, res: Response): Promise<void> => {
     const existingType = await checkIssueTypeExist(name);
     if (existingType) {
       res.status(400).json({
-        code: 'IssueTypeExists',
+        code: 'TypeExists',
         message: 'Issue type with this name already exists',
+        success: false,
       });
       return;
     }
@@ -46,10 +47,11 @@ const createIssueType = async (req: Request, res: Response): Promise<void> => {
       message: 'A new issue type has been created successfully',
     });
   } catch (error) {
+    console.error('Error creating new issue type, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };

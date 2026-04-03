@@ -16,6 +16,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     res.status(401).json({
       code: 'AuthenticationError',
       message: 'Access denied, no token provided',
+      success: false,
     });
     return;
   }
@@ -37,16 +38,18 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
       error instanceof jwt.JsonWebTokenError
     ) {
       res.status(401).json({
-        code: 'Unauthorized',
+        code: 'AuthenticationError',
         message: 'Refresh token invalid or expired',
+        success: false,
       });
       return;
     }
 
+    console.error('Error authenticating access token, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };

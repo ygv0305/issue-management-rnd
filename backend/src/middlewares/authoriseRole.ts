@@ -14,6 +14,7 @@ const authoriseRole = (allowedRoles: string[]) => {
         res.status(404).json({
           code: 'NotFound',
           message: 'User not found',
+          success: false,
         });
         return;
       }
@@ -21,17 +22,19 @@ const authoriseRole = (allowedRoles: string[]) => {
       if (!allowedRoles.includes(user.role)) {
         res.status(403).json({
           code: 'Forbidden',
-          message: 'Unauthorised request: Incorrect user role',
+          message: 'Unauthorised request',
+          success: false,
         });
         return;
       }
 
       return next();
     } catch (error) {
+      console.error('Error authorising user role, ', error);
       res.status(500).json({
         code: 'ServerError',
         message: 'Internal server error',
-        error: error,
+        success: false,
       });
     }
   };

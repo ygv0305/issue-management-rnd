@@ -1,15 +1,30 @@
 // Node modules
 import { Schema, Types, model } from 'mongoose';
 
+export enum IssueStatus {
+  New = 'New',
+  InProgress = 'InProgress',
+  Resolved = 'Resolved',
+  ReOpen = 'ReOpen',
+  Closed = 'Closed',
+}
+
+export enum IssuePriority {
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+  Critical = 'Critical',
+}
+
 export interface IIssue {
   subject: string;
   description: string;
   type: Schema.Types.ObjectId;
-  status: 'New' | 'InProgress' | 'Resolved' | 'Rejected' | 'ReOpen' | 'Closed';
-  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  status: IssueStatus;
+  priority: IssuePriority;
   author: Types.ObjectId;
   assignedTo: Types.ObjectId; // Paper Leader assigned
-  userTags: Types.ObjectId;
+  userTags: Types.ObjectId[];
   attachments: {
     url: string;
     publicId: string;
@@ -20,13 +35,7 @@ export interface IIssue {
     timestamp: Date;
   }[];
   history: {
-    status:
-      | 'New'
-      | 'InProgress'
-      | 'Resolved'
-      | 'Rejected'
-      | 'ReOpen'
-      | 'Closed';
+    status: IssueStatus;
     timestamp: Date;
   }[]; // Audit trail
 }
@@ -50,25 +59,12 @@ const issueSchema = new Schema<IIssue>(
     },
     status: {
       type: String,
-      enum: {
-        values: [
-          'New',
-          'InProgress',
-          'Resolved',
-          'Rejected',
-          'ReOpen',
-          'Closed',
-        ],
-        message: '{VALUE} status is not supported',
-      },
-      default: 'New',
+      enum: Object.values(IssueStatus),
+      default: IssueStatus.New,
     },
     priority: {
       type: String,
-      enum: {
-        values: ['Low', 'Medium', 'High', 'Critical'],
-        message: '{VALUE} priority is not supported',
-      },
+      enum: Object.values(IssuePriority),
       required: [true, 'Issue priority is required'],
     },
     author: {
@@ -80,10 +76,12 @@ const issueSchema = new Schema<IIssue>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    userTags: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    userTags: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     attachments: [
       {
         url: {
@@ -118,17 +116,7 @@ const issueSchema = new Schema<IIssue>(
       {
         status: {
           type: String,
-          enum: {
-            values: [
-              'New',
-              'InProgress',
-              'Resolved',
-              'Rejected',
-              'ReOpen',
-              'Closed',
-            ],
-            message: '{VALUE} status is not supported',
-          },
+          enum: Object.values(IssueStatus),
           required: [true, 'Status change is required'],
         },
         timestamp: {

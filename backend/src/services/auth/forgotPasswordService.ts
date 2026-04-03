@@ -18,7 +18,6 @@ export const generateAndSaveResetToken = async (email: string) => {
   await VerificationToken.create({
     email,
     token,
-    type: 'Reset',
     expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
   });
 

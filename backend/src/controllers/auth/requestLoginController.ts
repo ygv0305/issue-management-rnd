@@ -7,17 +7,16 @@ import { body } from 'express-validator';
 // Services
 import * as requestLoginService from '../../services/auth/requestLoginService.js';
 
-// Custom modules
+// Middlewares
 import validationError from '../../middlewares/validationError.js';
+
+// Config
 import config from '../../config/env.js';
 
+// Utils
+import { validateReqEmail } from '../../utils/validateReqEmail.js';
+
 export const requestLoginRules = [
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .isEmail()
-    .withMessage('Invalid email address'),
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
@@ -27,8 +26,9 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
     const user = await requestLoginService.verifyUser(email, password);
     if (!user) {
       res.status(401).json({
-        code: 'Unauthorized',
+        code: 'AuthError',
         message: 'Invalid email or password',
+        success: false,
       });
       return;
     }
@@ -47,15 +47,22 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({
       message: 'Login successful',
+      success: true,
       accessToken,
     });
   } catch (error) {
+    console.error('Error requesting to log in, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };
 
-export default [requestLoginRules, validationError, requestLogin];
+export default [
+  validateReqEmail,
+  requestLoginRules,
+  validationError,
+  requestLogin,
+];

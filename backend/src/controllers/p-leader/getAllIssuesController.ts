@@ -14,12 +14,13 @@ const getAllIssues = async (req: Request, res: Response): Promise<void> => {
       data: allIssues,
     });
   } catch (error) {
+    console.error('Error fetching all issues, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };
 
-export default [getAllIssues];
+export default getAllIssues;

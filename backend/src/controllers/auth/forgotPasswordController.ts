@@ -10,14 +10,8 @@ import * as forgotPasswordService from '../../services/auth/forgotPasswordServic
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-export const forgotPasswordRules = [
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('Email is required')
-    .isEmail()
-    .withMessage('Invalid email address'),
-];
+// Utils
+import { validateReqEmail } from '../../utils/validateReqEmail.js';
 
 interface ForgotPasswordData {
   email: string;
@@ -41,12 +35,13 @@ const forgotPassword = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ message: 'A password reset link has been sent.' });
   } catch (error) {
+    console.error('Error handling forgot password, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };
 
-export default [forgotPasswordRules, validationError, forgotPassword];
+export default [validateReqEmail, validationError, forgotPassword];

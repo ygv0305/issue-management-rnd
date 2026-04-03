@@ -14,12 +14,13 @@ const getIssueTypes = async (req: Request, res: Response): Promise<void> => {
       data: issueTypes,
     });
   } catch (error) {
+    console.error('Error fetching issue types, ', error);
     res.status(500).json({
       code: 'ServerError',
       message: 'Internal server error',
-      error: error,
+      success: false,
     });
   }
 };
 
-export default [getIssueTypes];
+export default getIssueTypes;

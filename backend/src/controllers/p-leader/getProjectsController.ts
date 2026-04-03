@@ -4,16 +4,23 @@ import type { Request, Response } from 'express';
 // Models
 import Project from '../../models/projectSchema.js';
 
-export const getProjects = async (req: Request, res: Response) => {
+const getProjects = async (req: Request, res: Response) => {
   try {
     const projects = await Project.find({}).select('_id name').lean().exec();
-    res.status(200).json({ success: true, projects });
+
+    res.status(200).json({
+      success: true,
+      message: 'All projects fetched successfully',
+      data: projects,
+    });
   } catch (error) {
     console.error('Error fetching projects:', error);
     res.status(500).json({
       code: 'ServerError',
+      message: 'Internal server error',
       success: false,
-      message: 'Server error fetching projects',
     });
   }
 };
+
+export default getProjects;
