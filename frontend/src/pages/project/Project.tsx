@@ -15,7 +15,7 @@ import type { ProjectData } from '../../types/projectTypes';
 // Styles
 import './project.css';
 
-function Project() {
+function ProjectManage() {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ function Project() {
   }, []);
 
   if (loading) {
-    return <div className="issue-view-container">Loading ...</div>;
+    return <div className="issue-view-container">Loading...</div>;
   }
 
   const handleNewProject = async () => {
@@ -135,4 +135,4 @@ function Project() {
   );
 }
 
-export default withPermission(Project, PERMISSIONS.VIEW_PROJECT);
+export default withPermission(ProjectManage, PERMISSIONS.CREATE_PROJECT);

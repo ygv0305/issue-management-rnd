@@ -19,9 +19,12 @@ const withPermission = <P extends object>(
     }
 
     const isAllowed = hasPermission(user, requiredPermission);
-    const disabled = props.disabled || !isAllowed;
 
-    return <WrappedComponent {...props} disabled={disabled} />;
+    if (!isAllowed) {
+      return null;
+    }
+
+    return <WrappedComponent {...props} />;
   };
 };
 

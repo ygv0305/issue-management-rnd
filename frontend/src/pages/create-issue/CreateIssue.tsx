@@ -39,7 +39,7 @@ export default function CreateIssue() {
   }, []);
 
   if (loading) {
-    return <div className="issue-view-container">Loading ...</div>;
+    return <div className="issue-view-container">Loading...</div>;
   }
 
   const handleChange = (

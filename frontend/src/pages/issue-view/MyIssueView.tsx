@@ -35,7 +35,7 @@ export default function MyIssueView() {
   }, []);
 
   if (loading) {
-    return <div className="issue-view-container">Loading your issues...</div>;
+    return <div className="issue-view-container">Loading...</div>;
   }
 
   return (

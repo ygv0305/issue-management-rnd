@@ -52,7 +52,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Logout error', error);
     } finally {
-      localStorage.removeItem('accessToken');
+      // Clear all data from localStorage
+      localStorage.clear();
       setUser(null);
     }
   };

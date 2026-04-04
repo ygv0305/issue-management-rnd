@@ -13,6 +13,9 @@ import CreateIssue from './pages/create-issue/CreateIssue';
 import Project from './pages/project/Project';
 import AccountManage from './pages/account-manage/AccountManage';
 
+// RBAC
+import { PERMISSIONS } from './lib/rbac/allPermission';
+
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
@@ -48,20 +51,47 @@ export const router = createBrowserRouter([
                 element: <MyIssueView />,
               },
               {
-                path: '/all-issues',
-                element: <AllIssueView />,
+                element: (
+                  <ProtectedRoute
+                    requiredPermission={PERMISSIONS.VIEW_ALL_ISSUE}
+                  />
+                ),
+                children: [
+                  {
+                    path: '/all-issues',
+                    element: <AllIssueView />,
+                  },
+                ],
               },
               {
                 path: '/create-issue',
                 element: <CreateIssue />,
               },
               {
-                path: '/projects',
-                element: <Project />,
+                element: (
+                  <ProtectedRoute
+                    requiredPermission={PERMISSIONS.CREATE_PROJECT}
+                  />
+                ),
+                children: [
+                  {
+                    path: '/project-manage',
+                    element: <Project />,
+                  },
+                ],
               },
               {
-                path: '/account-manage',
-                element: <AccountManage />,
+                element: (
+                  <ProtectedRoute
+                    requiredPermission={PERMISSIONS.WHITELIST_USER}
+                  />
+                ),
+                children: [
+                  {
+                    path: '/account-manage',
+                    element: <AccountManage />,
+                  },
+                ],
               },
             ],
           },

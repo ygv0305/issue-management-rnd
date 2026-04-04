@@ -56,7 +56,7 @@ export default function Sidebar() {
 
         {hasPermission(user, PERMISSIONS.CREATE_PROJECT) && (
           <NavLink
-            to="/projects"
+            to="/project-manage"
             className={({ isActive }) =>
               isActive ? 'sidebar-link active' : 'sidebar-link'
             }

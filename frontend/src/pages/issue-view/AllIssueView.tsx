@@ -39,7 +39,7 @@ function AllIssueView() {
   }, []);
 
   if (loading) {
-    return <div className="issue-view-container">Loading issues...</div>;
+    return <div className="issue-view-container">Loading...</div>;
   }
 
   return (
