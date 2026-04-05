@@ -12,10 +12,7 @@ import pLeaderService from '../../services/pLeaderService';
 import type { IssueData } from '../../types/issueTypes';
 
 // Styles
-import './issueView.css';
-
-// Utils
-import getPriorityColor from '../../utils/getPriorityColor';
+import styles from './IssueView.module.css';
 
 function AllIssueView() {
   const [allIssues, setAllIssues] = useState<IssueData[]>([]);
@@ -39,46 +36,55 @@ function AllIssueView() {
   }, []);
 
   if (loading) {
-    return <div className="issue-view-container">Loading...</div>;
+    return <div className="tableCont">Loading...</div>;
   }
 
   return (
-    <div className="issue-view-container">
+    <div className="tableCont">
       <h2>All Submitted Issues</h2>
 
-      <div className="issue-section">
-        <table className="issue-table">
+      <div className="tableSection">
+        <table className="dataTable">
           <thead>
             <tr>
-              <th className="priority-col"></th>
-              <th className="id-col">ID</th>
-              <th>Subject</th>
-              <th className="normal-col">Type</th>
-              <th className="normal-col">Author</th>
-              <th className="id-col">Status</th>
+              <th className={styles.smallCol}>ID</th>
+              <th style={{ textAlign: 'left', padding: '1rem 1.5rem' }}>
+                Subject
+              </th>
+              <th className={styles.normalCol}>Type</th>
+              <th className={styles.smallCol}>Date</th>
+              <th className={styles.smallCol}>Status</th>
+              <th className={styles.smallCol}>Priority</th>
             </tr>
           </thead>
           <tbody>
             {allIssues.map((issue) => (
               <tr key={issue._id}>
-                <td className="priority-col">
-                  <span
-                    style={{
-                      backgroundColor: getPriorityColor(issue.priority),
-                    }}
-                  ></span>
+                <td className={styles.smallCol}>
+                  {issue._id.slice(-6).toUpperCase()}
                 </td>
-                <td className="id-col">{issue._id.slice(-6).toUpperCase()}</td>
-                <td>{issue.subject}</td>
-                <td className="normal-col">{issue.type?.name || 'N/A'}</td>
-                <td className="normal-col">
-                  {issue.author?.fullName || 'Unknown'}
+                <td style={{ textAlign: 'left', padding: '1rem 1.5rem' }}>
+                  {issue.subject}
                 </td>
-                <td className="id-col">
+                <td className={styles.normalCol}>{issue.type.name}</td>
+                <td className={styles.smallCol}>
+                  {new Date(issue.createdAt).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                  })}
+                </td>
+                <td className={styles.smallCol}>
                   <span
-                    className={`status-badge status-${issue.status.toLowerCase()}`}
+                    className={`${styles.statusBadge} ${styles[`status${issue.status}`]}`}
                   >
                     {issue.status}
+                  </span>
+                </td>
+                <td className={styles.smallCol}>
+                  <span
+                    className={`${styles.statusBadge} ${styles[`priority${issue.priority}`]}`}
+                  >
+                    {issue.priority}
                   </span>
                 </td>
               </tr>

@@ -9,7 +9,7 @@ import coreService from '../../services/coreService';
 import type { IssueTypeData } from '../../types/issueTypes';
 
 // Styles
-import './createIssue.css';
+import styles from './CreateIssue.module.css';
 
 export default function CreateIssue() {
   const navigate = useNavigate();
@@ -37,10 +37,6 @@ export default function CreateIssue() {
       setLoading(false);
     }
   }, []);
-
-  if (loading) {
-    return <div className="issue-view-container">Loading...</div>;
-  }
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -108,22 +104,24 @@ export default function CreateIssue() {
     }
   };
 
+  if (loading) {
+    return <div className="createFormCont">Loading...</div>;
+  }
+
   return (
-    <div className="create-issue-container">
+    <div className="createFormCont">
       <h2>Create New Issue</h2>
 
-      <form onSubmit={handleSubmit} className="create-issue-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="issueType">
-              Issue Type <span className="required">*</span>
-            </label>
+      <form onSubmit={handleSubmit} className="createForm">
+        <div className="formRow">
+          <div className="formGroup">
+            <label htmlFor="issueType">Issue Type</label>
             <select
               id="issueType"
               name="issueType"
               value={formData.issueType}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               required
             >
               <option value="">Select Type</option>
@@ -135,57 +133,51 @@ export default function CreateIssue() {
             </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="subject">
-              Subject <span className="required">*</span>
-            </label>
+          <div className="formGroup">
+            <label htmlFor="subject">Subject</label>
             <input
               type="text"
               id="subject"
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               placeholder="Brief summary of the issue"
               maxLength={50}
               required
             />
-            <div className="char-count">
+            <div className="charCount">
               {formData.subject.length} / 50 characters
             </div>
           </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="description">
-            Description <span className="required">*</span>
-          </label>
+        <div className="formGroup">
+          <label htmlFor="description">Description</label>
           <textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            className="form-control"
+            className={`formControl ${styles.formControl}`}
             placeholder="Detailed description of the issue..."
             maxLength={1000}
             required
           />
-          <div className="char-count">
+          <div className="charCount">
             {formData.description.length} / 1000 characters
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="urgencyLevel">
-              Urgency Level <span className="required">*</span>
-            </label>
+        <div className="formRow">
+          <div className="formGroup">
+            <label htmlFor="urgencyLevel">Urgency Level</label>
             <select
               id="urgencyLevel"
               name="urgencyLevel"
               value={formData.urgencyLevel}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               required
             >
               <option value="">Select Urgency</option>
@@ -194,16 +186,14 @@ export default function CreateIssue() {
               <option value="Low">Low</option>
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="impactLevel">
-              Impact Level <span className="required">*</span>
-            </label>
+          <div className="formGroup">
+            <label htmlFor="impactLevel">Impact Level</label>
             <select
               id="impactLevel"
               name="impactLevel"
               value={formData.impactLevel}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               required
             >
               <option value="">Select Impact</option>
@@ -214,19 +204,15 @@ export default function CreateIssue() {
           </div>
         </div>
 
-        <div className="form-actions">
+        <div className="formActions">
           <button
             type="button"
-            className="btn btn-secondary"
+            className={`mainBtn ${styles.btnSecondary}`}
             onClick={() => window.history.back()}
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={submitting}
-          >
+          <button type="submit" className="mainBtn" disabled={submitting}>
             {submitting ? 'Submitting...' : 'Submit Issue'}
           </button>
         </div>

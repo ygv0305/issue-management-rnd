@@ -1,57 +1,57 @@
-.topbar-container {
+.topbarCont {
   height: 70px;
   background-color: #fff;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--divider-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--main-box-shadow);
 }
 
-.topbar-left {
+.topbarLeft {
   display: flex;
   align-items: center;
 }
 
-.topbar-logo {
+.topbarLogo {
   height: 40px;
   width: auto;
   object-fit: contain;
 }
 
-.topbar-right {
+.topbarRight {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.topbar-action-btn {
+.actionBtn {
   background: none;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--divider-color);
   border-radius: 50px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-weight: 500;
-  color: #495057;
+  color: var(--primary-text);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.topbar-action-btn:hover {
+.actionBtn:hover {
   background-color: #f8f9fa;
   border-color: #ced4da;
 }
 
-.topbar-user-info {
+.userInfo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.topbar-user-avatar {
+.userAvatar {
   background-color: #e9ecef;
   color: #495057;
   width: 32px;

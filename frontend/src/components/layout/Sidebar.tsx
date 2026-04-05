@@ -9,7 +9,7 @@ import { hasPermission } from '../../lib/rbac/hasPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
 // Styles
-import './sidebar.css';
+import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
   const { user, logout } = useUser();
@@ -21,14 +21,16 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="sidebar-container">
-      <div className="sidebar-brand">Issue Management</div>
+    <aside className={styles.sidebarCont}>
+      <div className={styles.sidebarBrand}>Issue Management</div>
 
-      <nav className="sidebar-nav">
+      <nav className={styles.sidebarNav}>
         <NavLink
           to="/my-issues"
           className={({ isActive }) =>
-            isActive ? 'sidebar-link active' : 'sidebar-link'
+            isActive
+              ? `${styles.sidebarLink} ${styles.linkActive}`
+              : `${styles.sidebarLink}`
           }
         >
           My Issues
@@ -38,7 +40,9 @@ export default function Sidebar() {
           <NavLink
             to="/all-issues"
             className={({ isActive }) =>
-              isActive ? 'sidebar-link active' : 'sidebar-link'
+              isActive
+                ? `${styles.sidebarLink} ${styles.linkActive}`
+                : `${styles.sidebarLink}`
             }
           >
             All Issues
@@ -48,7 +52,9 @@ export default function Sidebar() {
         <NavLink
           to="/create-issue"
           className={({ isActive }) =>
-            isActive ? 'sidebar-link active' : 'sidebar-link'
+            isActive
+              ? `${styles.sidebarLink} ${styles.linkActive}`
+              : `${styles.sidebarLink}`
           }
         >
           Create Issue
@@ -58,7 +64,9 @@ export default function Sidebar() {
           <NavLink
             to="/project-manage"
             className={({ isActive }) =>
-              isActive ? 'sidebar-link active' : 'sidebar-link'
+              isActive
+                ? `${styles.sidebarLink} ${styles.linkActive}`
+                : `${styles.sidebarLink}`
             }
           >
             Projects & Types
@@ -69,7 +77,9 @@ export default function Sidebar() {
           <NavLink
             to="/account-manage"
             className={({ isActive }) =>
-              isActive ? 'sidebar-link active' : 'sidebar-link'
+              isActive
+                ? `${styles.sidebarLink} ${styles.linkActive}`
+                : `${styles.sidebarLink}`
             }
           >
             Accounts
@@ -77,8 +87,8 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <div className="sidebar-footer">
-        <button className="sidebar-logout-btn" onClick={handleLogout}>
+      <div className={styles.sidebarFooter}>
+        <button className={styles.logoutBtn} onClick={handleLogout}>
           Log Out
         </button>
       </div>

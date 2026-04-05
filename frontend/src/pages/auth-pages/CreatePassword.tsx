@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 import AuthService from '../../services/authService';
 
 // Styles + Assets
-import './auth.css';
+import './Auth.module.css';
 import authBg from '../../assets/images/auth-bg.webp';
 import autLogo from '../../assets/images/aut-logo.jpg';
 import passwordIcon from '../../assets/vectors/lock.svg';

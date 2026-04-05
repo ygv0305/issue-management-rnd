@@ -12,8 +12,8 @@ import { PERMISSIONS } from '../../lib/rbac/allPermission';
 import type { SystemRoles, WhitelistUserData } from '../../types/authTypes';
 import type { ProjectData } from '../../types/projectTypes';
 
-// CSS
-import './accountManage.css';
+// Styles
+import styles from './AccountManage.module.css';
 
 function AccountManage() {
   const [formData, setFormData] = useState<WhitelistUserData>({
@@ -25,7 +25,7 @@ function AccountManage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
-    type: 'success' | 'error';
+    type: 'Success' | 'Error';
     text: string;
   } | null>(null);
 
@@ -45,10 +45,6 @@ function AccountManage() {
       setLoading(false);
     }
   }, []);
-
-  if (loading) {
-    return <div className="issue-view-container">Loading...</div>;
-  }
 
   const roles: SystemRoles[] = [
     'Student',
@@ -71,7 +67,7 @@ function AccountManage() {
 
     if (!formData.email.endsWith('@autuni.ac.nz')) {
       setStatusMessage({
-        type: 'error',
+        type: 'Error',
         text: 'Email must be a valid @autuni.ac.nz address.',
       });
       return;
@@ -79,7 +75,7 @@ function AccountManage() {
 
     if (formData.role === 'Student' && !formData.projectId) {
       setStatusMessage({
-        type: 'error',
+        type: 'Error',
         text: 'Student must work in a project. Please provide a Project ID.',
       });
       return;
@@ -95,7 +91,7 @@ function AccountManage() {
       const res = await adminService.whitelistUser(dataToSubmit);
       if (res.success) {
         setStatusMessage({
-          type: 'success',
+          type: 'Success',
           text: 'User successfully whitelisted!',
         });
         setFormData({
@@ -106,7 +102,7 @@ function AccountManage() {
         });
       } else {
         setStatusMessage({
-          type: 'error',
+          type: 'Error',
           text: res.message || 'Failed to whitelist user.',
         });
       }
@@ -115,69 +111,77 @@ function AccountManage() {
       const errorMsg =
         error.response?.data?.message ||
         'Failed to whitelist user. Please try again.';
-      setStatusMessage({ type: 'error', text: errorMsg });
+      setStatusMessage({ type: 'Error', text: errorMsg });
     } finally {
       setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return <div className="createFormCont">Loading...</div>;
+  }
+
   return (
-    <div className="account-manage-container">
+    <div className="createFormCont">
       <h2>Whitelist New Account</h2>
-      <p className="subtitle">Pre-approve users to IMS.</p>
+      <p className={styles.subtitle}>Pre-approve users to IMS.</p>
 
       {statusMessage && (
-        <div className={`alert alert-${statusMessage.type}`}>
+        <div
+          className={`${styles.alert} ${styles[`alert${statusMessage.type}`]}`}
+        >
           {statusMessage.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="account-manage-form">
-        <div className="form-group">
-          <label htmlFor="fullName">
-            Full Name <span className="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            className="form-control"
-            placeholder="John Doe"
-            maxLength={50}
-            required
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="createForm">
+        <div className="formRow">
+          <div className="formGroup">
+            <label htmlFor="fullName">Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="formControl"
+              placeholder="John Doe"
+              maxLength={50}
+              required
+            />
+            <div className="charCount">
+              {formData.fullName.length} / 50 characters
+            </div>
+          </div>
 
-        <div className="form-row">
-          <div className="form-group flex-1">
-            <label htmlFor="email">
-              Email Address <span className="required">*</span>
-            </label>
+          <div className="formGroup">
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               placeholder="user@autuni.ac.nz"
               maxLength={50}
               required
             />
+            <div className="charCount">
+              {formData.email.length} / 50 characters
+            </div>
           </div>
+        </div>
 
-          <div className="form-group flex-1">
-            <label htmlFor="role">
-              Role <span className="required">*</span>
-            </label>
+        <div className="formRow">
+          <div className="formGroup">
+            <label htmlFor="role">Role</label>
             <select
               id="role"
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="form-control"
+              className="formControl"
               required
             >
               <option value="">Select Role</option>
@@ -188,41 +192,35 @@ function AccountManage() {
               ))}
             </select>
           </div>
+
+          {formData.role === 'Student' && (
+            <div className={`formGroup ${styles.fadeIn}`}>
+              <label htmlFor="projectId">Project</label>
+              <select
+                id="projectId"
+                name="projectId"
+                value={formData.projectId}
+                onChange={handleChange}
+                className="formControl"
+                required={formData.role === 'Student'}
+              >
+                <option value="">Select a Project</option>
+                {projects.map((proj) => (
+                  <option key={proj._id} value={proj._id}>
+                    {proj.name}
+                  </option>
+                ))}
+              </select>
+              <small className={styles.helpText}>
+                Student must work in a project.
+              </small>
+            </div>
+          )}
         </div>
 
-        {formData.role === 'Student' && (
-          <div className="form-group fade-in">
-            <label htmlFor="projectId">
-              Project <span className="required">*</span>
-            </label>
-            <select
-              id="projectId"
-              name="projectId"
-              value={formData.projectId}
-              onChange={handleChange}
-              className="form-control"
-              required={formData.role === 'Student'}
-            >
-              <option value="">Select a Project</option>
-              {projects.map((proj) => (
-                <option key={proj._id} value={proj._id}>
-                  {proj.name}
-                </option>
-              ))}
-            </select>
-            <small className="help-text">
-              Assigned project is mandatory for students.
-            </small>
-          </div>
-        )}
-
-        <div className="form-actions">
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={submitting}
-          >
-            {submitting ? 'Whitelisting...' : 'Whitelist User'}
+        <div className="formActions">
+          <button type="submit" className="mainBtn" disabled={submitting}>
+            {submitting ? 'Creating...' : 'Create User'}
           </button>
         </div>
       </form>

@@ -3,7 +3,7 @@ import { useUser } from '../../lib/context/UserContext';
 
 // Assets + Styles
 import autLogo from '../../assets/images/aut-logo.jpg';
-import './topbar.css';
+import styles from './Topbar.module.css';
 
 export default function Topbar() {
   const { user } = useUser();
@@ -26,19 +26,19 @@ export default function Topbar() {
   };
 
   return (
-    <header className="topbar-container">
-      <div className="topbar-left">
-        <img src={autLogo} alt="AUT Logo" className="topbar-logo" />
+    <header className={styles.topbarCont}>
+      <div className={styles.topbarLeft}>
+        <img src={autLogo} alt="AUT Logo" className={styles.topbarLogo} />
       </div>
 
-      <div className="topbar-right">
-        <button className="topbar-action-btn" onClick={handleNotificationClick}>
+      <div className={styles.topbarRight}>
+        <button className={styles.actionBtn} onClick={handleNotificationClick}>
           Notifications
         </button>
 
-        <button className="topbar-action-btn" onClick={handleProfileClick}>
-          <div className="topbar-user-info">
-            <div className="topbar-user-avatar">{getUserInitials()}</div>
+        <button className={styles.actionBtn} onClick={handleProfileClick}>
+          <div className={styles.userInfo}>
+            <div className={styles.userAvatar}>{getUserInitials()}</div>
             <span>{user?.fullName || 'Profile'}</span>
           </div>
         </button>

@@ -6,15 +6,15 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
 // Styles
-import './layout.css';
+import styles from './Layout.module.css';
 
 export default function Layout() {
   return (
-    <div className="layout-container">
+    <div className={styles.layoutCont}>
       <Sidebar />
-      <div className="layout-content-wrapper">
+      <div className={styles.contentWrapper}>
         <Topbar />
-        <main className="layout-main-content">
+        <main className={styles.mainContent}>
           <Outlet />
         </main>
       </div>

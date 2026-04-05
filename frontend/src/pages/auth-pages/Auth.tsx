@@ -9,7 +9,7 @@ import AuthService from '../../services/authService';
 import { useUser } from '../../lib/context/UserContext';
 
 // Styles + Assets
-import './auth.css';
+import styles from './Auth.module.css';
 import authBg from '../../assets/images/auth-bg.webp';
 import autLogo from '../../assets/images/aut-logo.jpg';
 import emailIcon from '../../assets/vectors/user.svg';
@@ -105,14 +105,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="auth-container">
-      <img className="bg-img" src={authBg} alt="" />
-      <div className="bg-layer"></div>
-      <div className="auth-main">
-        <img className="aut-logo" src={autLogo} alt="" />
-        <h2 className="auth-intro">Issue Management and Tracking System</h2>
-        <div className="auth-card">
-          <h2 className="auth-title">
+    <div className={styles.authContainer}>
+      <img className={styles.bgImg} src={authBg} alt="" />
+      <div className={styles.authMain}>
+        <img className={styles.autLogo} src={autLogo} alt="" />
+        <h2 className={styles.authIntro}>
+          Issue Management and Tracking System
+        </h2>
+        <div className={styles.authCard}>
+          <h2 className={styles.authTitle}>
             {authMode === 'login'
               ? 'Welcome Back'
               : authMode === 'signup'
@@ -120,7 +121,7 @@ export default function Auth() {
                 : 'Forgot Password'}
           </h2>
           {authMode !== 'login' && (
-            <p className="auth-subtitle">
+            <p className={styles.authSubtitle}>
               Enter your email to request a link to{' '}
               {authMode === 'signup'
                 ? 'create an account'
@@ -128,10 +129,10 @@ export default function Auth() {
             </p>
           )}
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className={styles.authError}>{error}</div>}
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group-auth">
+          <form onSubmit={handleSubmit} className={styles.authForm}>
+            <div className={styles.formGroup}>
               <label htmlFor="email">
                 <img src={emailIcon} alt="" />
               </label>
@@ -146,7 +147,7 @@ export default function Auth() {
             </div>
 
             {authMode === 'login' && (
-              <div className="form-group-auth">
+              <div className={styles.formGroup}>
                 <label htmlFor="password">
                   <img src={passwordIcon} alt="" />
                 </label>
@@ -160,7 +161,7 @@ export default function Auth() {
               </div>
             )}
 
-            <button type="submit" className="auth-submit" disabled={isLoading}>
+            <button type="submit" className="mainBtn" disabled={isLoading}>
               {isLoading
                 ? 'Processing...'
                 : authMode === 'login'
@@ -172,30 +173,30 @@ export default function Auth() {
           </form>
 
           {authMode === 'login' ? (
-            <div className="auth-toggle-login">
+            <div className={styles.toggleLogin}>
               <button
                 type="button"
                 onClick={() => authModeChange('signup')}
-                className="toggle-btn"
+                className={styles.toggleBtn}
               >
                 Create Account
               </button>
               <button
                 type="button"
                 onClick={() => authModeChange('reset')}
-                className="toggle-btn"
+                className={styles.toggleBtn}
               >
                 Forgot Password?
               </button>
             </div>
           ) : (
-            <div className="auth-toggle-signup">
+            <div className={styles.toggleSignup}>
               <p>
                 {authMode === 'signup' ? 'Already have an account?' : 'Back to'}{' '}
                 <button
                   type="button"
                   onClick={() => authModeChange('login')}
-                  className="toggle-btn"
+                  className={styles.toggleBtn}
                 >
                   Log in
                 </button>

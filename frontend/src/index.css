@@ -1,15 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #ff7340;
-  --text-primary: #000000;
-  --border-focus: #6366f1;
-  --primary-hover: #4f46e5;
-  --error-color: #cc0000;
+  --primary-color: #4a6a8a;
+  --primary-dark: #2c4c6c;
+  --primary-light: #6b8aac;
+  --dark-bg: #0f1a24;
 
-  --text-shadow-md:
-    0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1),
-    0px 2px 4px rgb(0 0 0 / 0.1);
+  --page-bg: #f5f7fa;
+  --divider-color: #e2e8f0;
+
+  --primary-text: #1e2a3a;
+  --secondary-text: #5a6b7c;
+  --placeholder-text: #9aaebf;
+  --white-text: #fff;
+
+  --success-color: #10b981;
+  --error-color: #ef4444;
+
+  --main-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -20,7 +28,6 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
   display: flex;
@@ -31,41 +38,4 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-}
-
-/* Animations */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  50% {
-    transform: translateX(5px);
-  }
-  75% {
-    transform: translateX(-5px);
-  }
 }

@@ -13,7 +13,7 @@ import type { IssueTypeData } from '../../types/issueTypes';
 import type { ProjectData } from '../../types/projectTypes';
 
 // Styles
-import './project.css';
+import styles from './ProjectManage.module.css';
 
 function ProjectManage() {
   const [projects, setProjects] = useState<ProjectData[]>([]);
@@ -39,10 +39,6 @@ function ProjectManage() {
       setLoading(false);
     }
   }, []);
-
-  if (loading) {
-    return <div className="issue-view-container">Loading...</div>;
-  }
 
   const handleNewProject = async () => {
     const name = prompt('Enter new project name:');
@@ -78,18 +74,24 @@ function ProjectManage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className={`tableCont ${styles.projectManageCont}`}>Loading...</div>
+    );
+  }
+
   return (
-    <div className="project-page-container">
+    <div className={`tableCont ${styles.projectManageCont}`}>
       <h2>Project Management</h2>
 
-      <div className="project-section">
-        <div className="section-header">
+      <div className="tableSection">
+        <div className={styles.sectionHeader}>
           <h3>Projects</h3>
-          <button className="btn btn-primary" onClick={handleNewProject}>
-            + New Project
+          <button className="mainBtn" onClick={handleNewProject}>
+            New Project
           </button>
         </div>
-        <table className="data-table">
+        <table className={`dataTable ${styles.dataTable}`}>
           <thead>
             <tr>
               <th>ID</th>
@@ -107,14 +109,14 @@ function ProjectManage() {
         </table>
       </div>
 
-      <div className="project-section">
-        <div className="section-header">
+      <div className="tableSection">
+        <div className={styles.sectionHeader}>
           <h3>Issue Types</h3>
-          <button className="btn btn-primary" onClick={handleNewIssueType}>
-            + New Issue Type
+          <button className="mainBtn" onClick={handleNewIssueType}>
+            New Issue Type
           </button>
         </div>
-        <table className="data-table">
+        <table className={`dataTable ${styles.dataTable}`}>
           <thead>
             <tr>
               <th>ID</th>

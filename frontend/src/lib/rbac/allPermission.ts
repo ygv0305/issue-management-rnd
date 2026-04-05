@@ -14,6 +14,7 @@ export const PERMISSIONS = {
 
   // ADMIN
   WHITELIST_USER: 'whitelist:user',
+  // VIEW_PROJECT: 'view:project',
 
   // PAPERLEADER
   VIEW_ALL_ISSUE: 'view:allIssue',

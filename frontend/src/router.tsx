@@ -10,7 +10,7 @@ import CreatePassword from './pages/auth-pages/CreatePassword';
 import MyIssueView from './pages/issue-view/MyIssueView';
 import AllIssueView from './pages/issue-view/AllIssueView';
 import CreateIssue from './pages/create-issue/CreateIssue';
-import Project from './pages/project/Project';
+import ProjectManage from './pages/project/ProjectManage';
 import AccountManage from './pages/account-manage/AccountManage';
 
 // RBAC
@@ -76,7 +76,7 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: '/project-manage',
-                    element: <Project />,
+                    element: <ProjectManage />,
                   },
                 ],
               },
