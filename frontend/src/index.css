@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
   --primary-color: #4a6a8a;
@@ -11,7 +11,7 @@
 
   --primary-text: #1e2a3a;
   --secondary-text: #5a6b7c;
-  --placeholder-text: #9aaebf;
+  --placeholder-text: #91a3b0;
   --white-text: #fff;
 
   --success-color: #10b981;
@@ -27,7 +27,8 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto', sans-serif;
+  font-optical-sizing: auto;
   line-height: 1.5;
   min-height: 100vh;
   display: flex;
@@ -38,4 +39,8 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+button {
+  font-family: 'Roboto', sans-serif;
 }

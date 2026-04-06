@@ -43,8 +43,59 @@
   letter-spacing: 0.5px;
 }
 
+:global(.dataTable tbody tr) {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
 :global(.dataTable tbody tr:hover) {
   background-color: var(--table-row-hover);
+}
+
+:global(.statusBadge) {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+:global(.statusNew) {
+  background-color: #e6f0fa;
+  color: #2c5f8a;
+}
+:global(.statusInProgress) {
+  background-color: #fff4e5;
+  color: #c97e00;
+}
+:global(.statusReOpen) {
+  background-color: #e6f0fa;
+  color: #2c5f8a;
+}
+:global(.statusResolved) {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+:global(.statusClosed) {
+  background-color: #efebe9;
+  color: #5d4037;
+}
+
+:global(.priorityLow) {
+  background-color: #f0f4ec;
+  color: #4e6a3b;
+}
+:global(.priorityMedium) {
+  background-color: #fff2e0;
+  color: #b45f06;
+}
+:global(.priorityHigh) {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+:global(.priorityCritical) {
+  background-color: #ffebee;
+  color: #c62828;
 }
 
 /* Local */
@@ -53,50 +104,4 @@
 }
 .normalCol {
   width: 20%;
-}
-
-.statusBadge {
-  display: inline-block;
-  padding: 0.35rem 0.7rem;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.statusNew {
-  background-color: #e6f0fa;
-  color: #2c5f8a;
-}
-.statusInProgress {
-  background-color: #fff4e5;
-  color: #c97e00;
-}
-.statusReOpen {
-  background-color: #e6f0fa;
-  color: #2c5f8a;
-}
-.statusResolved {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-.statusClosed {
-  background-color: #efebe9;
-  color: #5d4037;
-}
-
-.priorityLow {
-  background-color: #f0f4ec;
-  color: #4e6a3b;
-}
-.priorityMedium {
-  background-color: #fff2e0;
-  color: #b45f06;
-}
-.priorityHigh {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-.priorityCritical {
-  background-color: #ffebee;
-  color: #c62828;
 }

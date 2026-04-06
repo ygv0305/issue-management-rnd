@@ -10,6 +10,11 @@ export interface CreateIssueData {
   attachments?: { url: string; publicId: string }[];
 }
 
+export interface CreateCommentData {
+  issueId: string;
+  message: string;
+}
+
 // Response
 export interface GetIssuesResponse {
   message: string;
@@ -27,6 +32,12 @@ export interface CreateIssueTypeResponse {
   success: boolean;
   message: string;
   data: IssueTypeData;
+}
+
+export interface CommentResponse {
+  success: boolean;
+  message: string;
+  data: CommentData;
 }
 
 // Data models
@@ -54,4 +65,11 @@ export interface IssueData {
   author: User;
   createdAt: string;
   assignedTo?: User;
+  thread: CommentData[];
+}
+
+export interface CommentData {
+  userId: User;
+  message: string;
+  timestamp: string;
 }

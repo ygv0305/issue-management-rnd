@@ -6,7 +6,7 @@
 :global(.mainBtn) {
   background-color: var(--primary-dark);
   color: var(--white-text);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1rem;
   padding: 0.75rem;
   border: none;

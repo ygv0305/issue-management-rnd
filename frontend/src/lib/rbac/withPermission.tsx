@@ -8,10 +8,10 @@ import { useUser } from '../context/UserContext';
 import { hasPermission } from './hasPermission';
 
 const withPermission = <P extends object>(
-  WrappedComponent: React.ComponentType<P & { disabled?: boolean }>,
+  WrappedComponent: React.ComponentType<P>,
   requiredPermission: string,
 ) => {
-  return function WithPermissionComponent(props: P & { disabled?: boolean }) {
+  return function WithPermissionComponent(props: P) {
     const { user, loading } = useUser();
 
     if (loading) {

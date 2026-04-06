@@ -25,6 +25,13 @@ class CoreService {
     const response = await apiAuth.post('/core-base/create-issue', data);
     return response.data;
   }
+
+  async createComment(
+    data: IssueTypes.CreateCommentData,
+  ): Promise<IssueTypes.CommentResponse> {
+    const response = await apiAuth.post('/core-base/create-comment', data);
+    return response.data;
+  }
 }
 
 export default new CoreService();
