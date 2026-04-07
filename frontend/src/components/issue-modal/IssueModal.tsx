@@ -103,11 +103,16 @@ export default function IssueModal({
                   <p>{new Date(issue.createdAt).toLocaleString()}</p>
                 </div>
                 <div className={styles.infoItem}>
-                  <label>Status & Priority</label>
-                  <div className={styles.badgeCont}>
+                  <label>Status</label>
+                  <div>
                     <span className={`statusBadge status${issue.status}`}>
                       {issue.status}
                     </span>
+                  </div>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Priority</label>
+                  <div>
                     <span className={`statusBadge priority${issue.priority}`}>
                       {issue.priority}
                     </span>
@@ -149,9 +154,13 @@ export default function IssueModal({
                   className={styles.commentInput}
                   placeholder="Post a message..."
                   value={commentMsg}
+                  maxLength={1000}
                   onChange={(e) => setCommentMsg(e.target.value)}
                 />
-                <div className={styles.formFooter}>
+                <div className={styles.submitWrapper}>
+                  <div className="charCount" style={{ textAlign: 'center' }}>
+                    {commentMsg.length} / 1000 characters
+                  </div>
                   <button
                     type="submit"
                     className={styles.postBtn}

@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 import AuthService from '../../services/authService';
 
 // Styles + Assets
-import './Auth.module.css';
+import styles from './Auth.module.css';
 import authBg from '../../assets/images/auth-bg.webp';
 import autLogo from '../../assets/images/aut-logo.jpg';
 import passwordIcon from '../../assets/vectors/lock.svg';
@@ -71,24 +71,25 @@ export default function CreatePassword() {
   const isReset = window.location.pathname.includes('reset-password');
 
   return (
-    <div className="auth-container">
-      <img className="bg-img" src={authBg} alt="" />
-      <div className="bg-layer"></div>
-      <div className="auth-main">
-        <img className="aut-logo" src={autLogo} alt="" />
-        <h2 className="auth-intro">Issue Management and Tracking System</h2>
-        <div className="auth-card">
-          <h2 className="auth-title">
+    <div className={styles.authContainer}>
+      <img className={styles.bgImg} src={authBg} alt="" />
+      <div className={styles.authMain}>
+        <img className={styles.autLogo} src={autLogo} alt="" />
+        <h2 className={styles.authIntro}>
+          Issue Management and Tracking System
+        </h2>
+        <div className={styles.authCard}>
+          <h2 className={styles.authTitle}>
             {isReset ? 'Reset Your Password' : 'Create Your Password'}
           </h2>
-          <p className="auth-subtitle">
+          <p className={styles.authSubtitle}>
             Please enter a strong password for <strong>{email}</strong>
           </p>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className={styles.authError}>{error}</div>}
           {success && (
             <div
-              className="auth-error"
+              className={styles.authError}
               style={{
                 color: '#008000',
                 border: '2px solid #008000',
@@ -99,8 +100,8 @@ export default function CreatePassword() {
           )}
 
           {!success && (
-            <form onSubmit={handleSubmit} className="auth-form">
-              <div className="form-group-auth">
+            <form onSubmit={handleSubmit} className={styles.authForm}>
+              <div className={styles.formGroup}>
                 <label htmlFor="password">
                   <img src={passwordIcon} alt="" />
                 </label>
@@ -114,7 +115,7 @@ export default function CreatePassword() {
                 />
               </div>
 
-              <div className="form-group-auth">
+              <div className={styles.formGroup}>
                 <label htmlFor="confirmPassword">
                   <img src={passwordIcon} alt="" />
                 </label>
@@ -128,11 +129,7 @@ export default function CreatePassword() {
                 />
               </div>
 
-              <button
-                type="submit"
-                className="auth-submit"
-                disabled={isLoading}
-              >
+              <button type="submit" className="mainBtn" disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save'}
               </button>
             </form>
