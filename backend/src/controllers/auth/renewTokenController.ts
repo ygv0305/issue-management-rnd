@@ -23,7 +23,6 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
   if (!refreshToken) {
     res.status(400).json({
-      code: 'BadRequest',
       message: 'Refresh token missing',
       success: false,
     });
@@ -36,7 +35,6 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
 
     if (!accessToken) {
       res.status(401).json({
-        code: 'Unauthorized',
         message: 'Invalid refresh token',
         success: false,
       });
@@ -53,7 +51,6 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
       error instanceof jwt.JsonWebTokenError
     ) {
       res.status(401).json({
-        code: 'Unauthorized',
         message: 'Refresh token invalid or expired',
         success: false,
       });
@@ -64,7 +61,6 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
 
     console.error('Error renewing access token, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: true,
     });

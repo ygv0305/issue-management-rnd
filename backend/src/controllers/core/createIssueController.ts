@@ -51,7 +51,6 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
 
     if (!author) {
       res.status(401).json({
-        code: 'AuthError',
         message: 'User is not authenticated',
         success: false,
       });
@@ -75,7 +74,6 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error creating new issue, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

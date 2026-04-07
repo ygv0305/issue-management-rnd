@@ -16,7 +16,6 @@ const getProjects = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching projects:', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

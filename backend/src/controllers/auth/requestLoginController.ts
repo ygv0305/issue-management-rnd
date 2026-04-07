@@ -26,7 +26,6 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
     const user = await requestLoginService.verifyUser(email, password);
     if (!user) {
       res.status(401).json({
-        code: 'AuthError',
         message: 'Invalid email or password',
         success: false,
       });
@@ -53,7 +52,6 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error requesting to log in, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

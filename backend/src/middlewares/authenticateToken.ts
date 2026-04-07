@@ -14,7 +14,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   // If there is no Bearer token, respond with 401 Unauthorised
   if (!authHeader?.startsWith('Bearer ')) {
     res.status(401).json({
-      code: 'AuthenticationError',
       message: 'Access denied, no token provided',
       success: false,
     });
@@ -38,7 +37,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
       error instanceof jwt.JsonWebTokenError
     ) {
       res.status(401).json({
-        code: 'AuthenticationError',
         message: 'Refresh token invalid or expired',
         success: false,
       });
@@ -47,7 +45,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
     console.error('Error authenticating access token, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

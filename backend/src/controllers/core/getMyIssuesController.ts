@@ -9,7 +9,6 @@ const getMyIssues = async (req: Request, res: Response): Promise<void> => {
     const userId = req.userId;
     if (!userId) {
       res.status(401).json({
-        code: 'AuthError',
         message: 'User is not authenticated',
         success: false,
       });
@@ -26,7 +25,6 @@ const getMyIssues = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error fetching my issues, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

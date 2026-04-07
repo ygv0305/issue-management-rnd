@@ -12,7 +12,6 @@ const authoriseRole = (allowedRoles: string[]) => {
       const user = await User.findById(userId).select('role').lean().exec();
       if (!user) {
         res.status(404).json({
-          code: 'NotFound',
           message: 'User not found',
           success: false,
         });
@@ -21,7 +20,6 @@ const authoriseRole = (allowedRoles: string[]) => {
 
       if (!allowedRoles.includes(user.role)) {
         res.status(403).json({
-          code: 'Forbidden',
           message: 'Unauthorised request',
           success: false,
         });
@@ -32,7 +30,6 @@ const authoriseRole = (allowedRoles: string[]) => {
     } catch (error) {
       console.error('Error authorising user role, ', error);
       res.status(500).json({
-        code: 'ServerError',
         message: 'Internal server error',
         success: false,
       });

@@ -26,7 +26,6 @@ const logout = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error logging out, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: true,
     });

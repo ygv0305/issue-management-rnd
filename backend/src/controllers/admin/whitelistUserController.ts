@@ -53,7 +53,6 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
     const checkProject = projectRules({ role, projectId });
     if (checkProject !== '') {
       res.status(400).json({
-        code: 'BadRequest',
         message: checkProject,
         success: false,
       });
@@ -77,7 +76,6 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error white-listing user:', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

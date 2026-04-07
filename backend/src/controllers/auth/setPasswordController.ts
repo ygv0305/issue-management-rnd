@@ -35,7 +35,6 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
     );
     if (!verificationToken) {
       res.status(400).json({
-        code: 'InvalidToken',
         message: 'The verification token is invalid or has expired',
         success: false,
       });
@@ -50,7 +49,6 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
       const user = await setPasswordService.updatePassword(email, password);
       if (!user) {
         res.status(404).json({
-          code: 'UserNotFound',
           message: 'User does not exist',
           success: false,
         });
@@ -68,7 +66,6 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error setting user password, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: true,
     });

@@ -34,7 +34,6 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
     const existingProject = await checkProjectExist(name);
     if (existingProject) {
       res.status(400).json({
-        code: 'ProjectExists',
         message: 'Project with this name already exists',
         success: false,
       });
@@ -51,7 +50,6 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error creating new project', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

@@ -37,7 +37,6 @@ const forgotPassword = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error handling forgot password, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

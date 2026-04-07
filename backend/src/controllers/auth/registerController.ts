@@ -24,7 +24,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
     const existingUser = await registerService.checkUserExist(email);
     if (!existingUser && email !== config.ADMIN_MAIL) {
       res.status(404).json({
-        code: 'UserNotFound',
         message: 'Account with this email does not exist',
         success: false,
       });
@@ -44,7 +43,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error registering user, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });

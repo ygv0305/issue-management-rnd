@@ -16,7 +16,6 @@ const getIssueTypes = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Error fetching issue types, ', error);
     res.status(500).json({
-      code: 'ServerError',
       message: 'Internal server error',
       success: false,
     });
