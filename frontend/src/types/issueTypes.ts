@@ -15,6 +15,12 @@ export interface CreateCommentData {
   message: string;
 }
 
+export interface ChangeStatusData {
+  issueId: string;
+  newStatus?: IssueStatus;
+  newPriority?: IssuePriority;
+}
+
 // Response
 export interface GetIssuesResponse {
   message: string;
@@ -38,6 +44,12 @@ export interface CommentResponse {
   success: boolean;
   message: string;
   data: CommentData;
+}
+
+export interface ChangeStatusResponse {
+  success: boolean;
+  message: string;
+  data: IssueData;
 }
 
 // Data models

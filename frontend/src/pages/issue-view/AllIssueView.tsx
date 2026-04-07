@@ -96,14 +96,21 @@ function AllIssueView() {
       {selectedIssue && (
         <IssueModal
           issue={selectedIssue}
+          originAllIssue={true}
           onClose={() => setSelectedIssue(null)}
-          // Update new comments optimistically
           onCommentAdded={(newComment) => {
             setAllIssues((prev) =>
               prev.map((issue) =>
                 issue._id === selectedIssue._id
                   ? { ...issue, thread: [...(issue.thread || []), newComment] }
                   : issue,
+              ),
+            );
+          }}
+          onIssueUpdated={(updatedIssue) => {
+            setAllIssues((prev) =>
+              prev.map((issue) =>
+                issue._id === updatedIssue._id ? updatedIssue : issue,
               ),
             );
           }}

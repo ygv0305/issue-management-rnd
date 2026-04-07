@@ -35,7 +35,8 @@ export interface IIssue {
     timestamp: Date;
   }[];
   history: {
-    status: IssueStatus;
+    status?: IssueStatus;
+    priority?: IssuePriority;
     timestamp: Date;
   }[]; // Audit trail
 }
@@ -117,7 +118,10 @@ const issueSchema = new Schema<IIssue>(
         status: {
           type: String,
           enum: Object.values(IssueStatus),
-          required: [true, 'Status change is required'],
+        },
+        priority: {
+          type: String,
+          enum: Object.values(IssuePriority),
         },
         timestamp: {
           type: Schema.Types.Date,

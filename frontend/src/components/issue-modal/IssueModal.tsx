@@ -3,30 +3,69 @@ import { useState } from 'react';
 
 // Services
 import coreService from '../../services/coreService';
+import pLeaderService from '../../services/pLeaderService';
+
+// Context
+import { useUser } from '../../lib/context/UserContext';
 
 // Types
-import type { IssueData, CommentData } from '../../types/issueTypes';
+import type {
+  IssueData,
+  CommentData,
+  IssueStatus,
+  IssuePriority,
+} from '../../types/issueTypes';
 
 // Styles
 import styles from './IssueModal.module.css';
 
 interface IssueModalProps {
   issue: IssueData;
+  originAllIssue: boolean;
   onClose: () => void;
   onCommentAdded?: (newComment: CommentData) => void;
+  onIssueUpdated?: (updatedIssue: IssueData) => void;
 }
 
 export default function IssueModal({
   issue,
+  originAllIssue,
   onClose,
   onCommentAdded,
+  onIssueUpdated,
 }: IssueModalProps) {
+  const { user } = useUser();
   const [commentMsg, setCommentMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localThread, setLocalThread] = useState<CommentData[]>(
     issue.thread || [],
   );
-  const [activeTab, setActiveTab] = useState<'details' | 'comments'>('details');
+  const [activeTab, setActiveTab] = useState<
+    'details' | 'comments' | 'actions'
+  >('details');
+
+  // Actions Tab State
+  const [newStatus, setNewStatus] = useState<IssueStatus>(issue.status);
+  const [newPriority, setNewPriority] = useState<IssuePriority>(issue.priority);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const isChanged =
+    newStatus !== issue.status || newPriority !== issue.priority;
+  const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
+
+  const statusOptions: IssueStatus[] = [
+    'New',
+    'InProgress',
+    'Resolved',
+    'ReOpen',
+    'Closed',
+  ];
+  const priorityOptions: IssuePriority[] = [
+    'Low',
+    'Medium',
+    'High',
+    'Critical',
+  ];
 
   const handlePostComment = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -50,6 +89,31 @@ export default function IssueModal({
       console.error('Failed to post comment, ', error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateIssue = async () => {
+    if (!isChanged) return;
+    setIsUpdating(true);
+
+    try {
+      let updatedIssue = issue;
+
+      const res = await pLeaderService.changeStatus({
+        issueId: issue._id,
+        ...(newStatus !== issue.status && { newStatus: newStatus }),
+        ...(newPriority !== issue.priority && { newPriority: newPriority }),
+      });
+      if (res.success) updatedIssue = res.data;
+
+      if (onIssueUpdated) {
+        onIssueUpdated(updatedIssue);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Failed to update issue, ', error);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -79,6 +143,14 @@ export default function IssueModal({
               <span className={styles.commentCount}>{localThread.length}</span>
             )}
           </button>
+          {isPaperLeader && (
+            <button
+              className={`${styles.tabButton} ${activeTab === 'actions' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('actions')}
+            >
+              Actions
+            </button>
+          )}
         </div>
 
         <div className={styles.modalBody}>
@@ -170,6 +242,51 @@ export default function IssueModal({
                   </button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* Section 3: Actions (Paper Leader Only) */}
+          {activeTab === 'actions' && isPaperLeader && (
+            <div className={`${styles.actionsTab} ${styles.tabContent}`}>
+              <div className={styles.actionGroup}>
+                <label className={styles.actionLabel}>Change Status</label>
+                <select
+                  className={styles.actionSelect}
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value as IssueStatus)}
+                >
+                  {statusOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.actionGroup}>
+                <label className={styles.actionLabel}>Change Priority</label>
+                <select
+                  className={styles.actionSelect}
+                  value={newPriority}
+                  onChange={(e) =>
+                    setNewPriority(e.target.value as IssuePriority)
+                  }
+                >
+                  {priorityOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                className={styles.confirmBtn}
+                disabled={!isChanged || isUpdating}
+                onClick={handleUpdateIssue}
+              >
+                {isUpdating ? 'Updating...' : 'Confirm Changes'}
+              </button>
             </div>
           )}
         </div>

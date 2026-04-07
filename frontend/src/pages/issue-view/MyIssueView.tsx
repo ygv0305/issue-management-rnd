@@ -92,8 +92,8 @@ export default function MyIssueView() {
       {selectedIssue && (
         <IssueModal
           issue={selectedIssue}
+          originAllIssue={false}
           onClose={() => setSelectedIssue(null)}
-          // Update new comments optimistically
           onCommentAdded={(newComment) => {
             setMyIssues((prev) =>
               prev.map((issue) =>

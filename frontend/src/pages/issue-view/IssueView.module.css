@@ -60,14 +60,7 @@
   font-weight: 600;
 }
 
-:global(.statusNew) {
-  background-color: #e6f0fa;
-  color: #2c5f8a;
-}
-:global(.statusInProgress) {
-  background-color: #fff4e5;
-  color: #c97e00;
-}
+:global(.statusNew),
 :global(.statusReOpen) {
   background-color: #e6f0fa;
   color: #2c5f8a;
@@ -85,7 +78,8 @@
   background-color: #f0f4ec;
   color: #4e6a3b;
 }
-:global(.priorityMedium) {
+:global(.priorityMedium),
+:global(.statusInProgress) {
   background-color: #fff2e0;
   color: #b45f06;
 }
