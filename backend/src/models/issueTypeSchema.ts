@@ -1,11 +1,26 @@
+/**
+ * @fileoverview Issue type schema definition.
+ * Defines the structure of issue type documents in MongoDB, which categorize
+ * issues (e.g., Bug, Feature, Task). The containIssue array is denormalized
+ * for efficient lookup of issues belonging to a type.
+ * @module models/issueTypeSchema
+ */
+
 // Node modules
 import { Schema, Types, model } from 'mongoose';
 
+/**
+ * Interface representing an issue type document in the database.
+ * @interface
+ */
 export interface IIssueType {
+  /** Name of the issue type (e.g., Bug, Feature, Task) */
   name: string;
+  /** Array of issue references that belong to this type (denormalized for easy lookup) */
   containIssue: Types.ObjectId[];
 }
 
+/** Mongoose schema for IssueType documents */
 const issueTypeSchema = new Schema<IIssueType>(
   {
     name: {
@@ -24,4 +39,5 @@ const issueTypeSchema = new Schema<IIssueType>(
   { timestamps: true },
 );
 
+/** Mongoose model for IssueType documents */
 export default model<IIssueType>('IssueType', issueTypeSchema);

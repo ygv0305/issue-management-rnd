@@ -1,10 +1,22 @@
+/**
+ * @fileoverview Service module for updating the status and/or priority of
+ * an issue, maintaining an audit trail in the history array.
+ */
+
 // Models
 import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
 
 /**
  * Update the status of an issue and log the change in the history array.
+ * If both newStatus and newPriority are undefined, the original issue is
+ * returned without modification.
+ *
  * @param issueId - ID of the issue to update.
- * @param newStatus - The new status value.
+ * @param newStatus - The new status value (optional).
+ * @param newPriority - The new priority value (optional).
+ * @returns The updated Issue document with populated author and type,
+ *          or the original issue if no updates were provided.
+ * @async
  */
 export const updateIssueStatus = async (
   issueId: string,

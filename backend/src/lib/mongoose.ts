@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Mongoose database connection management module.
+ * Provides functions to connect to and disconnect from the MongoDB database
+ * using configuration from the environment variables.
+ * @module lib/mongoose
+ */
+
 // Node modules
 import mongoose from 'mongoose';
 
@@ -7,10 +14,17 @@ import config from '../config/env.js';
 // Types
 import type { ConnectOptions } from 'mongoose';
 
+/** Mongoose connection options with database name configuration */
 const clientOptions: ConnectOptions = {
   dbName: 'ims-main',
 };
 
+/**
+ * Establishes connection to the MongoDB database.
+ * @async
+ * @returns {Promise<void>}
+ * @throws {Error} If MONGO_URI is not defined in environment or connection fails
+ */
 export const databaseConnect = async (): Promise<void> => {
   if (!config.MONGO_URI) {
     throw new Error('Can not find MongoDB URI');
@@ -27,6 +41,12 @@ export const databaseConnect = async (): Promise<void> => {
   }
 };
 
+/**
+ * Closes the MongoDB database connection.
+ * @async
+ * @returns {Promise<void>}
+ * @throws {Error} If disconnection fails
+ */
 export const databaseDisconnect = async (): Promise<void> => {
   try {
     await mongoose.disconnect();

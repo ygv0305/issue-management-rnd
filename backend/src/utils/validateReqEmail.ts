@@ -1,5 +1,20 @@
+/**
+ * @fileoverview Email validation rules for request bodies.
+ * Defines express-validator middleware rules for validating email input,
+ * including format validation and domain restriction to @autuni.ac.nz.
+ * @module utils/validateReqEmail
+ */
+
 import { body } from 'express-validator';
 
+/**
+ * Express-validator validation rules for email fields.
+ * - Trims whitespace
+ * - Ensures email is not empty
+ * - Validates max length of 50 characters
+ * - Validates proper email format
+ * - Restricts domain to @autuni.ac.nz only
+ */
 export const validateReqEmail = [
   body('email')
     .trim()

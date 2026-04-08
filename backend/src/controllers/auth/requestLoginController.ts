@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Controller module handling email/password login requests.
+ * Validates user credentials, creates an authentication session, and returns
+ * an access token along with a refresh token stored in an HTTP-only cookie.
+ */
+
 // Types
 import type { Request, Response } from 'express';
 
@@ -16,10 +22,22 @@ import config from '../../config/env.js';
 // Utils
 import { validateReqEmail } from '../../utils/validateReqEmail.js';
 
+/**
+ * Validation rules for the login request body.
+ * - `password`: Must not be empty.
+ */
 export const requestLoginRules = [
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
+/**
+ * Handles the login request by verifying user credentials, creating a session,
+ * and setting a refresh token cookie for persistent authentication.
+ *
+ * @param {Request} req - Express request object containing email and password in the body.
+ * @param {Response} res - Express response object used to send back the login result and set cookies.
+ * @returns {Promise<void>} A promise that resolves when the response is sent.
+ */
 const requestLogin = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   try {
@@ -58,6 +76,10 @@ const requestLogin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Middleware pipeline for the login endpoint.
+ * Runs email validation, request body validation, error handling, and the login controller.
+ */
 export default [
   validateReqEmail,
   requestLoginRules,

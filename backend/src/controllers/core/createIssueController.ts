@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Controller module handling issue creation requests.
+ * Validates the issue data (subject, description, type, attachments) and
+ * creates a new issue in the database associated with the authenticated user.
+ */
+
 // Types
 import type { Request, Response } from 'express';
 
@@ -10,6 +16,13 @@ import { body } from 'express-validator';
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
+/**
+ * Validation rules for the create issue request body.
+ * - `subject`: Required, trimmed, max 50 characters.
+ * - `description`: Required, trimmed, max 1000 characters.
+ * - `type`: Required, must be a valid MongoDB ObjectId.
+ * - `attachments`: Optional array; each item requires a valid `url` and `publicId`.
+ */
 export const createIssueRules = [
   body('subject')
     .trim()
@@ -44,6 +57,14 @@ export const createIssueRules = [
     .withMessage('Attachment publicId is required'),
 ];
 
+/**
+ * Handles the create issue request by extracting data from the request body
+ * and the authenticated user's ID, then persisting the issue to the database.
+ *
+ * @param {Request} req - Express request object containing subject, description, type, priority, and attachments in the body.
+ * @param {Response} res - Express response object used to send back the created issue data.
+ * @returns {Promise<void>} A promise that resolves when the response is sent.
+ */
 const createIssue = async (req: Request, res: Response): Promise<void> => {
   try {
     const { subject, description, type, priority, attachments } = req.body;
@@ -80,4 +101,8 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Middleware pipeline for the create issue endpoint.
+ * Runs body validation, error handling, and the create issue controller.
+ */
 export default [createIssueRules, validationError, createIssue];

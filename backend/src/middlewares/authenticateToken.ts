@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Authentication middleware for verifying JWT access tokens.
+ * Extracts the Bearer token from the Authorization header, verifies it,
+ * and attaches the user's ID to the request object for downstream use.
+ * @module middlewares/authenticateToken
+ */
+
 // Node modules
 import jwt from 'jsonwebtoken';
 
@@ -8,6 +15,15 @@ import { verifyAccessToken } from '../lib/jwt.js';
 import type { Request, Response, NextFunction } from 'express';
 import type { Types } from 'mongoose';
 
+/**
+ * Express middleware that authenticates incoming requests by verifying
+ * the JWT access token from the Authorization header's Bearer token.
+ * On success, attaches userId to the request object.
+ * On failure, returns 401 Unauthorized with an appropriate error message.
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ */
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
