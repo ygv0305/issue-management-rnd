@@ -29,11 +29,7 @@ export interface IIssue {
     url: string;
     publicId: string;
   }[];
-  thread: {
-    userId: Types.ObjectId;
-    message: string;
-    timestamp: Date;
-  }[];
+  commentCount: number;
   history: {
     status?: IssueStatus;
     priority?: IssuePriority;
@@ -95,24 +91,10 @@ const issueSchema = new Schema<IIssue>(
         },
       },
     ],
-    thread: [
-      {
-        userId: {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
-          required: [true, 'Comment author is required'],
-        },
-        message: {
-          type: String,
-          required: [true, 'Comment message is required'],
-          maxLength: [1000, 'Comment must be less than 1000 characters'],
-        },
-        timestamp: {
-          type: Schema.Types.Date,
-          default: Date.now,
-        },
-      },
-    ],
+    commentCount: {
+      type: Number,
+      default: 0,
+    },
     history: [
       {
         status: {

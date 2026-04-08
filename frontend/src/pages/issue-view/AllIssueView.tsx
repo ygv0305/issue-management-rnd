@@ -98,15 +98,6 @@ function AllIssueView() {
           issue={selectedIssue}
           originAllIssue={true}
           onClose={() => setSelectedIssue(null)}
-          onCommentAdded={(newComment) => {
-            setAllIssues((prev) =>
-              prev.map((issue) =>
-                issue._id === selectedIssue._id
-                  ? { ...issue, thread: [...(issue.thread || []), newComment] }
-                  : issue,
-              ),
-            );
-          }}
           onIssueUpdated={(updatedIssue) => {
             setAllIssues((prev) =>
               prev.map((issue) =>

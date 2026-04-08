@@ -94,15 +94,6 @@ export default function MyIssueView() {
           issue={selectedIssue}
           originAllIssue={false}
           onClose={() => setSelectedIssue(null)}
-          onCommentAdded={(newComment) => {
-            setMyIssues((prev) =>
-              prev.map((issue) =>
-                issue._id === selectedIssue._id
-                  ? { ...issue, thread: [...(issue.thread || []), newComment] }
-                  : issue,
-              ),
-            );
-          }}
         />
       )}
     </div>

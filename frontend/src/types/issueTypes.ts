@@ -46,6 +46,12 @@ export interface CommentResponse {
   data: CommentData;
 }
 
+export interface FetchCommentsResponse {
+  success: boolean;
+  message: string;
+  data: CommentData[];
+}
+
 export interface ChangeStatusResponse {
   success: boolean;
   message: string;
@@ -77,10 +83,11 @@ export interface IssueData {
   author: User;
   createdAt: string;
   assignedTo?: User;
-  thread: CommentData[];
+  commentCount: number;
 }
 
 export interface CommentData {
+  _id: string;
   userId: User;
   message: string;
   timestamp: string;

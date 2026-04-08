@@ -1,5 +1,5 @@
 // Node modules
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Services
 import coreService from '../../services/coreService';
@@ -23,7 +23,6 @@ interface IssueModalProps {
   issue: IssueData;
   originAllIssue: boolean;
   onClose: () => void;
-  onCommentAdded?: (newComment: CommentData) => void;
   onIssueUpdated?: (updatedIssue: IssueData) => void;
 }
 
@@ -31,15 +30,13 @@ export default function IssueModal({
   issue,
   originAllIssue,
   onClose,
-  onCommentAdded,
   onIssueUpdated,
 }: IssueModalProps) {
   const { user } = useUser();
   const [commentMsg, setCommentMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localThread, setLocalThread] = useState<CommentData[]>(
-    issue.thread || [],
-  );
+  const [localThread, setLocalThread] = useState<CommentData[]>([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [activeTab, setActiveTab] = useState<
     'details' | 'comments' | 'actions'
   >('details');
@@ -48,6 +45,24 @@ export default function IssueModal({
   const [newStatus, setNewStatus] = useState<IssueStatus>(issue.status);
   const [newPriority, setNewPriority] = useState<IssuePriority>(issue.priority);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    const loadComments = async () => {
+      setIsLoadingComments(true);
+      try {
+        const res = await coreService.fetchComments(issue._id);
+        if (res.success) {
+          setLocalThread(res.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch comments, ', error);
+      } finally {
+        setIsLoadingComments(false);
+      }
+    };
+
+    loadComments();
+  }, [issue._id]);
 
   const isChanged =
     newStatus !== issue.status || newPriority !== issue.priority;
@@ -81,9 +96,6 @@ export default function IssueModal({
       if (res.success) {
         setLocalThread([...localThread, res.data]);
         setCommentMsg('');
-        if (onCommentAdded) {
-          onCommentAdded(res.data);
-        }
       }
     } catch (error) {
       console.error('Failed to post comment, ', error);
@@ -140,7 +152,9 @@ export default function IssueModal({
           >
             Discussion
             {localThread.length > 0 && (
-              <span className={styles.commentCount}>{localThread.length}</span>
+              <span className={styles.commentCount}>
+                {isLoadingComments ? '...' : localThread.length}
+              </span>
             )}
           </button>
           {isPaperLeader && (
@@ -169,6 +183,7 @@ export default function IssueModal({
                 <div className={styles.infoItem}>
                   <label>Created By</label>
                   <p>{issue.author.fullName}</p>
+                  <span className={styles.infoEmail}>{issue.author.email}</span>
                 </div>
                 <div className={styles.infoItem}>
                   <label>Created On</label>
@@ -202,13 +217,22 @@ export default function IssueModal({
           {activeTab === 'comments' && (
             <div className={`${styles.commentsContainer} ${styles.tabContent}`}>
               <div className={styles.thread}>
-                {localThread.length > 0 ? (
-                  localThread.map((comment, index) => (
-                    <div key={index} className={styles.commentItem}>
+                {isLoadingComments ? (
+                  <div className={styles.loadingComments}>
+                    Loading discussion...
+                  </div>
+                ) : localThread.length > 0 ? (
+                  localThread.map((comment) => (
+                    <div key={comment._id} className={styles.commentItem}>
                       <div className={styles.commentHeader}>
-                        <span className={styles.commentUser}>
-                          {comment.userId.fullName}
-                        </span>
+                        <div>
+                          <span className={styles.commentUser}>
+                            {comment.userId.fullName}
+                          </span>
+                          <span className={styles.infoEmail}>
+                            &lt;{comment.userId.email}&gt;
+                          </span>
+                        </div>
                         <span className={styles.commentTime}>
                           {new Date(comment.timestamp).toLocaleString()}
                         </span>

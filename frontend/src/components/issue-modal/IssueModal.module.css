@@ -168,6 +168,11 @@
   font-weight: 500;
 }
 
+.infoEmail {
+  font-size: 0.8rem;
+  color: var(--secondary-text);
+}
+
 .subjectText {
   font-size: 1.125rem !important;
   font-weight: 600 !important;
@@ -217,6 +222,7 @@
   font-weight: 700;
   font-size: 0.8125rem;
   color: var(--primary-text);
+  margin-right: 0.5rem;
 }
 
 .commentTime {
@@ -226,7 +232,7 @@
 
 .commentMsg {
   font-size: 0.875rem;
-  color: var(--secondary-text);
+  color: var(--primary-text);
   line-height: 1.5;
   margin: 0;
 }
