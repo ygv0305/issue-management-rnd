@@ -2,28 +2,24 @@
 import crypto from 'crypto';
 
 // Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verificationToken.js';
+import User from '../../models/userSchema.js';
+import VerificationToken from '../../models/verificationTokenSchema.js';
 
 // Utils
-import { sendEmail } from '../../utils/email.js';
+import { sendEmail } from '../../utils/emailService.js';
 
-export const checkUserExists = async (email: string) => {
-  return await User.findOne({ email });
+export const checkUserExist = async (email: string) => {
+  return await User.findOne({ email }).lean().exec();
 };
 
-export const generateAndSaveToken = async (
-  email: string,
-  type: 'Register' | 'Reset',
-) => {
+export const generateAndSaveToken = async (email: string) => {
   const token = crypto.randomBytes(32).toString('hex');
 
   await VerificationToken.findOneAndUpdate(
-    { email, type },
+    { email },
     {
       email,
       token,
-      type,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     },
     { upsert: true, returnDocument: 'after' },

@@ -9,7 +9,7 @@ import type { CorsOptions } from 'cors';
 // Router
 import rootRoute from './routes/index.js';
 
-// Custom modules
+// Lib
 import { databaseConnect, databaseDisconnect } from './lib/mongoose.js';
 
 // DNS fix
@@ -48,7 +48,7 @@ const PORT = 3000;
       console.log(`Running on port ${PORT}`);
     });
   } catch (error) {
-    console.log('Server failed to run', error);
+    console.error('Server failed to run, ', error);
   }
 })();
 
@@ -56,11 +56,10 @@ const PORT = 3000;
 const handleServerShutdown = async () => {
   try {
     await databaseDisconnect();
-
-    console.log('Server Shutdown');
+    console.log('Server shutdown. Database disconnected.');
     process.exit(0);
   } catch (error) {
-    console.log('Error during server shutdown', error);
+    console.error('Error during server shutdown, ', error);
   }
 };
 process.on('SIGTERM', handleServerShutdown);

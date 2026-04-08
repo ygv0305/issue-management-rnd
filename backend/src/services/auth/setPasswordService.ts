@@ -1,17 +1,17 @@
 // Models
-import User from '../../models/user.js';
-import VerificationToken from '../../models/verificationToken.js';
+import User from '../../models/userSchema.js';
+import VerificationToken from '../../models/verificationTokenSchema.js';
 
 export const verifyToken = async (email: string, token: string) => {
-  return await VerificationToken.findOne({ email, token });
+  return await VerificationToken.findOne({ email, token }).lean().exec();
 };
 
-export const createUser = async (email: string, password: any) => {
-  return await User.create({ email, password });
+export const createAdmin = async (email: string, password: any) => {
+  return await User.create({ email, password, role: 'Admin' });
 };
 
 export const updatePassword = async (email: string, password: any) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).exec();
   if (!user) return null;
 
   user.password = password;

@@ -1,0 +1,66 @@
+:root {
+  --nav-text: #dcdcdc;
+}
+
+.sidebarCont {
+  width: 260px;
+  background-color: var(--dark-bg);
+  color: var(--white-text);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebarBrand {
+  padding: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 1.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebarLink {
+  display: block;
+  padding: 0.8rem 1rem;
+  color: var(--nav-text);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.sidebarLink:hover,
+.linkActive {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--white-text);
+}
+
+.sidebarFooter {
+  padding: 1.5rem 1rem;
+}
+
+.logoutBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--error-color);
+  color: var(--white-text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #e03131;
+  scale: 0.98;
+}

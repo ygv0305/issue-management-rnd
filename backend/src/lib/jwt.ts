@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 // Types
 import { Types } from 'mongoose';
 
-// Custom modules
+// Config
 import config from '../config/env.js';
 
 export const genAccessToken = (userId: Types.ObjectId): string => {

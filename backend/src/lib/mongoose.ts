@@ -1,7 +1,7 @@
 // Node modules
 import mongoose from 'mongoose';
 
-// Custom modules
+// Config
 import config from '../config/env.js';
 
 // Types
@@ -23,7 +23,7 @@ export const databaseConnect = async (): Promise<void> => {
     if (error instanceof Error) {
       throw error;
     }
-    console.log('Database connection failed', error);
+    console.error('Database connection failed, ', error);
   }
 };
 
@@ -35,6 +35,6 @@ export const databaseDisconnect = async (): Promise<void> => {
     if (error instanceof Error) {
       throw new Error(error.message);
     }
-    console.log('Database disconnection failed', error);
+    console.error('Database disconnection failed, ', error);
   }
 };

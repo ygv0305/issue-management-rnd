@@ -1,0 +1,64 @@
+.topbarCont {
+  height: 70px;
+  background-color: #fff;
+  border-bottom: 1px solid var(--divider-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-shadow: var(--main-box-shadow);
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+}
+
+.topbarLogo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.actionBtn {
+  background: none;
+  border: 1px solid var(--divider-color);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--primary-text);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionBtn:hover {
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userAvatar {
+  background-color: #e9ecef;
+  color: #495057;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
