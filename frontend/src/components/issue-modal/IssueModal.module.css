@@ -1,7 +1,5 @@
 :root {
   --modal-divider: #edf2f7;
-  --active-tab: #4f46e5;
-  --active-btn: #4338ca;
 }
 
 .modalOverlay {
@@ -93,7 +91,7 @@
 
 .tabButton:hover,
 .activeTab {
-  color: var(--active-tab);
+  color: var(--primary-dark);
 }
 
 .activeTab::after {
@@ -103,7 +101,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--active-tab);
+  background: var(--primary-dark);
   border-radius: 2px;
 }
 
@@ -269,7 +267,7 @@
 }
 
 .postBtn {
-  background: var(--active-tab);
+  background: var(--primary-dark);
   color: #ffffff;
   border: none;
   padding: 0.5rem 1rem;
@@ -360,7 +358,7 @@
 
 .confirmBtn {
   margin-top: 1rem;
-  background: var(--active-tab);
+  background: var(--primary-dark);
   color: #ffffff;
   border: none;
   padding: 0.875rem;
@@ -373,5 +371,5 @@
 
 .confirmBtn:hover:not(:disabled) {
   background: var(--active-btn);
-  box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
 }

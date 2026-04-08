@@ -19,7 +19,7 @@
 }
 
 :global(.mainBtn:hover) {
-  background-color: var(--primary-text);
+  background-color: var(--active-btn);
 }
 
 :global(.mainBtn:active) {
