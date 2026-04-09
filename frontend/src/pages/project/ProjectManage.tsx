@@ -75,14 +75,12 @@ function ProjectManage() {
   };
 
   if (loading) {
-    return (
-      <div className={`tableCont ${styles.projectManageCont}`}>Loading...</div>
-    );
+    return <div className={styles.projectManageCont}>Loading...</div>;
   }
 
   return (
-    <div className={`tableCont ${styles.projectManageCont}`}>
-      <h2>Project Management</h2>
+    <div className={styles.projectManageCont}>
+      <h1 className="viewTitle">Project Management</h1>
 
       <div className="tableSection">
         <div className={styles.sectionHeader}>

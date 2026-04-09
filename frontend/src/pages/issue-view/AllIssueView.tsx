@@ -13,9 +13,10 @@ import type { IssueData } from '../../types/issueTypes';
 
 // Components
 import IssueModal from '../../components/issue-modal/IssueModal';
+import IssueTable from '../../components/issue-table/IssueTable';
 
 // Styles
-import styles from './IssueView.module.css';
+import './IssueView.module.css';
 
 function AllIssueView() {
   const [allIssues, setAllIssues] = useState<IssueData[]>([]);
@@ -45,53 +46,9 @@ function AllIssueView() {
 
   return (
     <div className="tableCont">
-      <h2>All Submitted Issues</h2>
+      <h1 className="viewTitle">All Submitted Issues</h1>
 
-      <div className="tableSection">
-        <table className="dataTable">
-          <thead>
-            <tr>
-              <th className={styles.smallCol}>ID</th>
-              <th style={{ textAlign: 'left', padding: '1rem 1.5rem' }}>
-                Subject
-              </th>
-              <th className={styles.normalCol}>Type</th>
-              <th className={styles.smallCol}>Date</th>
-              <th className={styles.smallCol}>Status</th>
-              <th className={styles.smallCol}>Priority</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allIssues.map((issue) => (
-              <tr key={issue._id} onClick={() => setSelectedIssue(issue)}>
-                <td className={styles.smallCol}>
-                  {issue._id.slice(-6).toUpperCase()}
-                </td>
-                <td style={{ textAlign: 'left', padding: '1rem 1.5rem' }}>
-                  {issue.subject}
-                </td>
-                <td className={styles.normalCol}>{issue.type.name}</td>
-                <td className={styles.smallCol}>
-                  {new Date(issue.createdAt).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                  })}
-                </td>
-                <td className={styles.smallCol}>
-                  <span className={`statusBadge status${issue.status}`}>
-                    {issue.status}
-                  </span>
-                </td>
-                <td className={styles.smallCol}>
-                  <span className={`statusBadge priority${issue.priority}`}>
-                    {issue.priority}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <IssueTable issues={allIssues} onIssueSelect={setSelectedIssue} />
 
       {selectedIssue && (
         <IssueModal

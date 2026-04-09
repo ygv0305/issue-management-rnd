@@ -5,6 +5,7 @@
 
 // Models
 import Issue from '../../models/issueSchema.js';
+import User from '../../models/userSchema.js';
 
 // Node modules
 import DOMPurify from 'dompurify';
@@ -32,6 +33,8 @@ interface CreateIssueInput {
   author: Types.ObjectId;
   /** Optional array of file attachments with URL and Cloudinary public ID. */
   attachments?: { url: string; publicId: string }[];
+  /** Optional array of users tagged in the issue */
+  userTags?: Types.ObjectId[];
 }
 
 /**
@@ -58,4 +61,13 @@ export const createIssueDb = async (data: CreateIssueInput) => {
   };
 
   return await Issue.create(issueData as any);
+};
+
+/**
+ * Validate tagged users if they exist in the database
+ *
+ * @param userTags - An array of tagged IDs
+ */
+export const validateUserTags = async (userTags: Types.ObjectId[]) => {
+  return await User.find({ _id: { $in: userTags } });
 };

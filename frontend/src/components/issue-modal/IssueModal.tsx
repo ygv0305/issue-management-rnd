@@ -46,6 +46,9 @@ export default function IssueModal({
   const [newPriority, setNewPriority] = useState<IssuePriority>(issue.priority);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Tagged Users State
+  const [showTaggedUsers, setShowTaggedUsers] = useState(false);
+
   useEffect(() => {
     const loadComments = async () => {
       setIsLoadingComments(true);
@@ -203,6 +206,43 @@ export default function IssueModal({
                     <span className={`statusBadge priority${issue.priority}`}>
                       {issue.priority}
                     </span>
+                  </div>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Tagged Users</label>
+                  <div className={styles.taggedUserParent}>
+                    <p className={styles.taggedUserCount}>
+                      {issue.userTags.length > 0
+                        ? `${issue.userTags.length} users`
+                        : 'None'}
+                    </p>
+                    {issue.userTags.length > 0 && (
+                      <button
+                        onClick={() => setShowTaggedUsers((prev) => !prev)}
+                        className={styles.seeDetailsBtn}
+                      >
+                        {showTaggedUsers ? 'Hide details' : 'See details'}
+                      </button>
+                    )}
+
+                    {showTaggedUsers && (
+                      <>
+                        <div
+                          className={styles.detailsOverlay}
+                          onClick={() => setShowTaggedUsers(false)}
+                        />
+                        <div className={styles.detailsDropdown}>
+                          {issue.userTags.map((tag) => (
+                            <div key={tag._id} className={styles.tagItem}>
+                              <p className={styles.tagName}>{tag.fullName}</p>
+                              <span className={styles.tagEmail}>
+                                {tag.email}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className={styles.infoItem}>

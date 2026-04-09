@@ -1,6 +1,6 @@
 /**
  * @fileoverview Service module for retrieving issues authored by or assigned
- * to a specific user.
+ * to or tagged a specific user.
  */
 
 // Models
@@ -11,7 +11,7 @@ import type { Types } from 'mongoose';
 
 /**
  * Fetches all issues where the given user is either the author or the
- * assignee. Populates related fields (author, type, assignedTo) with
+ * assignee or being tagged. Populates related fields (author, type, userTags) with
  * relevant user details.
  *
  * @param userId - The MongoDB ObjectId of the user whose issues to fetch.
@@ -20,11 +20,11 @@ import type { Types } from 'mongoose';
  */
 export const fetchMyIssues = async (userId: string | Types.ObjectId) => {
   return await Issue.find({
-    $or: [{ author: userId }, { assignedTo: userId }],
+    $or: [{ author: userId }, { assignedTo: userId }, { userTags: userId }],
   })
     .populate('author', 'fullName email')
     .populate('type', 'name')
-    .populate('assignedTo', 'fullName email')
+    .populate('userTags', 'fullName email')
     .lean()
     .exec();
 };

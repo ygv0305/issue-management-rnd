@@ -83,6 +83,7 @@ export interface IssueData {
   author: User;
   createdAt: string;
   assignedTo?: User;
+  userTags: User[];
   commentCount: number;
 }
 

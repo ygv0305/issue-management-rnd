@@ -109,6 +109,7 @@ const issueSchema = new Schema<IIssue>(
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        default: [],
       },
     ],
     attachments: [
@@ -146,6 +147,9 @@ const issueSchema = new Schema<IIssue>(
   },
   { timestamps: true },
 );
+
+/** IMPORTANT: Add an index for query performance */
+issueSchema.index({ userTags: 1 });
 
 /** Mongoose model for Issue documents */
 export default model<IIssue>('Issue', issueSchema);

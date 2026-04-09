@@ -1,0 +1,106 @@
+:root {
+  --table-row-hover: #f8f9fa;
+}
+
+/* Local */
+.smallCol {
+  width: 10%;
+}
+.normalCol {
+  width: 20%;
+}
+
+.noFound {
+  padding: 2rem;
+  color: var(--secondary-text);
+}
+
+/* Global */
+:global(.tableCont) {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+:global(.tableCont h2) {
+  margin-bottom: 1rem;
+  color: var(--primary-text);
+  font-size: 1.5rem;
+}
+
+:global(.tableSection) {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--main-box-shadow);
+  border: 1px solid var(--divider-color);
+}
+
+:global(.dataTable) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+:global(.dataTable th),
+:global(.dataTable td) {
+  padding: 1rem;
+  border-bottom: 1px solid var(--divider-color);
+  text-align: center;
+}
+
+:global(.dataTable th) {
+  font-weight: 600;
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+:global(.dataTable tbody tr) {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+:global(.dataTable tbody tr:hover) {
+  background-color: var(--table-row-hover);
+}
+
+:global(.statusBadge) {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+:global(.statusNew),
+:global(.statusReOpen) {
+  background-color: #e6f0fa;
+  color: #2c5f8a;
+}
+:global(.statusResolved) {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+:global(.statusClosed) {
+  background-color: #efebe9;
+  color: #5d4037;
+}
+
+:global(.priorityLow) {
+  background-color: #f0f4ec;
+  color: #4e6a3b;
+}
+:global(.priorityMedium),
+:global(.statusInProgress) {
+  background-color: #fff2e0;
+  color: #b45f06;
+}
+:global(.priorityHigh) {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+:global(.priorityCritical) {
+  background-color: #ffebee;
+  color: #c62828;
+}
