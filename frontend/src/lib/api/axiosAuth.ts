@@ -26,7 +26,7 @@ apiAuth.interceptors.request.use(
 // with the new token or rejects them all if the refresh failed.
 let isRefreshing = false;
 let failedQueue: {
-  resolve: (token: string) => void;
+  resolve: (token: string | null) => void;
   reject: (err: unknown) => void;
 }[] = [];
 
