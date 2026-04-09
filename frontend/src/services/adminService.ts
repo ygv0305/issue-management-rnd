@@ -1,3 +1,12 @@
+/**
+ * AdminService handles admin-specific API calls.
+ *
+ * Methods:
+ * - whitelistUser(): Add a user to the system with an assigned role
+ *
+ * Restricted to Admin role only.
+ */
+
 // API
 import apiAuth from '../lib/api/axiosAuth';
 
