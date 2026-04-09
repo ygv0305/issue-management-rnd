@@ -12,6 +12,15 @@ import pLeaderService from '../services/pLeaderService';
 import { hasPermission } from '../lib/rbac/hasPermission';
 import { PERMISSIONS } from '../lib/rbac/allPermission';
 
+/**
+ * Fetches shared reference data after login and caches it in localStorage.
+ *
+ * - Issue types: fetched for every authenticated user.
+ * - Projects: fetched only for roles with VIEW_PROJECT permission (Admin, PaperLeader).
+ *   For other roles the projects key is removed so stale data is never shown.
+ *
+ * Call this hook once at the top of the app shell (e.g. Layout).
+ */
 export const useSyncGlobalData = () => {
   const { user, loading } = useUser();
 
