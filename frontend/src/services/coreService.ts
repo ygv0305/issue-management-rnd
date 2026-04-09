@@ -1,3 +1,16 @@
+/**
+ * CoreService handles issue and comment management API calls.
+ *
+ * Methods:
+ * - getIssueTypes(): Fetch all available issue type definitions
+ * - getMyIssues(): Fetch issues created by the current user
+ * - createIssue(): Create a new issue with attachments
+ * - createComment(): Add a comment to an issue
+ * - fetchComments(): Get all comments for a specific issue
+ *
+ * Available to all authenticated users (Student, Supervisor, Moderator, etc.)
+ */
+
 // API
 import apiAuth from '../lib/api/axiosAuth';
 

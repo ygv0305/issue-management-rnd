@@ -1,3 +1,16 @@
+/**
+ * PLeaderService handles Paper Leader-specific API calls.
+ *
+ * Paper Leaders have elevated permissions and can:
+ * - getAllIssues(): View all issues across the system
+ * - getProjects(): Fetch all projects
+ * - createProject(): Create a new project
+ * - createIssueType(): Define a new issue type
+ * - changeStatus(): Change issue status or priority (Admin action)
+ *
+ * Restricted to Paper Leader and Admin roles.
+ */
+
 // API
 import apiAuth from '../lib/api/axiosAuth';
 
