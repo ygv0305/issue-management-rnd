@@ -19,11 +19,22 @@ apiAuth.interceptors.request.use(
 );
 
 // Response Interceptor: Renew token on 401 (accessToken expired)
+//
+// When a 401 is received, a single token-refresh request is made.
+// Any other requests that arrive while the refresh is in-flight are held in
+// `failedQueue`. Once the refresh resolves, `processQueue` either retries them
+// with the new token or rejects them all if the refresh failed.
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: {
+  resolve: (token: string | null) => void;
+  reject: (err: unknown) => void;
+}[] = [];
 
-// Prevent race condition
-const processQueue = (error: any, token: string | null = null) => {
+/**
+ * Flushes the queue of requests that were held during a token refresh.
+ * Resolves each with the new token on success, or rejects all on failure.
+ */
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);

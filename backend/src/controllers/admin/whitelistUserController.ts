@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Controller module handling user whitelisting requests.
+ * Allows admins to create user accounts with specific roles and optionally
+ * assign them to projects. Validates input and manages project membership.
+ */
+
 // Types
 import type { Request, Response } from 'express';
 import { Types } from 'mongoose';
@@ -18,12 +24,21 @@ import Project from '../../models/projectSchema.js';
 // Utils
 import { validateReqEmail } from '../../utils/validateReqEmail.js';
 
+/** Represents the expected shape of the user setup request body. */
 export interface SetupData {
   fullName: string;
   role: SystemRoles;
   projectId?: Types.ObjectId;
 }
 
+/**
+ * Validates that a Student role must be assigned to a specific project.
+ *
+ * @param data - Object containing the user's role and optional projectId.
+ * @param data.role - The role being assigned to the user.
+ * @param data.projectId - The optional project ID the user is assigned to.
+ * @returns An error message string if validation fails, or an empty string if valid.
+ */
 const projectRules = (data: Pick<SetupData, 'role' | 'projectId'>) => {
   const { role, projectId } = data;
 
@@ -33,6 +48,11 @@ const projectRules = (data: Pick<SetupData, 'role' | 'projectId'>) => {
   return '';
 };
 
+/**
+ * Validation rules for the set user request body.
+ * - `role`: Required, must be a valid SystemRoles enum value.
+ * - `fullName`: Required, trimmed, max 50 characters.
+ */
 export const setUserRules = [
   body('role')
     .notEmpty()
@@ -46,10 +66,19 @@ export const setUserRules = [
     .withMessage('Full name must be less than 50 characters'),
 ];
 
+/**
+ * Handles the request to whitelist a new user by creating their account
+ * and optionally adding them to a project's members list.
+ *
+ * @param {Request} req - Express request object containing email, role, fullName, and optional projectId in the body.
+ * @param {Response} res - Express response object used to send back the whitelisting result.
+ * @returns {Promise<void>} A promise that resolves when the response is sent.
+ */
 const whitelistUser = async (req: Request, res: Response): Promise<void> => {
   const { email, role, fullName, projectId } = req.body;
 
   try {
+    // Validate that students must be assigned to a project
     const checkProject = projectRules({ role, projectId });
     if (checkProject !== '') {
       res.status(400).json({
@@ -82,4 +111,8 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Middleware pipeline for the whitelist user endpoint.
+ * Runs email validation, body validation, error handling, and the whitelist user controller.
+ */
 export default [validateReqEmail, setUserRules, validationError, whitelistUser];

@@ -8,13 +8,11 @@
 
 ## 🚀 Overview
 
-The **R&D Issue Management and Tracking System** is a robust web application designed to streamline the reporting, tracking, and management of issues raised in the R&D course at AUT. Built with modern technologies, it provides a seamless experience for both administrators and users.
+The **R&D Issue Management and Tracking System** is a web application designed to streamline the reporting, tracking, and management of issues raised in the R&D course at AUT. Our goal is to provide a seamless experience for both paper leaders and stakeholders working in the R&D course.
 
 ---
 
 ## 🛠️ Tech Stack
-
-This project utilizes a powerful full-stack architecture:
 
 - **Frontend:** [React](https://reactjs.org/)
 - **Backend:** [Express.js](https://expressjs.com/)

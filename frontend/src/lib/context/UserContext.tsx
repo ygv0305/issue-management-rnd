@@ -1,3 +1,16 @@
+/**
+ * UserContext manages the authenticated user's state and session across the app.
+ *
+ * Provides:
+ * - user: Current authenticated user or null
+ * - loading: Whether auth state is being initialized
+ * - checkAuth(): Validate stored access token and restore user session
+ * - logout(): Clear user data and revoke session
+ *
+ * Wrap the app with `UserProvider` to make this context available.
+ * Access user data with the `useUser()` hook.
+ */
+
 // Node modules
 import React, { createContext, useContext, useState, useEffect } from 'react';
 

@@ -1,3 +1,21 @@
+/**
+ * Route guard component that protects routes based on authentication and authorization.
+ *
+ * Behavior:
+ * - If not authenticated: redirects to home (/)
+ * - If authenticated but lacks requiredPermission: redirects to /my-issues
+ * - If authenticated and authorized: renders the route
+ * - Syncs global data (issue types, projects) on mount
+ *
+ * Use this as a parent route wrapper in the router to protect nested routes.
+ * Optionally pass requiredPermission to enforce role-based access control.
+ *
+ * @example
+ * <Route element={<ProtectedRoute requiredPermission={PERMISSIONS.VIEW_ALL_ISSUE} />}>
+ *   <Route path="all-issues" element={<AllIssues />} />
+ * </Route>
+ */
+
 // Node modules
 import { Navigate, Outlet } from 'react-router';
 

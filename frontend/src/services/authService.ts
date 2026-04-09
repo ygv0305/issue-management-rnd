@@ -1,3 +1,17 @@
+/**
+ * AuthService handles all authentication-related API calls.
+ *
+ * Methods:
+ * - requestLogin(): Send login credentials and receive access token
+ * - autoLogin(): Restore session using stored access token
+ * - register(): Create new user account with email
+ * - forgotPassword(): Request password reset
+ * - setPassword(): Set new password with reset token
+ * - logout(): Clear session and revoke access token
+ *
+ * Uses `api` for unauthenticated endpoints and `apiAuth` for authenticated ones.
+ */
+
 // API
 import api from '../lib/api/axios';
 import apiAuth from '../lib/api/axiosAuth';

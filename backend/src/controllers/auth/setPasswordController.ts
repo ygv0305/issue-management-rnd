@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Controller module handling password setup requests.
+ * Validates a verification token, then sets or updates the user's password.
+ * Supports both admin account creation and regular user password updates.
+ */
+
 // Types
 import type { Request, Response } from 'express';
 
@@ -16,6 +22,11 @@ import config from '../../config/env.js';
 // Utils
 import { validateReqEmail } from '../../utils/validateReqEmail.js';
 
+/**
+ * Validation rules for the set password request body.
+ * - `token`: Must not be empty (the verification token).
+ * - `password`: Required, must be between 8 and 50 characters.
+ */
 export const setPasswordRules = [
   body('token').notEmpty().withMessage('Token is required'),
   body('password')
@@ -25,6 +36,15 @@ export const setPasswordRules = [
     .withMessage('Password must be between 8 and 50 characters long'),
 ];
 
+/**
+ * Handles the set password request by validating the token and updating
+ * the user's password. Creates an admin account if the email matches the
+ * configured admin mail.
+ *
+ * @param {Request} req - Express request object containing email, token, and password in the body.
+ * @param {Response} res - Express response object used to send back the result.
+ * @returns {Promise<void>} A promise that resolves when the response is sent.
+ */
 const setPassword = async (req: Request, res: Response): Promise<void> => {
   const { email, token, password } = req.body;
   try {
@@ -72,6 +92,10 @@ const setPassword = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/**
+ * Middleware pipeline for the set password endpoint.
+ * Runs email validation, body validation, error handling, and the set password controller.
+ */
 export default [
   validateReqEmail,
   setPasswordRules,
