@@ -1,12 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Types } from 'mongoose';
 
-const createMock = vi.fn();
+const mocks = vi.hoisted(() => {
+  const createMock = vi.fn();
+
+  return {
+    createMock,
+  };
+});
 
 vi.mock('../../../models/issueSchema.js', () => {
   return {
     default: {
-      create: createMock,
+      create: mocks.createMock,
     },
     IssuePriority: {
       Low: 'Low',
@@ -21,7 +27,7 @@ vi.mock('../../../models/issueSchema.js', () => {
   };
 });
 
-import { createIssueDb } from '../createIssueService.js';
+import { createIssueDb } from '../createIssueService';
 import { IssueStatus } from '../../../models/issueSchema.js';
 
 describe('createIssueDb', () => {
@@ -63,13 +69,13 @@ describe('createIssueDb', () => {
       ],
     };
 
-    createMock.mockResolvedValue(createdIssue);
+    mocks.createMock.mockResolvedValue(createdIssue);
 
     const result = await createIssueDb(mockInput);
 
-    expect(createMock).toHaveBeenCalledTimes(1);
+    expect(mocks.createMock).toHaveBeenCalledTimes(1);
 
-    expect(createMock).toHaveBeenCalledWith(
+    expect(mocks.createMock).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: 'Login issue',
         description: '<p>Valid content</p>',
@@ -112,11 +118,11 @@ describe('createIssueDb', () => {
       ],
     };
 
-    createMock.mockResolvedValue(createdIssue);
+    mocks.createMock.mockResolvedValue(createdIssue);
 
     const result = await createIssueDb(mockInput);
 
-    expect(createMock).toHaveBeenCalledWith(
+    expect(mocks.createMock).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: 'Dashboard bug',
         description: expect.any(String),
@@ -145,11 +151,11 @@ describe('createIssueDb', () => {
       author: new Types.ObjectId(),
     };
 
-    createMock.mockResolvedValue({ ok: true });
+    mocks.createMock.mockResolvedValue({ ok: true });
 
     await createIssueDb(mockInput);
 
-    const calledWith = createMock.mock.calls[0][0];
+    const calledWith = mocks.createMock.mock.calls[0][0];
 
     expect(calledWith.description).not.toContain('<script>');
     expect(calledWith.description).toContain('<p>Hello</p>');
@@ -164,7 +170,7 @@ describe('createIssueDb', () => {
       author: new Types.ObjectId(),
     };
 
-    createMock.mockRejectedValue(new Error('Database error'));
+    mocks.createMock.mockRejectedValue(new Error('Database error'));
 
     await expect(createIssueDb(mockInput)).rejects.toThrow('Database error');
   });
