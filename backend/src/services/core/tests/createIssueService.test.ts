@@ -21,7 +21,7 @@ vi.mock('../../../models/issueSchema.js', () => {
   };
 });
 
-import { createIssueDb } from '../createIssueService';
+import { createIssueDb } from '../createIssueService.js';
 import { IssueStatus } from '../../../models/issueSchema.js';
 
 describe('createIssueDb', () => {
