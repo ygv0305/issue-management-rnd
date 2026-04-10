@@ -1,5 +1,5 @@
 // Node modules
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Services
 import coreService from '../../services/coreService';
@@ -48,6 +48,7 @@ export default function IssueModal({
 
   // Tagged Users State
   const [showTaggedUsers, setShowTaggedUsers] = useState(false);
+  const taggedUsersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadComments = async () => {
@@ -180,10 +181,6 @@ export default function IssueModal({
                   <p className={styles.subjectText}>{issue.subject}</p>
                 </div>
                 <div className={styles.infoItem}>
-                  <label>Type</label>
-                  <p>{issue.type.name}</p>
-                </div>
-                <div className={styles.infoItem}>
                   <label>Created By</label>
                   <p>{issue.author.fullName}</p>
                   <span className={styles.infoEmail}>{issue.author.email}</span>
@@ -191,6 +188,50 @@ export default function IssueModal({
                 <div className={styles.infoItem}>
                   <label>Created On</label>
                   <p>{new Date(issue.createdAt).toLocaleString()}</p>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Tagged Users</label>
+                  <div className={styles.taggedUserCont} ref={taggedUsersRef}>
+                    <p>
+                      {issue.userTags.length > 0
+                        ? `${issue.userTags.length} users`
+                        : 'None'}
+                    </p>
+                    {issue.userTags.length > 0 && (
+                      <button
+                        onClick={() => setShowTaggedUsers((prev) => !prev)}
+                        className={styles.seeDetailsBtn}
+                      >
+                        {showTaggedUsers ? 'Hide details' : 'See details'}
+                      </button>
+                    )}
+                    {showTaggedUsers && issue.userTags.length > 0 && (
+                      <div className={styles.taggedUsersPopup}>
+                        <div className={styles.taggedUsersHeader}>
+                          Tagged Users
+                        </div>
+                        <div className={styles.taggedUsersList}>
+                          {issue.userTags.map((taggedUser) => (
+                            <div
+                              key={taggedUser._id}
+                              className={styles.taggedUserItem}
+                            >
+                              <span className={styles.taggedUserName}>
+                                {taggedUser.fullName}
+                              </span>
+                              <span className={styles.taggedUserEmail}>
+                                {taggedUser.email}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Type</label>
+                  <p>{issue.type.name}</p>
                 </div>
                 <div className={styles.infoItem}>
                   <label>Status</label>
@@ -206,43 +247,6 @@ export default function IssueModal({
                     <span className={`statusBadge priority${issue.priority}`}>
                       {issue.priority}
                     </span>
-                  </div>
-                </div>
-                <div className={styles.infoItem}>
-                  <label>Tagged Users</label>
-                  <div className={styles.taggedUserParent}>
-                    <p className={styles.taggedUserCount}>
-                      {issue.userTags.length > 0
-                        ? `${issue.userTags.length} users`
-                        : 'None'}
-                    </p>
-                    {issue.userTags.length > 0 && (
-                      <button
-                        onClick={() => setShowTaggedUsers((prev) => !prev)}
-                        className={styles.seeDetailsBtn}
-                      >
-                        {showTaggedUsers ? 'Hide details' : 'See details'}
-                      </button>
-                    )}
-
-                    {showTaggedUsers && (
-                      <>
-                        <div
-                          className={styles.detailsOverlay}
-                          onClick={() => setShowTaggedUsers(false)}
-                        />
-                        <div className={styles.detailsDropdown}>
-                          {issue.userTags.map((tag) => (
-                            <div key={tag._id} className={styles.tagItem}>
-                              <p className={styles.tagName}>{tag.fullName}</p>
-                              <span className={styles.tagEmail}>
-                                {tag.email}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
                   </div>
                 </div>
                 <div className={styles.infoItem}>

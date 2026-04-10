@@ -88,3 +88,8 @@ textarea.formControl {
 .btnSecondary:hover {
   background-color: #e9ecef;
 }
+
+/* React Select overrides */
+.reactSelect {
+  padding: 0 !important; /* Let react-select control its own padding */
+}

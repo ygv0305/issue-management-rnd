@@ -1,15 +1,30 @@
 // Node modules
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
+import AsyncSelect from 'react-select/async';
+import debounce from 'lodash/debounce';
 
 // Services
 import coreService from '../../services/coreService';
+import searchService from '../../services/searchService';
 
 // Types
 import type { IssueTypeData } from '../../types/issueTypes';
+import type { SearchedUserData } from '../../types/searchTypes';
 
 // Styles
 import styles from './CreateIssue.module.css';
+
+/** Shape of a react-select option for user tagging */
+type UserOption = {
+  value: string;
+  label: string;
+  /** Raw email for custom rendering */
+  email?: string;
+};
+
+/** Strips the '@autuni.ac.nz' suffix for display */
+const trimEmail = (email: string) => email.replace(/@autuni\.ac\.nz$/i, '');
 
 export default function CreateIssue() {
   const navigate = useNavigate();
@@ -23,6 +38,58 @@ export default function CreateIssue() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Selected users for tagging (AsyncSelect manages options/loading internally)
+  const [selectedUsers, setSelectedUsers] = useState<UserOption[]>([]);
+
+  // Debounced loadOptions ref, cancelled on unmount to prevent memory leaks
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const loadOptionsRef = useRef<ReturnType<typeof debounce> | null>(null);
+
+  /**
+   * Debounced function passed to AsyncSelect's loadOptions.
+   * Queries the server and resolves with react-select options.
+   * AsyncSelect internally tracks isLoading and handles race conditions.
+   */
+  const loadOptions = (
+    inputValue: string,
+    callback: (options: UserOption[]) => void,
+  ) => {
+    if (!loadOptionsRef.current) {
+      loadOptionsRef.current = debounce(
+        async (query: string, cb: (options: UserOption[]) => void) => {
+          if (!query || query.length < 2) {
+            cb([]);
+            return;
+          }
+          try {
+            const response = await searchService.searchUsers(query);
+            const options: UserOption[] = response.data.map(
+              (user: SearchedUserData) => ({
+                value: user._id,
+                label: `${user.fullName} <${trimEmail(user.email)}>`,
+                email: trimEmail(user.email),
+              }),
+            );
+            cb(options);
+          } catch (error) {
+            console.error('Error searching users, ', error);
+            cb([]);
+          }
+        },
+        300, // 300ms debounce to avoid excessive API calls
+      );
+    }
+
+    loadOptionsRef.current(inputValue, callback);
+  };
+
+  useEffect(() => {
+    return () => {
+      // Cancel debounce on unmount to prevent memory leaks
+      loadOptionsRef.current?.cancel();
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -93,6 +160,7 @@ export default function CreateIssue() {
         description: formData.description,
         type: formData.issueType,
         priority: priority,
+        userTags: selectedUsers.map((u) => u.value),
       });
       alert('Issue submitted successfully!');
       navigate('/my-issues');
@@ -202,6 +270,31 @@ export default function CreateIssue() {
               <option value="Low">Low</option>
             </select>
           </div>
+        </div>
+
+        {/* User tagging: search and select users to tag */}
+        <div className="formGroup">
+          <label htmlFor="userTags">Tag Users</label>
+          <AsyncSelect
+            inputId="userTags"
+            isMulti
+            value={selectedUsers}
+            onChange={(selected) => setSelectedUsers(selected as UserOption[])}
+            loadOptions={loadOptions}
+            cacheOptions // Cache results by input to avoid redundant API calls
+            defaultOptions={false} // Don't fetch on mount; wait for user input
+            noOptionsMessage={() => 'No users found'}
+            placeholder="Search users by name or email..."
+            className={`formControl ${styles.reactSelect}`}
+            formatOptionLabel={(option) => (
+              <span>
+                {option.label.split(' <')[0]}{' '}
+                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                  &lt;{option.email}&gt;
+                </span>
+              </span>
+            )}
+          />
         </div>
 
         <div className="formActions">

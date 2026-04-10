@@ -15,6 +15,7 @@ export interface CreateIssueData {
   description: string;
   type: string;
   priority: string;
+  userTags?: string[];
   attachments?: { url: string; publicId: string }[];
 }
 
