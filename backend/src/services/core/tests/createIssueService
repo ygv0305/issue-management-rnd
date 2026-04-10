@@ -1,0 +1,171 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { Types } from 'mongoose';
+
+const createMock = vi.fn();
+
+vi.mock('../../../models/issueSchema.js', () => {
+  return {
+    default: {
+      create: createMock,
+    },
+    IssuePriority: {
+      Low: 'Low',
+      Medium: 'Medium',
+      High: 'High',
+    },
+    IssueStatus: {
+      New: 'New',
+      InProgress: 'InProgress',
+      Resolved: 'Resolved',
+    },
+  };
+});
+
+import { createIssueDb } from '../createIssueService';
+import { IssueStatus } from '../../../models/issueSchema.js';
+
+describe('createIssueDb', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-07T10:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should create an issue with sanitized description, New status, and history', async () => {
+    const mockInput = {
+      subject: 'Login issue',
+      description: '<script>alert("xss")</script><p>Valid content</p>',
+      type: new Types.ObjectId(),
+      priority: 'High' as any,
+      author: new Types.ObjectId(),
+      attachments: [
+        {
+          url: 'https://example.com/file.png',
+          publicId: 'file-123',
+        },
+      ],
+    };
+
+    const createdIssue = {
+      _id: new Types.ObjectId(),
+      ...mockInput,
+      description: '<p>Valid content</p>',
+      status: IssueStatus.New,
+      history: [
+        {
+          status: IssueStatus.New,
+          timestamp: new Date('2026-04-07T10:00:00.000Z'),
+        },
+      ],
+    };
+
+    createMock.mockResolvedValue(createdIssue);
+
+    const result = await createIssueDb(mockInput);
+
+    expect(createMock).toHaveBeenCalledTimes(1);
+
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: 'Login issue',
+        description: '<p>Valid content</p>',
+        type: mockInput.type,
+        priority: 'High',
+        author: mockInput.author,
+        attachments: mockInput.attachments,
+        status: IssueStatus.New,
+        history: [
+          {
+            status: IssueStatus.New,
+            timestamp: new Date('2026-04-07T10:00:00.000Z'),
+          },
+        ],
+      }),
+    );
+
+    expect(result).toEqual(createdIssue);
+  });
+
+  it('should create an issue even when attachments are not provided', async () => {
+    const mockInput = {
+      subject: 'Dashboard bug',
+      description: '<img src=x onerror=alert(1)><p>Broken widget</p>',
+      type: new Types.ObjectId(),
+      priority: 'Medium' as any,
+      author: new Types.ObjectId(),
+    };
+
+    const createdIssue = {
+      _id: new Types.ObjectId(),
+      ...mockInput,
+      description: '<img src="x"><p>Broken widget</p>',
+      status: IssueStatus.New,
+      history: [
+        {
+          status: IssueStatus.New,
+          timestamp: new Date('2026-04-07T10:00:00.000Z'),
+        },
+      ],
+    };
+
+    createMock.mockResolvedValue(createdIssue);
+
+    const result = await createIssueDb(mockInput);
+
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: 'Dashboard bug',
+        description: expect.any(String),
+        type: mockInput.type,
+        priority: 'Medium',
+        author: mockInput.author,
+        status: IssueStatus.New,
+        history: [
+          {
+            status: IssueStatus.New,
+            timestamp: new Date('2026-04-07T10:00:00.000Z'),
+          },
+        ],
+      }),
+    );
+
+    expect(result).toEqual(createdIssue);
+  });
+
+  it('should remove unsafe html from the description before saving', async () => {
+    const mockInput = {
+      subject: 'Security test',
+      description: '<script>alert("bad")</script><p>Hello</p>',
+      type: new Types.ObjectId(),
+      priority: 'Low' as any,
+      author: new Types.ObjectId(),
+    };
+
+    createMock.mockResolvedValue({ ok: true });
+
+    await createIssueDb(mockInput);
+
+    const calledWith = createMock.mock.calls[0][0];
+
+    expect(calledWith.description).not.toContain('<script>');
+    expect(calledWith.description).toContain('<p>Hello</p>');
+  });
+
+  it('should throw an error if Issue.create fails', async () => {
+    const mockInput = {
+      subject: 'Server issue',
+      description: '<p>Something failed</p>',
+      type: new Types.ObjectId(),
+      priority: 'High' as any,
+      author: new Types.ObjectId(),
+    };
+
+    createMock.mockRejectedValue(new Error('Database error'));
+
+    await expect(createIssueDb(mockInput)).rejects.toThrow('Database error');
+  });
+});
