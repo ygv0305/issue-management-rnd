@@ -1,121 +1,24 @@
-// Node modules
-import React, { useEffect, useState } from 'react';
-
-// Services
-import adminService from '../../services/adminService';
+// Hooks
+import { useAccountManage } from '../../hooks/account-manage/useAccountManage';
 
 // RBAC
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
-// Types
-import type { SystemRoles, WhitelistUserData } from '../../types/authTypes';
-import type { ProjectData } from '../../types/projectTypes';
-
 // Styles
 import styles from './AccountManage.module.css';
 
 function AccountManage() {
-  const [formData, setFormData] = useState<WhitelistUserData>({
-    email: '',
-    role: 'Student' as SystemRoles,
-    fullName: '',
-    projectId: '',
-  });
-
-  const [submitting, setSubmitting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{
-    type: 'Success' | 'Error';
-    text: string;
-  } | null>(null);
-
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    try {
-      const parsed = JSON.parse(localStorage.getItem('projects')!);
-      if (parsed) {
-        setProjects(parsed);
-      }
-    } catch (error) {
-      console.error('Error reading projects, ', error);
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const roles: SystemRoles[] = [
-    'Student',
-    'Supervisor',
-    'Moderator',
-    'PaperLeader',
-    'Admin',
-    'Client',
-  ];
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatusMessage(null);
-
-    if (!formData.email.endsWith('@autuni.ac.nz')) {
-      setStatusMessage({
-        type: 'Error',
-        text: 'Email must be a valid @autuni.ac.nz address.',
-      });
-      return;
-    }
-
-    if (formData.role === 'Student' && !formData.projectId) {
-      setStatusMessage({
-        type: 'Error',
-        text: 'Student must work in a project. Please provide a Project ID.',
-      });
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const dataToSubmit = { ...formData };
-      if (dataToSubmit.role !== 'Student') {
-        delete dataToSubmit.projectId;
-      }
-
-      const res = await adminService.whitelistUser(dataToSubmit);
-      if (res.success) {
-        setStatusMessage({
-          type: 'Success',
-          text: 'User successfully whitelisted!',
-        });
-        setFormData({
-          email: '',
-          role: 'Student' as SystemRoles,
-          fullName: '',
-          projectId: '',
-        });
-      } else {
-        setStatusMessage({
-          type: 'Error',
-          text: res.message || 'Failed to whitelist user.',
-        });
-      }
-    } catch (error: any) {
-      console.error('Error whitelisting user:', error);
-      const errorMsg =
-        error.response?.data?.message ||
-        'Failed to whitelist user. Please try again.';
-      setStatusMessage({ type: 'Error', text: errorMsg });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const {
+    formData,
+    submitting,
+    statusMessage,
+    projects,
+    loading,
+    roles,
+    handleChange,
+    handleSubmit,
+  } = useAccountManage();
 
   if (loading) {
     return <div className="createFormCont">Loading...</div>;

@@ -5,8 +5,8 @@ import { createBrowserRouter, Outlet } from 'react-router';
 import { UserProvider } from './lib/context/UserContext';
 
 // Pages
-import Auth from './pages/auth-pages/Auth';
-import CreatePassword from './pages/auth-pages/CreatePassword';
+import Auth from './pages/auth/Auth';
+import CreatePassword from './pages/auth/CreatePassword';
 import MyIssueView from './pages/issue-view/MyIssueView';
 import AllIssueView from './pages/issue-view/AllIssueView';
 import CreateIssue from './pages/create-issue/CreateIssue';

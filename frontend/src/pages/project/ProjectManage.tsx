@@ -1,78 +1,21 @@
-// Node modules
-import { useState, useEffect } from 'react';
-
 // RBAC
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
-// Services
-import pLeaderService from '../../services/pLeaderService';
-
-// Types
-import type { IssueTypeData } from '../../types/issueTypes';
-import type { ProjectData } from '../../types/projectTypes';
+// Hooks
+import { useProjectManage } from '../../hooks/project/useProjectManage';
 
 // Styles
 import styles from './ProjectManage.module.css';
 
 function ProjectManage() {
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    try {
-      const parsedProjects = JSON.parse(localStorage.getItem('projects')!);
-      if (parsedProjects) {
-        setProjects(parsedProjects);
-      }
-
-      const parsedIssueTypes = JSON.parse(localStorage.getItem('issueTypes')!);
-      if (parsedIssueTypes) {
-        setIssueTypes(parsedIssueTypes);
-      }
-    } catch (error) {
-      console.error('Error reading projects or issue types, ', error);
-      setProjects([]);
-      setIssueTypes([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleNewProject = async () => {
-    const name = prompt('Enter new project name:');
-    if (name) {
-      try {
-        const res = await pLeaderService.createProject(name);
-        alert('Project created!');
-        if (res.success && res.data) {
-          const updatedProjects = [...projects, res.data];
-          setProjects(updatedProjects);
-          localStorage.setItem('projects', JSON.stringify(updatedProjects));
-        }
-      } catch (error) {
-        alert('Failed to create project.');
-      }
-    }
-  };
-
-  const handleNewIssueType = async () => {
-    const name = prompt('Enter new issue type name:');
-    if (name) {
-      try {
-        const res = await pLeaderService.createIssueType(name);
-        alert('Issue type created!');
-        if (res.success && res.data) {
-          const updatedIssueTypes = [...issueTypes, res.data];
-          setIssueTypes(updatedIssueTypes);
-          localStorage.setItem('issueTypes', JSON.stringify(updatedIssueTypes));
-        }
-      } catch (error) {
-        alert('Failed to create issue type.');
-      }
-    }
-  };
+  const {
+    projects,
+    issueTypes,
+    loading,
+    handleNewProject,
+    handleNewIssueType,
+  } = useProjectManage();
 
   if (loading) {
     return <div className={styles.projectManageCont}>Loading...</div>;

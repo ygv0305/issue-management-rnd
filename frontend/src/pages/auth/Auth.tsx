@@ -1,12 +1,5 @@
-// Node modules
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-
-// Services
-import AuthService from '../../services/authService';
-
-// Context
-import { useUser } from '../../lib/context/UserContext';
+// Hooks
+import { useAuth } from '../../hooks/auth/useAuth';
 
 // Styles + Assets
 import styles from './Auth.module.css';
@@ -15,94 +8,18 @@ import autLogo from '../../assets/images/aut-logo.jpg';
 import emailIcon from '../../assets/vectors/user.svg';
 import passwordIcon from '../../assets/vectors/lock.svg';
 
-type AuthMode = 'login' | 'signup' | 'reset';
-
 export default function Auth() {
-  const [authMode, setAuthMode] = useState<AuthMode>('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { user, loading: userLoading, checkAuth } = useUser();
-  const navigate = useNavigate();
-
-  // Redirect if already logged in
-  useEffect(() => {
-    if (!userLoading && user) {
-      navigate('/my-issues');
-    }
-  }, [user, userLoading, navigate]);
-
-  const authModeChange = (mode: AuthMode) => {
-    setAuthMode(mode);
-    setError('');
-    setEmail('');
-    setPassword('');
-  };
-
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setError('');
-    setIsLoading(true);
-
-    if (!email.trim()) {
-      setError('Email cannot be empty.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (authMode === 'login' && !password.trim()) {
-      setError('Password cannot be empty.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!email.endsWith('@autuni.ac.nz')) {
-      setError('You must use a valid @autuni.ac.nz address.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (authMode === 'login' && password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      if (authMode === 'login') {
-        const res = await AuthService.requestLogin({ email, password });
-        localStorage.setItem('accessToken', res.accessToken!);
-        await checkAuth();
-      } else if (authMode === 'signup') {
-        const res = await AuthService.register({ email });
-        alert(res.message || 'Check your email for the verification link.');
-        authModeChange('login'); // Switch back to login page
-      } else if (authMode === 'reset') {
-        const res = await AuthService.forgotPassword({ email });
-        alert(res.message || 'A reset link has been sent to your email.');
-        authModeChange('login');
-      }
-    } catch (error: any) {
-      if (
-        authMode === 'signup' &&
-        error.response?.data?.code === 'UserNotFound'
-      ) {
-        alert(
-          'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
-        );
-      } else {
-        const message =
-          error.response?.data?.message ||
-          error.message ||
-          'An unexpected error occurred';
-        setError(message);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    authMode,
+    email,
+    password,
+    error,
+    isLoading,
+    setEmail,
+    setPassword,
+    authModeChange,
+    handleSubmit,
+  } = useAuth();
 
   return (
     <div className={styles.authContainer}>

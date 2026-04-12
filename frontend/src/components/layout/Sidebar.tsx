@@ -1,5 +1,5 @@
 // Node modules
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink } from 'react-router';
 
 // Context
 import { useUser } from '../../lib/context/UserContext';
@@ -8,17 +8,15 @@ import { useUser } from '../../lib/context/UserContext';
 import { hasPermission } from '../../lib/rbac/hasPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
+// Hooks
+import { useSidebar } from '../../hooks/layout/useSidebar';
+
 // Styles
 import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
-  const { user, logout } = useUser();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
+  const { user } = useUser();
+  const { handleLogout } = useSidebar();
 
   return (
     <aside className={styles.sidebarCont}>

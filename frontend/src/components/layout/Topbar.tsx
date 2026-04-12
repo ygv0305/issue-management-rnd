@@ -1,29 +1,17 @@
-// Context
-import { useUser } from '../../lib/context/UserContext';
+// Hooks
+import { useTopbar } from '../../hooks/layout/useTopbar';
 
 // Assets + Styles
 import autLogo from '../../assets/images/aut-logo.jpg';
 import styles from './Topbar.module.css';
 
 export default function Topbar() {
-  const { user } = useUser();
-
-  const handleNotificationClick = () => {
-    alert('You have 0 new notifications.');
-  };
-
-  const handleProfileClick = () => {
-    alert(
-      `My Profile\n\nName: ${user?.fullName || user?.email}\nRole: ${user?.role}`,
-    );
-  };
-
-  const getUserInitials = () => {
-    if (user?.fullName) {
-      return user.fullName.charAt(0).toUpperCase();
-    }
-    return user?.email?.charAt(0).toUpperCase() || 'U';
-  };
+  const {
+    userName,
+    userInitials,
+    handleNotificationClick,
+    handleProfileClick,
+  } = useTopbar();
 
   return (
     <header className={styles.topbarCont}>
@@ -38,8 +26,8 @@ export default function Topbar() {
 
         <button className={styles.actionBtn} onClick={handleProfileClick}>
           <div className={styles.userInfo}>
-            <div className={styles.userAvatar}>{getUserInitials()}</div>
-            <span>{user?.fullName || 'Profile'}</span>
+            <div className={styles.userAvatar}>{userInitials}</div>
+            <span>{userName}</span>
           </div>
         </button>
       </div>

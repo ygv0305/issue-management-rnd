@@ -1,9 +1,5 @@
-// Node modules
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
-
-// Services
-import AuthService from '../../services/authService';
+// Hooks
+import { useCreatePassword } from '../../hooks/auth/useCreatePassword';
 
 // Styles + Assets
 import styles from './Auth.module.css';
@@ -12,63 +8,23 @@ import autLogo from '../../assets/images/aut-logo.jpg';
 import passwordIcon from '../../assets/vectors/lock.svg';
 
 export default function CreatePassword() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
-
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!token || !email) {
-      navigate('/');
-    }
-  }, [token, email, navigate]);
-
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setError('');
-    setIsLoading(true);
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      if (!email || !token) throw new Error('Missing email or token.');
-      await AuthService.setPassword({ email, token, password });
-      setSuccess(true);
-      setTimeout(() => navigate('/'), 1000); // Give user time to see success message
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        'An unexpected error occurred';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    email,
+    token,
+    password,
+    confirmPassword,
+    error,
+    success,
+    isLoading,
+    isReset,
+    setPassword,
+    setConfirmPassword,
+    handleSubmit,
+  } = useCreatePassword();
 
   if (!token || !email) {
     return null;
   }
-
-  // Determine if it looks like a reset or create flow based on URL path
-  const isReset = window.location.pathname.includes('reset-password');
 
   return (
     <div className={styles.authContainer}>
