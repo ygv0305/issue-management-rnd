@@ -1,12 +1,19 @@
+// Node modules
+import { useCallback } from 'react';
+
 // Hooks
 import { useMyIssues } from '../../hooks/issue/useMyIssues';
 
-// Components
-import IssueModal from '../../components/issue-modal/IssueModal';
-import IssueTable from '../../components/issue-table/IssueTable';
+// Types
+import type { IssueData } from '../../types/issueTypes';
 
-// Styles
-import './IssueView.module.css';
+// Components
+import IssueModal from '../../components/organisms/IssueModal';
+import IssueTable from '../../components/organisms/IssueTable';
+
+// MUI
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 export default function MyIssueView() {
   const {
@@ -19,41 +26,48 @@ export default function MyIssueView() {
     setSelectedIssue,
   } = useMyIssues();
 
+  // Ensures the onIssueSelect prop doesn’t create a new function on every render
+  const handleIssueSelect = useCallback(
+    (issue: IssueData) => setSelectedIssue(issue),
+    [setSelectedIssue],
+  );
+
   if (loading) {
-    return <div className="tableCont">Loading...</div>;
+    return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
-    <div className="tableCont">
-      <h1 className="viewTitle">My Issues Dashboard</h1>
+    <Box sx={{ p: 0, width: '100%' }}>
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+        My Issues Dashboard
+      </Typography>
 
       <IssueTable
         title="My Submitted Issues"
         issues={submittedIssues}
-        onIssueSelect={setSelectedIssue}
+        onIssueSelect={handleIssueSelect}
       />
 
       {canViewAssigned && (
         <IssueTable
           title="My Assigned Issues"
           issues={assignedIssues}
-          onIssueSelect={setSelectedIssue}
+          onIssueSelect={handleIssueSelect}
         />
       )}
 
       <IssueTable
         title="Issues I'm Tagged In"
         issues={taggedIssues}
-        onIssueSelect={setSelectedIssue}
+        onIssueSelect={handleIssueSelect}
       />
 
-      {selectedIssue && (
-        <IssueModal
-          issue={selectedIssue}
-          originAllIssue={false}
-          onClose={() => setSelectedIssue(null)}
-        />
-      )}
-    </div>
+      <IssueModal
+        issue={selectedIssue}
+        originAllIssue={false}
+        open={!!selectedIssue}
+        onClose={() => setSelectedIssue(null)}
+      />
+    </Box>
   );
 }

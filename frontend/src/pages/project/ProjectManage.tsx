@@ -5,8 +5,17 @@ import { PERMISSIONS } from '../../lib/rbac/allPermission';
 // Hooks
 import { useProjectManage } from '../../hooks/project/useProjectManage';
 
-// Styles
-import styles from './ProjectManage.module.css';
+// MUI
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 function ProjectManage() {
   const {
@@ -18,63 +27,141 @@ function ProjectManage() {
   } = useProjectManage();
 
   if (loading) {
-    return <div className={styles.projectManageCont}>Loading...</div>;
+    return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
-    <div className={styles.projectManageCont}>
-      <h1 className="viewTitle">Project Management</h1>
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
+        Project Management
+      </Typography>
 
-      <div className="tableSection">
-        <div className={styles.sectionHeader}>
-          <h3>Projects</h3>
-          <button className="mainBtn" onClick={handleNewProject}>
+      <Box sx={{ mb: 6 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 2,
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: 500 }}>
+            Projects
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNewProject}
+          >
             New Project
-          </button>
-        </div>
-        <table className={`dataTable ${styles.dataTable}`}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project) => (
-              <tr key={project._id}>
-                <td>{project._id.slice(-6).toUpperCase()}</td>
-                <td>{project.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          </Button>
+        </Box>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ border: '1px solid', borderColor: 'divider' }}
+        >
+          <Table>
+            <TableHead sx={{ bgcolor: 'background.default' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {projects.map((project) => (
+                <TableRow key={project._id} hover>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontWeight: 500 }}
+                    >
+                      #{project._id.slice(-6).toUpperCase()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{project.name}</TableCell>
+                </TableRow>
+              ))}
+              {projects.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={2}
+                    align="center"
+                    sx={{ py: 3, color: 'text.secondary' }}
+                  >
+                    No projects found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
-      <div className="tableSection">
-        <div className={styles.sectionHeader}>
-          <h3>Issue Types</h3>
-          <button className="mainBtn" onClick={handleNewIssueType}>
+      <Box sx={{ mb: 6 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 2,
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: 500 }}>
+            Issue Types
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNewIssueType}
+          >
             New Issue Type
-          </button>
-        </div>
-        <table className={`dataTable ${styles.dataTable}`}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {issueTypes.map((type) => (
-              <tr key={type._id}>
-                <td>{type._id.slice(-6).toUpperCase()}</td>
-                <td>{type.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </Button>
+        </Box>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ border: '1px solid', borderColor: 'divider' }}
+        >
+          <Table>
+            <TableHead sx={{ bgcolor: 'background.default' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {issueTypes.map((type) => (
+                <TableRow key={type._id} hover>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontWeight: 500 }}
+                    >
+                      #{type._id.slice(-6).toUpperCase()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{type.name}</TableCell>
+                </TableRow>
+              ))}
+              {issueTypes.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={2}
+                    align="center"
+                    sx={{ py: 3, color: 'text.secondary' }}
+                  >
+                    No issue types found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Box>
   );
 }
 

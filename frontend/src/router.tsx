@@ -18,7 +18,7 @@ import { PERMISSIONS } from './lib/rbac/allPermission';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/layout/Layout';
+import LayoutTemplate from './components/templates/LayoutTemplate';
 
 export const router = createBrowserRouter([
   {
@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            element: <Layout />,
+            element: <LayoutTemplate />,
             children: [
               {
                 path: '/my-issues',

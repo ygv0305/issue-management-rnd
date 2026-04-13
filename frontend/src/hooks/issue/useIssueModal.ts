@@ -24,17 +24,17 @@ interface UseIssueModalReturn {
   localThread: CommentData[];
   isLoadingComments: boolean;
   activeTab: ActiveTab;
-  newStatus: IssueStatus;
-  newPriority: IssuePriority;
+  newStatus: IssueStatus | '';
+  newPriority: IssuePriority | '';
   isUpdating: boolean;
-  isChanged: boolean;
+  isChanged: boolean | null;
   isPaperLeader: boolean;
   statusOptions: IssueStatus[];
   priorityOptions: IssuePriority[];
   showTaggedUsers: boolean;
   taggedUsersRef: React.RefObject<HTMLDivElement | null>;
   setCommentMsg: (msg: string) => void;
-  setActiveTab: (tab: ActiveTab) => void;
+  handleTabChange: (event: React.SyntheticEvent, newValue: string) => void;
   setNewStatus: (status: IssueStatus) => void;
   setNewPriority: (priority: IssuePriority) => void;
   setShowTaggedUsers: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,8 +43,9 @@ interface UseIssueModalReturn {
 }
 
 export const useIssueModal = (
-  issue: IssueData,
+  issue: IssueData | null,
   originAllIssue: boolean,
+  open: boolean,
   onClose: () => void,
   onIssueUpdated?: (updatedIssue: IssueData) => void,
 ): UseIssueModalReturn => {
@@ -56,8 +57,12 @@ export const useIssueModal = (
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
   // Actions Tab State
-  const [newStatus, setNewStatus] = useState<IssueStatus>(issue.status);
-  const [newPriority, setNewPriority] = useState<IssuePriority>(issue.priority);
+  const [newStatus, setNewStatus] = useState<IssueStatus | ''>(
+    issue?.status ?? '',
+  );
+  const [newPriority, setNewPriority] = useState<IssuePriority | ''>(
+    issue?.priority ?? '',
+  );
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Tagged Users State
@@ -65,8 +70,16 @@ export const useIssueModal = (
   const taggedUsersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!issue || !open) return;
+
+    // Reset state when a new issue opens
+    setActiveTab('details');
+    setLocalThread([]);
+    setIsLoadingComments(true);
+    setNewStatus(issue.status);
+    setNewPriority(issue.priority);
+
     const loadComments = async () => {
-      setIsLoadingComments(true);
       try {
         const res = await coreService.fetchComments(issue._id);
         if (res.success) {
@@ -80,10 +93,10 @@ export const useIssueModal = (
     };
 
     loadComments();
-  }, [issue._id]);
+  }, [issue?._id, open]);
 
   const isChanged =
-    newStatus !== issue.status || newPriority !== issue.priority;
+    issue && (newStatus !== issue.status || newPriority !== issue.priority);
   const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
 
   const statusOptions: IssueStatus[] = [
@@ -102,7 +115,7 @@ export const useIssueModal = (
 
   const handlePostComment = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!commentMsg.trim()) return;
+    if (!commentMsg.trim() || !issue) return;
 
     setIsSubmitting(true);
     try {
@@ -122,8 +135,13 @@ export const useIssueModal = (
     }
   };
 
+  // Convert MUI Tabs event signature to call setActiveTab
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
+    setActiveTab(newValue as ActiveTab);
+  };
+
   const handleUpdateIssue = async () => {
-    if (!isChanged) return;
+    if (!isChanged || !issue) return;
     setIsUpdating(true);
 
     try {
@@ -131,8 +149,9 @@ export const useIssueModal = (
 
       const res = await pLeaderService.changeStatus({
         issueId: issue._id,
-        ...(newStatus !== issue.status && { newStatus: newStatus }),
-        ...(newPriority !== issue.priority && { newPriority: newPriority }),
+        ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
+        ...(newPriority !== issue.priority &&
+          newPriority !== '' && { newPriority }),
       });
       if (res.success) updatedIssue = res.data;
 
@@ -163,7 +182,7 @@ export const useIssueModal = (
     showTaggedUsers,
     taggedUsersRef,
     setCommentMsg,
-    setActiveTab,
+    handleTabChange,
     setNewStatus,
     setNewPriority,
     setShowTaggedUsers,

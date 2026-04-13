@@ -17,6 +17,7 @@ import bcrypt from 'bcrypt';
 export enum SystemRoles {
   Student = 'Student',
   Supervisor = 'Supervisor',
+  Moderator = 'Moderator',
   PaperLeader = 'PaperLeader',
   Admin = 'Admin',
   Client = 'Client',

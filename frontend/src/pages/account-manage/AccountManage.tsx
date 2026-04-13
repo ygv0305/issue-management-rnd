@@ -5,8 +5,21 @@ import { useAccountManage } from '../../hooks/account-manage/useAccountManage';
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
-// Styles
-import styles from './AccountManage.module.css';
+// MUI
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+
+// Components
+import Select from '../../components/atoms/CustomSelect';
 
 function AccountManage() {
   const {
@@ -21,113 +34,139 @@ function AccountManage() {
   } = useAccountManage();
 
   if (loading) {
-    return <div className="createFormCont">Loading...</div>;
+    return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
-    <div className="createFormCont">
-      <h2>Whitelist New Account</h2>
-      <p className={styles.subtitle}>Pre-approve users to IMS.</p>
+    <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto' }}>
+      <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
+        Whitelist New Account
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Pre-approve users to IMS.
+      </Typography>
 
       {statusMessage && (
-        <div
-          className={`${styles.alert} ${styles[`alert${statusMessage.type}`]}`}
-        >
+        <Alert severity={statusMessage.type} sx={{ mb: 4 }}>
           {statusMessage.text}
-        </div>
+        </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="createForm">
-        <div className="formRow">
-          <div className="formGroup">
-            <label htmlFor="fullName">Full Name</label>
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="formControl"
-              placeholder="John Doe"
-              maxLength={50}
-              required
-            />
-            <div className="charCount">
-              {formData.fullName.length} / 50 characters
-            </div>
-          </div>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 4,
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange as any}
+                placeholder="John Doe"
+                required
+                slotProps={{
+                  htmlInput: { maxLength: 50 },
+                }}
+                helperText={`${formData.fullName.length} / 50 characters`}
+              />
+            </Grid>
 
-          <div className="formGroup">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="formControl"
-              placeholder="user@autuni.ac.nz"
-              maxLength={50}
-              required
-            />
-            <div className="charCount">
-              {formData.email.length} / 50 characters
-            </div>
-          </div>
-        </div>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Email Address"
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange as any}
+                placeholder="user@autuni.ac.nz"
+                required
+                slotProps={{
+                  htmlInput: { maxLength: 50 },
+                }}
+                helperText={`${formData.email.length} / 50 characters`}
+              />
+            </Grid>
 
-        <div className="formRow">
-          <div className="formGroup">
-            <label htmlFor="role">Role</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="formControl"
-              required
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth required>
+                <InputLabel id="role-label">Role</InputLabel>
+                <Select
+                  labelId="role-label"
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  label="Role"
+                  onChange={handleChange as any}
+                >
+                  <MenuItem value="">
+                    <em>Select Role</em>
+                  </MenuItem>
+                  {roles.map((role) => (
+                    <MenuItem key={role} value={role}>
+                      {role}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {formData.role === 'Student' && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth required={formData.role === 'Student'}>
+                  <InputLabel id="projectId-label">Project</InputLabel>
+                  <Select
+                    labelId="projectId-label"
+                    id="projectId"
+                    name="projectId"
+                    value={formData.projectId}
+                    label="Project"
+                    onChange={handleChange as any}
+                  >
+                    <MenuItem value="">
+                      <em>Select a Project</em>
+                    </MenuItem>
+                    {projects.map((proj) => (
+                      <MenuItem key={proj._id} value={proj._id}>
+                        {proj.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>
+                    Student must work in a project.
+                  </FormHelperText>
+                </FormControl>
+              </Grid>
+            )}
+
+            <Grid
+              size={12}
+              sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}
             >
-              <option value="">Select Role</option>
-              {roles.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {formData.role === 'Student' && (
-            <div className={`formGroup ${styles.fadeIn}`}>
-              <label htmlFor="projectId">Project</label>
-              <select
-                id="projectId"
-                name="projectId"
-                value={formData.projectId}
-                onChange={handleChange}
-                className="formControl"
-                required={formData.role === 'Student'}
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="large"
+                disabled={submitting}
               >
-                <option value="">Select a Project</option>
-                {projects.map((proj) => (
-                  <option key={proj._id} value={proj._id}>
-                    {proj.name}
-                  </option>
-                ))}
-              </select>
-              <small className={styles.helpText}>
-                Student must work in a project.
-              </small>
-            </div>
-          )}
-        </div>
-
-        <div className="formActions">
-          <button type="submit" className="mainBtn" disabled={submitting}>
-            {submitting ? 'Creating...' : 'Create User'}
-          </button>
-        </div>
-      </form>
-    </div>
+                {submitting ? 'Creating...' : 'Create User'}
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Box>
   );
 }
 

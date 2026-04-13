@@ -25,7 +25,7 @@ const INITIAL_FORM_DATA: WhitelistUserData = {
 };
 
 interface StatusMessage {
-  type: 'Success' | 'Error';
+  type: 'success' | 'error';
   text: string;
 }
 
@@ -83,7 +83,7 @@ export const useAccountManage = (): UseAccountManageReturn => {
 
     if (!isValidEmail(formData.email)) {
       setStatusMessage({
-        type: 'Error',
+        type: 'error',
         text: 'Email must be a valid @autuni.ac.nz address.',
       });
       return;
@@ -91,7 +91,7 @@ export const useAccountManage = (): UseAccountManageReturn => {
 
     if (formData.role === 'Student' && !formData.projectId) {
       setStatusMessage({
-        type: 'Error',
+        type: 'error',
         text: 'Student must work in a project. Please provide a Project ID.',
       });
       return;
@@ -107,13 +107,13 @@ export const useAccountManage = (): UseAccountManageReturn => {
       const res = await adminService.whitelistUser(dataToSubmit);
       if (res.success) {
         setStatusMessage({
-          type: 'Success',
+          type: 'success',
           text: 'User successfully whitelisted!',
         });
         setFormData(INITIAL_FORM_DATA);
       } else {
         setStatusMessage({
-          type: 'Error',
+          type: 'error',
           text: res.message || 'Failed to whitelist user.',
         });
       }
@@ -123,7 +123,7 @@ export const useAccountManage = (): UseAccountManageReturn => {
       const errorMsg =
         err.response?.data?.message ||
         'Failed to whitelist user. Please try again.';
-      setStatusMessage({ type: 'Error', text: errorMsg });
+      setStatusMessage({ type: 'error', text: errorMsg });
     } finally {
       setSubmitting(false);
     }

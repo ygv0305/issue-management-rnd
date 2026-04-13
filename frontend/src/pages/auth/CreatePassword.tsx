@@ -1,11 +1,16 @@
 // Hooks
 import { useCreatePassword } from '../../hooks/auth/useCreatePassword';
 
-// Styles + Assets
-import styles from './Auth.module.css';
-import authBg from '../../assets/images/auth-bg.webp';
-import autLogo from '../../assets/images/aut-logo.jpg';
-import passwordIcon from '../../assets/vectors/lock.svg';
+// Components
+import AuthTemplate from '../../components/templates/AuthTemplate';
+
+// MUI
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
 export default function CreatePassword() {
   const {
@@ -27,71 +32,74 @@ export default function CreatePassword() {
   }
 
   return (
-    <div className={styles.authContainer}>
-      <img className={styles.bgImg} src={authBg} alt="" />
-      <div className={styles.authMain}>
-        <img className={styles.autLogo} src={autLogo} alt="" />
-        <h2 className={styles.authIntro}>
-          Issue Management and Tracking System
-        </h2>
-        <div className={styles.authCard}>
-          <h2 className={styles.authTitle}>
-            {isReset ? 'Reset Your Password' : 'Create Your Password'}
-          </h2>
-          <p className={styles.authSubtitle}>
-            Please enter a strong password for <strong>{email}</strong>
-          </p>
+    <AuthTemplate>
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 'bold', textAlign: 'center' }}
+          gutterBottom
+        >
+          {isReset ? 'Reset Your Password' : 'Create Your Password'}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ textAlign: 'center' }}
+        >
+          Please enter a strong password for <strong>{email}</strong>
+        </Typography>
+      </Box>
 
-          {error && <div className={styles.authError}>{error}</div>}
-          {success && (
-            <div
-              className={styles.authError}
-              style={{
-                color: '#008000',
-                border: '2px solid #008000',
-              }}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          Password set successfully! Redirecting...
+        </Alert>
+      )}
+
+      {!success && (
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={3}>
+            <TextField
+              label="New Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your new password"
+              fullWidth
+              required
+              variant="outlined"
+            />
+
+            <TextField
+              label="Confirm Password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your new password"
+              fullWidth
+              required
+              variant="outlined"
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="large"
+              disabled={isLoading}
+              sx={{ py: 1.5, fontWeight: 'bold' }}
             >
-              Password set successfully! Redirecting...
-            </div>
-          )}
-
-          {!success && (
-            <form onSubmit={handleSubmit} className={styles.authForm}>
-              <div className={styles.formGroup}>
-                <label htmlFor="password">
-                  <img src={passwordIcon} alt="" />
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="confirmPassword">
-                  <img src={passwordIcon} alt="" />
-                </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm your password"
-                  required
-                />
-              </div>
-
-              <button type="submit" className="mainBtn" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save'}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    </div>
+              {isLoading ? 'Saving...' : 'Save Password'}
+            </Button>
+          </Stack>
+        </form>
+      )}
+    </AuthTemplate>
   );
 }

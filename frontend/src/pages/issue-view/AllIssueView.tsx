@@ -1,3 +1,6 @@
+// Node modules
+import { useCallback } from 'react';
+
 // RBAC
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 import withPermission from '../../lib/rbac/withPermission';
@@ -5,12 +8,16 @@ import withPermission from '../../lib/rbac/withPermission';
 // Hooks
 import { useAllIssues } from '../../hooks/issue/useAllIssues';
 
-// Components
-import IssueModal from '../../components/issue-modal/IssueModal';
-import IssueTable from '../../components/issue-table/IssueTable';
+// Types
+import type { IssueData } from '../../types/issueTypes';
 
-// Styles
-import './IssueView.module.css';
+// Components
+import IssueModal from '../../components/organisms/IssueModal';
+import IssueTable from '../../components/organisms/IssueTable';
+
+// MUI
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 function AllIssueView() {
   const {
@@ -21,25 +28,31 @@ function AllIssueView() {
     handleIssueUpdated,
   } = useAllIssues();
 
+  const handleIssueSelect = useCallback(
+    (issue: IssueData) => setSelectedIssue(issue),
+    [setSelectedIssue],
+  );
+
   if (loading) {
-    return <div className="tableCont">Loading...</div>;
+    return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
-    <div className="tableCont">
-      <h1 className="viewTitle">All Submitted Issues</h1>
+    <Box sx={{ p: 0, width: '100%' }}>
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+        All Submitted Issues
+      </Typography>
 
-      <IssueTable issues={allIssues} onIssueSelect={setSelectedIssue} />
+      <IssueTable issues={allIssues} onIssueSelect={handleIssueSelect} />
 
-      {selectedIssue && (
-        <IssueModal
-          issue={selectedIssue}
-          originAllIssue={true}
-          onClose={() => setSelectedIssue(null)}
-          onIssueUpdated={handleIssueUpdated}
-        />
-      )}
-    </div>
+      <IssueModal
+        issue={selectedIssue}
+        originAllIssue={true}
+        open={!!selectedIssue}
+        onClose={() => setSelectedIssue(null)}
+        onIssueUpdated={handleIssueUpdated}
+      />
+    </Box>
   );
 }
 
