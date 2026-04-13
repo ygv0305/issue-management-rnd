@@ -108,7 +108,7 @@ function AccountManage() {
         });
       }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError;
+      const axiosError = error as AxiosError<{ message?: string }>;
       console.error('Error whitelisting user:', axiosError);
       const errorMsg =
         axiosError.response?.data?.message ||

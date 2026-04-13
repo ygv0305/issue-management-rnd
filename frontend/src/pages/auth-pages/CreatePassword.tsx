@@ -54,7 +54,7 @@ export default function CreatePassword() {
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
     } catch (error: unknown) {
-      const axiosError = error as AxiosError;
+      const axiosError = error as AxiosError<{ message?: string }>;
       const message =
         axiosError.response?.data?.message ||
         axiosError.message ||

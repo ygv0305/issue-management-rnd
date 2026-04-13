@@ -86,7 +86,7 @@ export default function Auth() {
         authModeChange('login');
       }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError;
+      const axiosError = error as AxiosError<{ message?: string; code?: string }>;
       if (
         authMode === 'signup' &&
         axiosError.response?.data?.code === 'UserNotFound'
