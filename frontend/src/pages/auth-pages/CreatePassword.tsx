@@ -53,10 +53,11 @@ export default function CreatePassword() {
       await AuthService.setPassword({ email, token, password });
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
-    } catch (error: AxiosError) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
       const message =
-        error.response?.data?.message ||
-        error.message ||
+        axiosError.response?.data?.message ||
+        axiosError.message ||
         'An unexpected error occurred';
       setError(message);
     } finally {
