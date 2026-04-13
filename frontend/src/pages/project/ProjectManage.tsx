@@ -68,7 +68,7 @@ function ProjectManage() {
           setIssueTypes(updatedIssueTypes);
           localStorage.setItem('issueTypes', JSON.stringify(updatedIssueTypes));
         }
-      } catch (error) {
+      } catch {
         alert('Failed to create issue type.');
       }
     }

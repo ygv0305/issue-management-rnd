@@ -1,6 +1,6 @@
 // Node modules
 import React, { useEffect, useState } from 'react';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 
 // Services
 import adminService from '../../services/adminService';

@@ -1,7 +1,7 @@
 // Node modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 
 // Services
 import AuthService from '../../services/authService';
