@@ -2,6 +2,8 @@
 
 React + TypeScript single-page application for the Issue Management system.
 
+<!-- Test commit for workflow -->
+
 ## Tech Stack
 
 | Tool         | Version | Purpose                       |
