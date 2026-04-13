@@ -51,7 +51,7 @@ function ProjectManage() {
           setProjects(updatedProjects);
           localStorage.setItem('projects', JSON.stringify(updatedProjects));
         }
-      } catch (error) {
+      } catch {
         alert('Failed to create project.');
       }
     }
