@@ -1,5 +1,6 @@
 // Node modules
 import React, { useEffect, useState } from 'react';
+import { AxiosError } from 'axios';
 
 // Services
 import adminService from '../../services/adminService';
@@ -106,7 +107,7 @@ function AccountManage() {
           text: res.message || 'Failed to whitelist user.',
         });
       }
-    } catch (error: any) {
+    } catch (error: AxiosError) {
       console.error('Error whitelisting user:', error);
       const errorMsg =
         error.response?.data?.message ||
@@ -228,4 +229,6 @@ function AccountManage() {
   );
 }
 
-export default withPermission(AccountManage, PERMISSIONS.WHITELIST_USER);
+const AccountManageWithPermission = withPermission(AccountManage, PERMISSIONS.WHITELIST_USER);
+
+export default AccountManageWithPermission;

@@ -1,6 +1,7 @@
 // Node modules
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { AxiosError } from 'axios';
 
 // Services
 import AuthService from '../../services/authService';
@@ -84,7 +85,7 @@ export default function Auth() {
         alert(res.message || 'A reset link has been sent to your email.');
         authModeChange('login');
       }
-    } catch (error: any) {
+    } catch (error: AxiosError) {
       if (
         authMode === 'signup' &&
         error.response?.data?.code === 'UserNotFound'
