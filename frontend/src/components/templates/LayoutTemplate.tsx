@@ -5,8 +5,8 @@ import { Outlet } from 'react-router';
 import Box from '@mui/material/Box';
 
 // Components
-import SideBar from '../organisms/SideBar';
-import TopBar from '../organisms/TopBar';
+import SideBar from '../organisms/layout/SideBar';
+import TopBar from '../organisms/layout/TopBar';
 
 const DRAWER_WIDTH = 260;
 

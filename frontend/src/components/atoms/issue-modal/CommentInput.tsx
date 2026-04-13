@@ -20,11 +20,7 @@ export default function CommentInput({
   return (
     <Box
       sx={{
-        position: 'sticky',
-        bottom: 0,
         bgcolor: 'background.paper',
-        pt: 2,
-        pb: 1,
       }}
     >
       <form onSubmit={onSubmit}>

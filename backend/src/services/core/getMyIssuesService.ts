@@ -22,6 +22,7 @@ export const fetchMyIssues = async (userId: string | Types.ObjectId) => {
   return await Issue.find({
     $or: [{ author: userId }, { assignedTo: userId }, { userTags: userId }],
   })
+    .sort({ createdAt: -1 })
     .populate('author', 'fullName email')
     .populate('type', 'name')
     .populate('userTags', 'fullName email')

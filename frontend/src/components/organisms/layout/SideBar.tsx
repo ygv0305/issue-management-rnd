@@ -15,21 +15,21 @@ import Button from '@mui/material/Button';
 
 // Icons
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
+import DatasetIcon from '@mui/icons-material/Dataset';
 import PeopleIcon from '@mui/icons-material/People';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // Context
-import { useUser } from '../../lib/context/UserContext';
+import { useUser } from '../../../lib/context/UserContext';
 
 // RBAC
-import { hasPermission } from '../../lib/rbac/hasPermission';
-import { PERMISSIONS } from '../../lib/rbac/allPermission';
+import { hasPermission } from '../../../lib/rbac/hasPermission';
+import { PERMISSIONS } from '../../../lib/rbac/allPermission';
 
 // Hooks
-import { useSidebar } from '../../hooks/layout/useSidebar';
+import { useSidebar } from '../../../hooks/layout/useSidebar';
 
 const DRAWER_WIDTH = 260;
 
@@ -85,7 +85,7 @@ export default function SideBar() {
             sx={() => getActiveStyle(window.location.pathname === '/my-issues')}
           >
             <ListItemIcon>
-              <AssignmentIcon color="inherit" />
+              <AssignmentIndIcon color="inherit" />
             </ListItemIcon>
             <ListItemText
               primary={
@@ -105,7 +105,7 @@ export default function SideBar() {
               }
             >
               <ListItemIcon>
-                <AssignmentTurnedInIcon color="inherit" />
+                <AssignmentIcon color="inherit" />
               </ListItemIcon>
               <ListItemText
                 primary={
@@ -145,7 +145,7 @@ export default function SideBar() {
               }
             >
               <ListItemIcon>
-                <SettingsIcon color="inherit" />
+                <DatasetIcon color="inherit" />
               </ListItemIcon>
               <ListItemText
                 primary={

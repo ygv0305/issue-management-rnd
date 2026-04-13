@@ -37,12 +37,7 @@ interface TabPanelProps {
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      {...other}
-      style={{ paddingTop: '24px' }}
-    >
+    <div role="tabpanel" hidden={value !== index} {...other}>
       {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
     </div>
   );
@@ -118,7 +113,7 @@ export default function IssueModal({
               height: '450px',
             }}
           >
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', pb: 2 }}>
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
               <CommentList
                 comments={localThread}
                 isLoading={isLoadingComments}

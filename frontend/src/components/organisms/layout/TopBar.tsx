@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 // Hooks
-import { useTopbar } from '../../hooks/layout/useTopbar';
+import { useTopbar } from '../../../hooks/layout/useTopbar';
 
 // Assets
 import autLogo from '../../assets/images/aut-logo.jpg';

@@ -2,20 +2,27 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // Types
 import type { IssueData } from '../../../types/issueTypes';
 
 // Components
 import StatusBadge from '../../atoms/StatusBadge';
+import TaggedUsersDialog from '../../atoms/issue-modal/TaggedUsersDialog';
+
+// Hooks
+import { useState } from 'react';
 
 interface OverviewTabProps {
   issue: IssueData;
 }
 
 export default function OverviewTab({ issue }: OverviewTabProps) {
+  const [usersDialogOpen, setUsersDialogOpen] = useState(false);
+
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} sx={{ mt: 2 }}>
       <Grid size={12}>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Subject
@@ -53,11 +60,18 @@ export default function OverviewTab({ issue }: OverviewTabProps) {
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Tagged Users
         </Typography>
-        <Typography variant="body2">
-          {issue.userTags.length > 0
-            ? `${issue.userTags.length} users`
-            : 'None'}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">
+            {issue.userTags.length > 0
+              ? `${issue.userTags.length} users`
+              : 'None'}
+          </Typography>
+          {issue.userTags.length > 0 && (
+            <Button variant="text" onClick={() => setUsersDialogOpen(true)}>
+              See details
+            </Button>
+          )}
+        </Box>
       </Grid>
       <Grid size={{ xs: 12, sm: 6 }}>
         <Typography
@@ -94,6 +108,12 @@ export default function OverviewTab({ issue }: OverviewTabProps) {
           </Typography>
         </Box>
       </Grid>
+
+      <TaggedUsersDialog
+        open={usersDialogOpen}
+        users={issue.userTags}
+        onClose={() => setUsersDialogOpen(false)}
+      />
     </Grid>
   );
 }

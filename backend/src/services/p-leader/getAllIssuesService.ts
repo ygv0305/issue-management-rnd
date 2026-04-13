@@ -15,6 +15,7 @@ import Issue from '../../models/issueSchema.js';
  */
 export const fetchAllIssues = async () => {
   return await Issue.find({})
+    .sort({ createdAt: -1 })
     .populate('author', 'fullName email')
     .populate('type', 'name')
     .populate('assignedTo', 'fullName email')
