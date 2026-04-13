@@ -1,6 +1,7 @@
 // Node modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { AxiosError } from 'axios';
 
 // Services
 import AuthService from '../../services/authService';
@@ -52,7 +53,7 @@ export default function CreatePassword() {
       await AuthService.setPassword({ email, token, password });
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
-    } catch (error: any) {
+    } catch (error: AxiosError) {
       const message =
         error.response?.data?.message ||
         error.message ||
