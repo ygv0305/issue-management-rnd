@@ -111,4 +111,6 @@ function AllIssueView() {
   );
 }
 
-export default withPermission(AllIssueView, PERMISSIONS.VIEW_ALL_ISSUE);
+const AllIssueViewWithPermission = withPermission(AllIssueView, PERMISSIONS.VIEW_ALL_ISSUE);
+
+export default AllIssueViewWithPermission;

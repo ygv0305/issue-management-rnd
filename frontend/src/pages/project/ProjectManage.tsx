@@ -137,4 +137,6 @@ function ProjectManage() {
   );
 }
 
-export default withPermission(ProjectManage, PERMISSIONS.CREATE_PROJECT);
+const ProjectManageWithPermission = withPermission(ProjectManage, PERMISSIONS.CREATE_PROJECT);
+
+export default ProjectManageWithPermission;
