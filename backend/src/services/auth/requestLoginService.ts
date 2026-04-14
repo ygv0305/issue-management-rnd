@@ -13,6 +13,9 @@ import RefreshToken from '../../models/refreshTokenSchema.js';
 // Lib
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
 
+// Types
+import type { Types } from 'mongoose';
+
 /**
  * Verifies a user's credentials by looking up the email and comparing
  * the provided password against the stored bcrypt hash.
@@ -44,7 +47,7 @@ export const verifyUser = async (email: string, password: string) => {
  * @returns An object containing the access token and refresh token strings.
  * @async
  */
-export const createSession = async (userId: any) => {
+export const createSession = async (userId: Types.ObjectId) => {
   const accessToken = genAccessToken(userId);
   const refreshToken = genRefreshToken(userId);
 

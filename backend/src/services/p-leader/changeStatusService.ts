@@ -18,13 +18,25 @@ import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
  *          or the original issue if no updates were provided.
  * @async
  */
+
+interface UpdateData {
+  status?: IssueStatus;
+  priority?: IssuePriority;
+}
+
+interface HistoryEntry {
+  status?: IssueStatus;
+  priority?: IssuePriority;
+  timestamp: Date;
+}
+
 export const updateIssueStatus = async (
   issueId: string,
   newStatus?: IssueStatus,
   newPriority?: IssuePriority,
 ) => {
-  const updateData: any = {};
-  const historyEntry: any = { timestamp: new Date() };
+  const updateData: UpdateData = {};
+  const historyEntry: HistoryEntry = { timestamp: new Date() };
 
   if (newStatus) {
     updateData.status = newStatus;

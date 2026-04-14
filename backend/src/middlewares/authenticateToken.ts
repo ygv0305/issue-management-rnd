@@ -37,6 +37,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 
   // Split the token from Bearer prefix
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, token] = authHeader.split(' ');
 
   try {

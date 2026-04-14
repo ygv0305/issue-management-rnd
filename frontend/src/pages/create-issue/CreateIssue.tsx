@@ -63,7 +63,7 @@ export default function CreateIssue() {
                   id="issueType"
                   name="issueType"
                   value={formData.issueType}
-                  onChange={handleChange as any}
+                  onChange={handleChange}
                   label="Issue Type"
                 >
                   <MenuItem value="">
@@ -122,7 +122,7 @@ export default function CreateIssue() {
                   id="urgencyLevel"
                   name="urgencyLevel"
                   value={formData.urgencyLevel}
-                  onChange={handleChange as any}
+                  onChange={handleChange}
                   label="Urgency Level"
                 >
                   <MenuItem value="">
@@ -150,7 +150,7 @@ export default function CreateIssue() {
                   id="impactLevel"
                   name="impactLevel"
                   value={formData.impactLevel}
-                  onChange={handleChange as any}
+                  onChange={handleChange}
                   label="Impact Level"
                 >
                   <MenuItem value="">

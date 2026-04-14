@@ -42,7 +42,7 @@ export interface IIssue {
   /** Detailed description of the issue */
   description: string;
   /** Reference to the issue's type/category */
-  type: Schema.Types.ObjectId;
+  type: Types.ObjectId;
   /** Current status of the issue */
   status: IssueStatus;
   /** Priority level of the issue */

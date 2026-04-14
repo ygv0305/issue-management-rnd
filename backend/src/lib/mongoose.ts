@@ -53,7 +53,7 @@ export const databaseDisconnect = async (): Promise<void> => {
     console.log('Disconnected from database');
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error('Failed to disconnect from database', { cause: error });
     }
     console.error('Database disconnection failed, ', error);
   }

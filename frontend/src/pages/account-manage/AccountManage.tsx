@@ -70,7 +70,7 @@ function AccountManage() {
                 id="fullName"
                 name="fullName"
                 value={formData.fullName}
-                onChange={handleChange as any}
+                onChange={handleChange}
                 placeholder="John Doe"
                 required
                 slotProps={{
@@ -88,7 +88,7 @@ function AccountManage() {
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange as any}
+                onChange={handleChange}
                 placeholder="user@autuni.ac.nz"
                 required
                 slotProps={{
@@ -107,7 +107,7 @@ function AccountManage() {
                   name="role"
                   value={formData.role}
                   label="Role"
-                  onChange={handleChange as any}
+                  onChange={handleChange}
                 >
                   <MenuItem value="">
                     <em>Select Role</em>
@@ -131,7 +131,7 @@ function AccountManage() {
                     name="projectId"
                     value={formData.projectId}
                     label="Project"
-                    onChange={handleChange as any}
+                    onChange={handleChange}
                   >
                     <MenuItem value="">
                       <em>Select a Project</em>

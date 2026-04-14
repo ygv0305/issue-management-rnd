@@ -14,7 +14,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useTopbar } from '../../../hooks/layout/useTopbar';
 
 // Assets
-import autLogo from '../../assets/images/aut-logo.jpg';
+import autLogo from '../../../assets/images/aut-logo.jpg';
 
 const DRAWER_WIDTH = 260;
 

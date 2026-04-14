@@ -12,6 +12,9 @@ import searchService from '../../services/searchService';
 import type { IssueTypeData } from '../../types/issueTypes';
 import type { SearchedUserData } from '../../types/searchTypes';
 
+// MUI
+import type { SelectChangeEvent } from '@mui/material/Select';
+
 /** Shape of a react-select option for user tagging */
 export type UserOption = {
   value: string;
@@ -36,9 +39,9 @@ interface UseCreateIssueReturn {
   setFormData: (data: CreateIssueFormData) => void;
   setSelectedUsers: (users: UserOption[]) => void;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>,
   ) => void;
   handleSubmit: (e: React.SubmitEvent) => Promise<void>;
 }
@@ -158,9 +161,9 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

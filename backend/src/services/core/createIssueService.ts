@@ -35,6 +35,12 @@ interface CreateIssueInput {
   attachments?: { url: string; publicId: string }[];
   /** Optional array of users tagged in the issue */
   userTags?: Types.ObjectId[];
+  status?: IssueStatus;
+  history?: {
+    status?: IssueStatus;
+    priority?: IssuePriority;
+    timestamp: Date;
+  }[];
 }
 
 /**
@@ -45,22 +51,24 @@ interface CreateIssueInput {
  * @returns The newly created Issue document.
  * @async
  */
+
 export const createIssueDb = async (data: CreateIssueInput) => {
   const cleanDescription = purify.sanitize(data.description);
 
-  const issueData = {
+  const issueData: CreateIssueInput = {
     ...data,
     description: cleanDescription,
     status: IssueStatus.New,
     history: [
       {
         status: IssueStatus.New,
+        priority: data.priority,
         timestamp: new Date(),
       },
     ],
   };
 
-  return await Issue.create(issueData as any);
+  return await Issue.create(issueData);
 };
 
 /**

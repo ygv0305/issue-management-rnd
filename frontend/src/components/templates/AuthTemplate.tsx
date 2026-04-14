@@ -75,7 +75,7 @@ export default function AuthTemplate({ children }: AuthTemplateProps) {
             src={autLogo}
             alt="AUT Logo"
             style={{
-              height: '60px',
+              height: '120px',
               objectFit: 'cover',
             }}
           />

@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 // Services
 import adminService from '../../services/adminService';
 
+// MUI
+import type { SelectChangeEvent } from '@mui/material/Select';
+
 // Types
 import type { SystemRoles, WhitelistUserData } from '../../types/authTypes';
 import type { ProjectData } from '../../types/projectTypes';
@@ -38,7 +41,9 @@ interface UseAccountManageReturn {
   roles: SystemRoles[];
   setFormData: (data: WhitelistUserData) => void;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>,
   ) => void;
   handleSubmit: (e: React.SubmitEvent) => Promise<void>;
 }
@@ -72,12 +77,14 @@ export const useAccountManage = (): UseAccountManageReturn => {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setStatusMessage(null);
 
