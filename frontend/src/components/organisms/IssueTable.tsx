@@ -26,7 +26,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         field: '_id',
         headerName: 'ID',
         headerClassName: 'issue-table-header',
-        width: 100,
+        width: 110,
         valueFormatter: (value?: string) => {
           if (value) {
             return `#${value.slice(-6).toUpperCase()}`;
@@ -51,7 +51,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         field: 'createdAt',
         headerName: 'Date',
         headerClassName: 'issue-table-header',
-        width: 100,
+        width: 110,
         valueFormatter: (value?: string) => {
           if (value) {
             return new Date(value).toLocaleDateString('en-GB', {
@@ -65,7 +65,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         field: 'status',
         headerName: 'Status',
         headerClassName: 'issue-table-header',
-        width: 100,
+        width: 110,
         renderCell: (params: GridRenderCellParams) => (
           <StatusBadge status={params.value} />
         ),
@@ -74,7 +74,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         field: 'priority',
         headerName: 'Priority',
         headerClassName: 'issue-table-header',
-        width: 100,
+        width: 110,
         renderCell: (params: GridRenderCellParams) => (
           <StatusBadge priority={params.value} />
         ),
@@ -93,12 +93,13 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
 
       <Box
         sx={{
-          maxHeight: 500,
+          maxHeight: '80vh',
           width: '100%',
           bgcolor: 'background.paper',
           border: 1,
           borderColor: 'divider',
           boxShadow: '0px 2px 4px rgba(0,0,0,0.05)',
+          overflowY: 'auto',
         }}
       >
         <DataGrid

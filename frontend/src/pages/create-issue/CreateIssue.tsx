@@ -11,14 +11,13 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-
-// Icon
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // Components
 import Select from '../../components/atoms/CustomSelect';
+import PriorityTooltip from '../../components/atoms/PriorityTooltip';
+
+// Utils
+import { urgencyData, impactData } from '../../utils/priorityJustifyData';
 
 export default function CreateIssue() {
   const {
@@ -133,13 +132,7 @@ export default function CreateIssue() {
                   <MenuItem value="Low">Low</MenuItem>
                 </Select>
               </FormControl>
-              <Box>
-                <Tooltip title="Urgency Info" placement="top">
-                  <IconButton>
-                    <InfoOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <PriorityTooltip data={urgencyData} />
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex' }}>
@@ -161,13 +154,7 @@ export default function CreateIssue() {
                   <MenuItem value="Low">Low</MenuItem>
                 </Select>
               </FormControl>
-              <Box>
-                <Tooltip title="Impact Info" placement="top">
-                  <IconButton>
-                    <InfoOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <PriorityTooltip data={impactData} />
             </Grid>
 
             <Grid size={12}>

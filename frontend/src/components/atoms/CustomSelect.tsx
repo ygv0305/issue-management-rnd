@@ -9,9 +9,7 @@ import type { SelectProps } from '@mui/material/Select';
  * This component disables scroll lock (which causes layout shifts) and removes
  * the transition animation that causes the visual "jump".
  */
-export default function CustomSelect<Value = unknown>(
-  props: SelectProps<Value>,
-) {
+export default function CustomSelect<Value>(props: SelectProps<Value>) {
   return (
     <MuiSelect<Value>
       {...props}
