@@ -57,7 +57,7 @@ interface CreateIssueFormData {
 /** Strips the '@autuni.ac.nz' suffix for display */
 const trimEmail = (email: string) => email.replace(/@autuni\.ac\.nz$/i, '');
 
-const getIssueTypesFromStorage = (): IssueTypeData[] => {
+export const getIssueTypesFromStorage = (): IssueTypeData[] => {
   try {
     const parsed = JSON.parse(localStorage.getItem('issueTypes')!);
     return parsed || [];

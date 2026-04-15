@@ -31,7 +31,7 @@ function ProjectManage() {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', maxWidth: '1200px', mx: 'auto' }}>
       <Typography variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
         Project Management
       </Typography>

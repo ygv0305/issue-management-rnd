@@ -8,10 +8,17 @@ import Typography from '@mui/material/Typography';
 import React, { useMemo } from 'react';
 
 // Types
-import type { IssueData } from '../../types/issueTypes';
+import type {
+  IssueData,
+  IssueStatus,
+  IssuePriority,
+} from '../../types/issueTypes';
 
 // Components
 import StatusBadge from '../atoms/StatusBadge';
+
+// Hooks
+import { getIssueTypesFromStorage } from '../../hooks/issue/useCreateIssue';
 
 interface IssueTableProps {
   title?: string;
@@ -19,11 +26,24 @@ interface IssueTableProps {
   onIssueSelect: (issue: IssueData) => void;
 }
 
+const IssueStatusArr: IssueStatus[] = [
+  'New',
+  'InProgress',
+  'Resolved',
+  'ReOpen',
+  'Closed',
+];
+
+const IssuePrioArr: IssuePriority[] = ['Low', 'Medium', 'High', 'Critical'];
+
+const IssueTypeArr = getIssueTypesFromStorage().map((e) => e.name);
+
 const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
   const columns = useMemo<GridColDef[]>(
     () => [
       {
         field: '_id',
+        filterable: false,
         headerName: 'ID',
         headerClassName: 'issue-table-header',
         width: 110,
@@ -46,6 +66,8 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         headerClassName: 'issue-table-header',
         width: 220,
         valueGetter: (_value, row) => row.type?.name || 'N/A',
+        type: 'singleSelect',
+        valueOptions: IssueTypeArr,
       },
       {
         field: 'createdAt',
@@ -60,6 +82,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
             });
           }
         },
+        type: 'date',
       },
       {
         field: 'status',
@@ -69,6 +92,8 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         renderCell: (params: GridRenderCellParams) => (
           <StatusBadge status={params.value} />
         ),
+        type: 'singleSelect',
+        valueOptions: IssueStatusArr,
       },
       {
         field: 'priority',
@@ -78,6 +103,8 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         renderCell: (params: GridRenderCellParams) => (
           <StatusBadge priority={params.value} />
         ),
+        type: 'singleSelect',
+        valueOptions: IssuePrioArr,
       },
     ],
     [],
@@ -107,6 +134,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
           columns={columns}
           getRowId={(row) => row._id}
           onRowClick={(params) => onIssueSelect(params.row as IssueData)}
+          showToolbar
           initialState={{
             pagination: {
               paginationModel: { pageSize: 15 },

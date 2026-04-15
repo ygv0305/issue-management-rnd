@@ -3,12 +3,24 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { keyframes } from '@mui/system';
 
 // Icon
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // Types
 import type { PriorityJustifyType } from '../../utils/priorityJustifyData';
+
+const fadeIn = keyframes`
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
 
 interface PriorityTooltipProps {
   data: PriorityJustifyType;
@@ -59,6 +71,13 @@ export default function PriorityTooltip({ data }: PriorityTooltipProps) {
         }
         arrow
         placement="top"
+        slotProps={{
+          tooltip: {
+            sx: {
+              animation: `${fadeIn} 150ms cubic-bezier(0.4, 0, 0.2, 1) forwards`,
+            },
+          },
+        }}
       >
         <IconButton size="small" sx={{ ml: 1 }} tabIndex={-1}>
           <InfoOutlinedIcon fontSize="small" />
