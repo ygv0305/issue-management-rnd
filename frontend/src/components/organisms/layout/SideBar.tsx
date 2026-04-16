@@ -77,6 +77,7 @@ export default function SideBar() {
         </Typography>
       </Box>
 
+      {/* My Issues */}
       <List sx={{ flexGrow: 1, px: 2 }}>
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
@@ -95,27 +96,7 @@ export default function SideBar() {
           </ListItemButton>
         </ListItem>
 
-        {hasPermission(user, PERMISSIONS.VIEW_ALL_ISSUE) && (
-          <ListItem disablePadding sx={{ mb: 0.5 }}>
-            <ListItemButton
-              component={NavLink}
-              to="/all-issues"
-              sx={() =>
-                getActiveStyle(window.location.pathname === '/all-issues')
-              }
-            >
-              <ListItemIcon>
-                <AssignmentIcon color="inherit" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography sx={{ fontWeight: 500 }}>All Issues</Typography>
-                }
-              />
-            </ListItemButton>
-          </ListItem>
-        )}
-
+        {/* Create Issue */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
             component={NavLink}
@@ -135,6 +116,54 @@ export default function SideBar() {
           </ListItemButton>
         </ListItem>
 
+        {/* All Issues */}
+        {hasPermission(user, PERMISSIONS.VIEW_ALL_ISSUE) && (
+          <>
+            <Divider />
+            <ListItem disablePadding sx={{ my: 0.5 }}>
+              <ListItemButton
+                component={NavLink}
+                to="/all-issues"
+                sx={() =>
+                  getActiveStyle(window.location.pathname === '/all-issues')
+                }
+              >
+                <ListItemIcon>
+                  <AssignmentIcon color="inherit" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography sx={{ fontWeight: 500 }}>All Issues</Typography>
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
+
+        {/* Dashboard */}
+        {hasPermission(user, PERMISSIONS.VIEW_DASHBOARD) && (
+          <ListItem disablePadding sx={{ mb: 0.5 }}>
+            <ListItemButton
+              component={NavLink}
+              to="/dashboard"
+              sx={() =>
+                getActiveStyle(window.location.pathname === '/dashboard')
+              }
+            >
+              <ListItemIcon>
+                <AssignmentIcon color="inherit" />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography sx={{ fontWeight: 500 }}>Dashboard</Typography>
+                }
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
+
+        {/* Project Manage */}
         {hasPermission(user, PERMISSIONS.CREATE_PROJECT) && (
           <ListItem disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
@@ -158,25 +187,29 @@ export default function SideBar() {
           </ListItem>
         )}
 
+        {/* Account Manage */}
         {hasPermission(user, PERMISSIONS.WHITELIST_USER) && (
-          <ListItem disablePadding sx={{ mb: 0.5 }}>
-            <ListItemButton
-              component={NavLink}
-              to="/account-manage"
-              sx={() =>
-                getActiveStyle(window.location.pathname === '/account-manage')
-              }
-            >
-              <ListItemIcon>
-                <PeopleIcon color="inherit" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography sx={{ fontWeight: 500 }}>Accounts</Typography>
+          <>
+            <Divider />
+            <ListItem disablePadding sx={{ my: 0.5 }}>
+              <ListItemButton
+                component={NavLink}
+                to="/account-manage"
+                sx={() =>
+                  getActiveStyle(window.location.pathname === '/account-manage')
                 }
-              />
-            </ListItemButton>
-          </ListItem>
+              >
+                <ListItemIcon>
+                  <PeopleIcon color="inherit" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography sx={{ fontWeight: 500 }}>Accounts</Typography>
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          </>
         )}
       </List>
 

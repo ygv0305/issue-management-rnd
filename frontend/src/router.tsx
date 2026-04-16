@@ -8,8 +8,9 @@ import { UserProvider } from './lib/context/UserContext';
 import Auth from './pages/auth/Auth';
 import CreatePassword from './pages/auth/CreatePassword';
 import MyIssueView from './pages/issue-view/MyIssueView';
-import AllIssueView from './pages/issue-view/AllIssueView';
 import CreateIssue from './pages/create-issue/CreateIssue';
+import AllIssueView from './pages/issue-view/AllIssueView';
+import Dashboard from './pages/dashboard/Dashboard';
 import ProjectManage from './pages/project/ProjectManage';
 import AccountManage from './pages/account-manage/AccountManage';
 
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
       </UserProvider>
     ),
     children: [
+      // Auth routes
       {
         path: '/',
         element: <Auth />,
@@ -40,6 +42,7 @@ export const router = createBrowserRouter([
         path: '/reset-password',
         element: <CreatePassword />,
       },
+      // Main protected routes
       {
         element: <ProtectedRoute />,
         children: [
@@ -49,6 +52,10 @@ export const router = createBrowserRouter([
               {
                 path: '/my-issues',
                 element: <MyIssueView />,
+              },
+              {
+                path: '/create-issue',
+                element: <CreateIssue />,
               },
               {
                 element: (
@@ -64,8 +71,17 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                path: '/create-issue',
-                element: <CreateIssue />,
+                element: (
+                  <ProtectedRoute
+                    requiredPermission={PERMISSIONS.VIEW_DASHBOARD}
+                  />
+                ),
+                children: [
+                  {
+                    path: '/dashboard',
+                    element: <Dashboard />,
+                  },
+                ],
               },
               {
                 element: (

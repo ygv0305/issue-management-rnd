@@ -29,7 +29,6 @@ export enum IssuePriority {
   Low = 'Low',
   Medium = 'Medium',
   High = 'High',
-  Critical = 'Critical',
 }
 
 /**
@@ -46,7 +45,8 @@ export interface IIssue {
   /** Current status of the issue */
   status: IssueStatus;
   /** Priority level of the issue */
-  priority: IssuePriority;
+  urgency: IssuePriority;
+  impact: IssuePriority;
   /** Reference to the user who created the issue */
   author: Types.ObjectId;
   /** Reference to the Paper Leader assigned to handle the issue */
@@ -66,6 +66,7 @@ export interface IIssue {
     priority?: IssuePriority;
     timestamp: Date;
   }[];
+  resolvedAt: Date;
 }
 
 /** Mongoose schema for Issue documents */
@@ -91,10 +92,15 @@ const issueSchema = new Schema<IIssue>(
       enum: Object.values(IssueStatus),
       default: IssueStatus.New,
     },
-    priority: {
+    urgency: {
       type: String,
       enum: Object.values(IssuePriority),
-      required: [true, 'Issue priority is required'],
+      required: [true, 'Urgency level is required'],
+    },
+    impact: {
+      type: String,
+      enum: Object.values(IssuePriority),
+      required: [true, 'Impact level is required'],
     },
     author: {
       type: Schema.Types.ObjectId,
@@ -144,6 +150,9 @@ const issueSchema = new Schema<IIssue>(
         },
       },
     ],
+    resolvedAt: {
+      type: Schema.Types.Date,
+    },
   },
   { timestamps: true },
 );

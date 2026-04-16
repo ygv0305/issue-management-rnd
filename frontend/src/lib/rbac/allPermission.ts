@@ -30,6 +30,7 @@ export const PERMISSIONS = {
   CREATE_ISSUETYPE: 'create:issueType',
   VIEW_ISSUETYPE: 'view:issueType',
   VIEW_PROJECT: 'view:project',
+  VIEW_DASHBOARD: 'view:dashboard',
 };
 
 const BASE = [PERMISSIONS.CREATE_ISSUE, PERMISSIONS.VIEW_MY_ISSUE];
@@ -50,6 +51,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.CREATE_ISSUETYPE,
     PERMISSIONS.VIEW_PROJECT,
     PERMISSIONS.VIEW_ISSUETYPE,
+    PERMISSIONS.VIEW_DASHBOARD,
   ],
   [ROLES.ADMIN]: [
     ...BASE,

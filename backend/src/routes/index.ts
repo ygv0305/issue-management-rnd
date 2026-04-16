@@ -15,6 +15,7 @@ import pLeaderRoutes from './pLeader.js';
 import coreBaseRoutes from './coreBase.js';
 import adminRoutes from './admin.js';
 import searchRoutes from './search.js';
+import dashboardRoutes from './dashboard.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
@@ -49,6 +50,13 @@ router.use(
   authenticateToken,
   authoriseRole(['PaperLeader', 'Admin']),
   pLeaderRoutes,
+);
+
+router.use(
+  '/dashboard',
+  authenticateToken,
+  authoriseRole(['PaperLeader']),
+  dashboardRoutes,
 );
 
 /** Admin routes - requires authentication AND Admin role authorization */
