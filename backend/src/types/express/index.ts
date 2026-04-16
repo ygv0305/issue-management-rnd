@@ -8,12 +8,7 @@
 // Types
 import { Types } from 'mongoose';
 
-/**
- * Global namespace augmentation for Express Request interface.
- * Adds the `userId` property which is set by the authentication middleware.
- */
-
-declare module 'express' {
+declare module 'express-serve-static-core' {
   interface Request {
     /** User ID extracted from the verified JWT access token */
     userId: Types.ObjectId;
