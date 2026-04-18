@@ -1,5 +1,5 @@
 // Node modules
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 // RBAC
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
@@ -20,6 +20,15 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 function AllIssueView() {
+  const [isMounting, setIsMounting] = useState(true);
+
+  useEffect(() => {
+    // Defers rendering the heavy DataGrids to after the initial paint
+    // Prevent the 'delayed' route switch behaviour
+    const timer = setTimeout(() => setIsMounting(false), 20);
+    return () => clearTimeout(timer);
+  }, []);
+
   const {
     allIssues,
     loading,
@@ -33,7 +42,7 @@ function AllIssueView() {
     [setSelectedIssue],
   );
 
-  if (loading) {
+  if (loading || isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 

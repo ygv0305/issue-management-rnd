@@ -1,55 +1,56 @@
 // Node modules
-import { useEffect } from 'react';
-
-// Context
-import { useUser } from '../lib/context/UserContext';
+import { useQuery } from '@tanstack/react-query';
 
 // Services
 import coreService from '../services/coreService';
 import pLeaderService from '../services/pLeaderService';
 
-// RBAC
+// Lib
 import { hasPermission } from '../lib/rbac/hasPermission';
 import { PERMISSIONS } from '../lib/rbac/allPermission';
+import { useUser } from '../lib/context/UserContext';
+import { QUERY_KEYS } from '../lib/react-query/queryKeys';
+
+// Types
+import type { IssueTypeData } from '../types/issueTypes';
+import type { ProjectData } from '../types/projectTypes';
 
 /**
- * Fetches shared reference data after login and caches it in localStorage.
- *
- * - Issue types: fetched for every authenticated user.
- * - Projects: fetched only for roles with VIEW_PROJECT permission (Admin, PaperLeader).
- *   For other roles the projects key is removed so stale data is never shown.
- *
- * Call this hook once at the top of the app shell (e.g. Layout).
+ * Hook to fetch and manage issue types.
+ * Synchronizes with localStorage for persistent state across sessions.
  */
-export const useSyncGlobalData = () => {
-  const { user, loading } = useUser();
-
-  useEffect(() => {
-    if (loading || !user) return;
-
-    const fetchData = async () => {
-      try {
-        // All users fetch issue types
-        const typesRes = await coreService.getIssueTypes();
-        if (typesRes.success) {
-          localStorage.setItem('issueTypes', JSON.stringify(typesRes.data));
-        }
-
-        // Only admin and paper leader fetch projects
-        if (hasPermission(user, PERMISSIONS.VIEW_PROJECT)) {
-          const projectsRes = await pLeaderService.getProjects();
-          if (projectsRes.success) {
-            localStorage.setItem('projects', JSON.stringify(projectsRes.data));
-          }
-        } else {
-          // Clear projects from localStorage if user doesn't have permission
-          localStorage.removeItem('projects');
-        }
-      } catch (error) {
-        console.error('Failed to sync global data:', error);
+export const useIssueTypes = () => {
+  return useQuery<IssueTypeData[]>({
+    queryKey: QUERY_KEYS.issueTypes,
+    queryFn: async () => {
+      const res = await coreService.getIssueTypes();
+      if (res.success) {
+        return res.data;
       }
-    };
+      throw new Error('Failed to fetch issue types');
+    },
+    staleTime: Infinity, // Shared data rarely changes
+  });
+};
 
-    fetchData();
-  }, [user, loading]);
+/**
+ * Hook to fetch and manage projects.
+ * Only fetches if the user has VIEW_PROJECT permission.
+ */
+export const useProjects = () => {
+  const { user } = useUser();
+  const isAllowed = hasPermission(user, PERMISSIONS.VIEW_PROJECT);
+
+  return useQuery<ProjectData[]>({
+    queryKey: QUERY_KEYS.projects,
+    queryFn: async () => {
+      const res = await pLeaderService.getProjects();
+      if (res.success) {
+        return res.data;
+      }
+      throw new Error('Failed to fetch projects');
+    },
+    enabled: !!user && isAllowed,
+    staleTime: Infinity,
+  });
 };

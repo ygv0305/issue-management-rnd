@@ -1,6 +1,8 @@
 // Node modules
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 // Services
 import AuthService from '../../services/authService';
@@ -30,7 +32,6 @@ export const useAuth = (): UseAuthReturn => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { user, loading: userLoading, checkAuth } = useUser();
   const navigate = useNavigate();
 
@@ -41,44 +42,8 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, [user, userLoading, navigate]);
 
-  const authModeChange = (mode: AuthMode) => {
-    setAuthMode(mode);
-    setError('');
-    setEmail('');
-    setPassword('');
-  };
-
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setError('');
-    setIsLoading(true);
-
-    if (!email.trim()) {
-      setError('Email cannot be empty.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (authMode === 'login' && !password.trim()) {
-      setError('Password cannot be empty.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setError('You must use a valid @autuni.ac.nz address.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (authMode === 'login' && password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
+  const authMutation = useMutation({
+    mutationFn: async () => {
       if (authMode === 'login') {
         const res = await AuthService.requestLogin({ email, password });
         localStorage.setItem('accessToken', res.accessToken!);
@@ -92,29 +57,58 @@ export const useAuth = (): UseAuthReturn => {
         alert(res.message || 'A reset link has been sent to your email.');
         authModeChange('login');
       }
-    } catch (error: unknown) {
+    },
+    onError: (err: AxiosError<{ message?: string; code?: string }>) => {
       if (
         authMode === 'signup' &&
-        (error as { response?: { data?: { code?: string } } })?.response?.data
-          ?.code === 'UserNotFound'
+        err.response?.data?.code === 'UserNotFound'
       ) {
         alert(
           'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
         );
       } else {
-        const err = error as {
-          response?: { data?: { message?: string } };
-          message?: string;
-        };
         const message =
           err.response?.data?.message ||
           err.message ||
           'An unexpected error occurred';
         setError(message);
       }
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const authModeChange = (mode: AuthMode) => {
+    setAuthMode(mode);
+    setError('');
+    setEmail('');
+    setPassword('');
+  };
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (authMutation.isPending) return;
+    setError('');
+
+    if (!email.trim()) {
+      setError('Email cannot be empty.');
+      return;
     }
+
+    if (authMode === 'login' && !password.trim()) {
+      setError('Password cannot be empty.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError('You must use a valid @autuni.ac.nz address.');
+      return;
+    }
+
+    if (authMode === 'login' && password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    authMutation.mutate();
   };
 
   return {
@@ -122,7 +116,7 @@ export const useAuth = (): UseAuthReturn => {
     email,
     password,
     error,
-    isLoading,
+    isLoading: authMutation.isPending,
     setEmail,
     setPassword,
     authModeChange,

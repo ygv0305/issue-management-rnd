@@ -22,9 +22,6 @@ import { Navigate, Outlet } from 'react-router';
 // Context
 import { useUser } from '../lib/context/UserContext';
 
-// Hooks
-import { useSyncGlobalData } from '../hooks/useSyncGlobalData';
-
 // RBAC
 import { hasPermission } from '../lib/rbac/hasPermission';
 
@@ -36,9 +33,6 @@ export default function ProtectedRoute({
   requiredPermission,
 }: ProtectedRouteProps) {
   const { user, loading } = useUser();
-
-  // Sync global data (projects and issue types)
-  useSyncGlobalData();
 
   if (loading) return <div>Loading...</div>;
 

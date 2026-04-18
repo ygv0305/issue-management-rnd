@@ -1,8 +1,13 @@
 // Node modules
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 // Services
 import adminService from '../../services/adminService';
+
+// Hooks
+import { useProjects } from '../useSyncGlobalData';
 
 // MUI
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -48,33 +53,47 @@ interface UseAccountManageReturn {
   handleSubmit: (e: React.SubmitEvent) => Promise<void>;
 }
 
-const getProjectsFromStorage = (): ProjectData[] => {
-  try {
-    const parsed = JSON.parse(localStorage.getItem('projects')!);
-    return parsed || [];
-  } catch (error) {
-    console.error('Error reading projects, ', error);
-    return [];
-  }
-};
-
 const isValidEmail = (email: string): boolean =>
   email.endsWith('@autuni.ac.nz');
 
 export const useAccountManage = (): UseAccountManageReturn => {
   const [formData, setFormData] =
     useState<WhitelistUserData>(INITIAL_FORM_DATA);
-  const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(
     null,
   );
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
 
-  useEffect(() => {
-    setProjects(getProjectsFromStorage());
-    setLoading(false);
-  }, []);
+  const whitelistMutation = useMutation({
+    mutationFn: async (data: WhitelistUserData) => {
+      const dataToSubmit = { ...data };
+      if (dataToSubmit.role !== 'Student') {
+        delete dataToSubmit.projectId;
+      }
+      return await adminService.whitelistUser(dataToSubmit);
+    },
+    onSuccess: (res) => {
+      if (res.success) {
+        setStatusMessage({
+          type: 'success',
+          text: 'User successfully whitelisted!',
+        });
+        setFormData(INITIAL_FORM_DATA);
+      } else {
+        setStatusMessage({
+          type: 'error',
+          text: res.message || 'Failed to whitelist user.',
+        });
+      }
+    },
+    onError: (error: AxiosError<{ message?: string }>) => {
+      console.error('Error whitelisting user:', error);
+      const errorMsg =
+        error.response?.data?.message ||
+        'Failed to whitelist user. Please try again.';
+      setStatusMessage({ type: 'error', text: errorMsg });
+    },
+  });
 
   const handleChange = (
     e:
@@ -104,44 +123,15 @@ export const useAccountManage = (): UseAccountManageReturn => {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const dataToSubmit = { ...formData };
-      if (dataToSubmit.role !== 'Student') {
-        delete dataToSubmit.projectId;
-      }
-
-      const res = await adminService.whitelistUser(dataToSubmit);
-      if (res.success) {
-        setStatusMessage({
-          type: 'success',
-          text: 'User successfully whitelisted!',
-        });
-        setFormData(INITIAL_FORM_DATA);
-      } else {
-        setStatusMessage({
-          type: 'error',
-          text: res.message || 'Failed to whitelist user.',
-        });
-      }
-    } catch (error: unknown) {
-      console.error('Error whitelisting user:', error);
-      const err = error as { response?: { data?: { message?: string } } };
-      const errorMsg =
-        err.response?.data?.message ||
-        'Failed to whitelist user. Please try again.';
-      setStatusMessage({ type: 'error', text: errorMsg });
-    } finally {
-      setSubmitting(false);
-    }
+    whitelistMutation.mutate(formData);
   };
 
   return {
     formData,
-    submitting,
+    submitting: whitelistMutation.isPending,
     statusMessage,
     projects,
-    loading,
+    loading: projectsLoading,
     roles: ROLES,
     setFormData,
     handleChange,

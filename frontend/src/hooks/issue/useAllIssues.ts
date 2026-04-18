@@ -1,11 +1,15 @@
 // Node modules
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import pLeaderService from '../../services/pLeaderService';
 
 // Types
 import type { IssueData } from '../../types/issueTypes';
+
+// React Query
+import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
 interface UseAllIssuesReturn {
   allIssues: IssueData[];
@@ -16,34 +20,27 @@ interface UseAllIssuesReturn {
 }
 
 export const useAllIssues = (): UseAllIssuesReturn => {
-  const [allIssues, setAllIssues] = useState<IssueData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await pLeaderService.getAllIssues();
-        if (res.success) {
-          setAllIssues(res.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch issues, ', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: allIssues = [], isLoading: loading } = useQuery({
+    queryKey: QUERY_KEYS.allIssues,
+    queryFn: async () => {
+      const res = await pLeaderService.getAllIssues();
+      return res.success ? res.data : [];
+    },
+  });
 
-    fetchData();
-  }, []);
-
-  const handleIssueUpdated = useCallback((updatedIssue: IssueData) => {
-    setAllIssues((prev) =>
-      prev.map((issue) =>
-        issue._id === updatedIssue._id ? updatedIssue : issue,
-      ),
-    );
-  }, []);
+  const handleIssueUpdated = useCallback(
+    (updatedIssue: IssueData) => {
+      queryClient.setQueryData(QUERY_KEYS.allIssues, (old: IssueData[] = []) =>
+        old.map((issue) =>
+          issue._id === updatedIssue._id ? updatedIssue : issue,
+        ),
+      );
+    },
+    [queryClient],
+  );
 
   return {
     allIssues,

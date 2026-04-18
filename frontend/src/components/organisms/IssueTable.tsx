@@ -18,7 +18,7 @@ import type {
 import StatusBadge from '../atoms/StatusBadge';
 
 // Hooks
-import { getIssueTypesFromStorage } from '../../hooks/issue/useCreateIssue';
+import { useIssueTypes } from '../../hooks/useSyncGlobalData';
 
 interface IssueTableProps {
   title?: string;
@@ -36,9 +36,12 @@ const IssueStatusArr: IssueStatus[] = [
 
 const IssuePrioArr: IssuePriority[] = ['Low', 'Medium', 'High', 'Critical'];
 
-const IssueTypeArr = getIssueTypesFromStorage().map((e) => e.name);
-
 const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
+  const { data: issueTypes = [] } = useIssueTypes();
+  const IssueTypeArr = useMemo(
+    () => issueTypes.map((t) => t.name),
+    [issueTypes],
+  );
   const columns = useMemo<GridColDef[]>(
     () => [
       {
@@ -107,7 +110,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         valueOptions: IssuePrioArr,
       },
     ],
-    [],
+    [IssueTypeArr],
   );
 
   return (

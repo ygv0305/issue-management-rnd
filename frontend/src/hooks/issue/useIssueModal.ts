@@ -1,12 +1,14 @@
 // Node modules
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
 import pLeaderService from '../../services/pLeaderService';
 
-// Context
+// Lib
 import { useUser } from '../../lib/context/UserContext';
+import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
 // Types
 import type {
@@ -27,7 +29,7 @@ interface UseIssueModalReturn {
   newStatus: IssueStatus | '';
   newPriority: IssuePriority | '';
   isUpdating: boolean;
-  isChanged: boolean | null;
+  isChanged: boolean;
   isPaperLeader: boolean;
   statusOptions: IssueStatus[];
   priorityOptions: IssuePriority[];
@@ -50,10 +52,8 @@ export const useIssueModal = (
   onIssueUpdated?: (updatedIssue: IssueData) => void,
 ): UseIssueModalReturn => {
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const [commentMsg, setCommentMsg] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localThread, setLocalThread] = useState<CommentData[]>([]);
-  const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
   // Actions Tab State
@@ -63,40 +63,83 @@ export const useIssueModal = (
   const [newPriority, setNewPriority] = useState<IssuePriority | ''>(
     issue?.priority ?? '',
   );
-  const [isUpdating, setIsUpdating] = useState(false);
 
   // Tagged Users State
   const [showTaggedUsers, setShowTaggedUsers] = useState(false);
   const taggedUsersRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!issue || !open) return;
+  const [prevIssueId, setPrevIssueId] = useState<string | undefined>(
+    issue?._id,
+  );
+  const [prevOpen, setPrevOpen] = useState<boolean>(open);
 
-    // Reset state when a new issue opens
-    setActiveTab('details');
-    setLocalThread([]);
-    setIsLoadingComments(true);
-    setNewStatus(issue.status);
-    setNewPriority(issue.priority);
+  // Reset state when a new issue opens
+  if (issue?._id !== prevIssueId || open !== prevOpen) {
+    setPrevIssueId(issue?._id);
+    setPrevOpen(open);
+    if (issue && open) {
+      setActiveTab('details');
+      setNewStatus(issue.status);
+      setNewPriority(issue.priority);
+      setCommentMsg('');
+    }
+  }
 
-    const loadComments = async () => {
-      try {
-        const res = await coreService.fetchComments(issue._id);
-        if (res.success) {
-          setLocalThread(res.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch comments, ', error);
-      } finally {
-        setIsLoadingComments(false);
+  // Fetch comments
+  const { data: localThread = [], isLoading: isLoadingComments } = useQuery({
+    queryKey: QUERY_KEYS.comments(issue?._id ?? ''),
+    queryFn: async () => {
+      if (!issue) return [];
+      const res = await coreService.fetchComments(issue._id);
+      return res.success ? res.data : [];
+    },
+    enabled: !!issue && open,
+  });
+
+  // Post Comment Mutation
+  const postCommentMutation = useMutation({
+    mutationFn: async (message: string) => {
+      if (!issue) return;
+      return await coreService.createComment({
+        issueId: issue._id,
+        message,
+      });
+    },
+    onSuccess: (res) => {
+      if (res?.success) {
+        // Optimistically update comments or invalidate
+        queryClient.setQueryData(
+          QUERY_KEYS.comments(issue?._id ?? ''),
+          (old: CommentData[] = []) => [...old, res.data],
+        );
+        setCommentMsg('');
       }
-    };
+    },
+  });
 
-    loadComments();
-  }, [issue?._id, open]);
+  // Update Issue Mutation
+  const updateIssueMutation = useMutation({
+    mutationFn: async () => {
+      if (!issue) return;
+      return await pLeaderService.changeStatus({
+        issueId: issue._id,
+        ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
+        ...(newPriority !== issue.priority &&
+          newPriority !== '' && { newPriority }),
+      });
+    },
+    onSuccess: (res) => {
+      if (res?.success) {
+        if (onIssueUpdated) {
+          onIssueUpdated(res.data);
+        }
+        onClose();
+      }
+    },
+  });
 
   const isChanged =
-    issue && (newStatus !== issue.status || newPriority !== issue.priority);
+    !!issue && (newStatus !== issue.status || newPriority !== issue.priority);
   const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
 
   const statusOptions: IssueStatus[] = [
@@ -116,65 +159,27 @@ export const useIssueModal = (
   const handlePostComment = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!commentMsg.trim() || !issue) return;
-
-    setIsSubmitting(true);
-    try {
-      const res = await coreService.createComment({
-        issueId: issue._id,
-        message: commentMsg,
-      });
-
-      if (res.success) {
-        setLocalThread([...localThread, res.data]);
-        setCommentMsg('');
-      }
-    } catch (error) {
-      console.error('Failed to post comment, ', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    postCommentMutation.mutate(commentMsg);
   };
 
-  // Convert MUI Tabs event signature to call setActiveTab
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue as ActiveTab);
   };
 
   const handleUpdateIssue = async () => {
     if (!isChanged || !issue) return;
-    setIsUpdating(true);
-
-    try {
-      let updatedIssue = issue;
-
-      const res = await pLeaderService.changeStatus({
-        issueId: issue._id,
-        ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
-        ...(newPriority !== issue.priority &&
-          newPriority !== '' && { newPriority }),
-      });
-      if (res.success) updatedIssue = res.data;
-
-      if (onIssueUpdated) {
-        onIssueUpdated(updatedIssue);
-      }
-      onClose();
-    } catch (error) {
-      console.error('Failed to update issue, ', error);
-    } finally {
-      setIsUpdating(false);
-    }
+    updateIssueMutation.mutate();
   };
 
   return {
     commentMsg,
-    isSubmitting,
+    isSubmitting: postCommentMutation.isPending,
     localThread,
     isLoadingComments,
     activeTab,
     newStatus,
     newPriority,
-    isUpdating,
+    isUpdating: updateIssueMutation.isPending,
     isChanged,
     isPaperLeader,
     statusOptions,

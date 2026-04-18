@@ -3,14 +3,21 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import AsyncSelect from 'react-select/async';
 import debounce from 'lodash/debounce';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
 import searchService from '../../services/searchService';
 
+// Hooks
+import { useIssueTypes } from '../useSyncGlobalData';
+
 // Types
 import type { IssueTypeData } from '../../types/issueTypes';
 import type { SearchedUserData } from '../../types/searchTypes';
+
+// Lib
+import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
 // MUI
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -57,16 +64,6 @@ interface CreateIssueFormData {
 /** Strips the '@autuni.ac.nz' suffix for display */
 const trimEmail = (email: string) => email.replace(/@autuni\.ac\.nz$/i, '');
 
-export const getIssueTypesFromStorage = (): IssueTypeData[] => {
-  try {
-    const parsed = JSON.parse(localStorage.getItem('issueTypes')!);
-    return parsed || [];
-  } catch (error) {
-    console.error('Error reading issue types, ', error);
-    return [];
-  }
-};
-
 const INITIAL_FORM_DATA: CreateIssueFormData = {
   issueType: '',
   subject: '',
@@ -95,11 +92,12 @@ const resolvePriority = (urgency: string, impact: string): string => {
 
 export const useCreateIssue = (): UseCreateIssueReturn => {
   const navigate = useNavigate();
-  const [issueTypes, setIssueTypes] = useState<IssueTypeData[]>([]);
+  const queryClient = useQueryClient();
+
+  const { data: issueTypes = [], isLoading: issueTypesLoading } =
+    useIssueTypes();
   const [formData, setFormData] =
     useState<CreateIssueFormData>(INITIAL_FORM_DATA);
-  const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [selectedUsers, setSelectedUsers] = useState<UserOption[]>([]);
 
   // Debounced loadOptions ref, cancelled on unmount to prevent memory leaks
@@ -155,10 +153,31 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
     };
   }, []);
 
-  useEffect(() => {
-    setIssueTypes(getIssueTypesFromStorage());
-    setLoading(false);
-  }, []);
+  const createIssueMutation = useMutation({
+    mutationFn: async () => {
+      const priority = resolvePriority(
+        formData.urgencyLevel,
+        formData.impactLevel,
+      );
+      return await coreService.createIssue({
+        subject: formData.subject,
+        description: formData.description,
+        type: formData.issueType,
+        priority: priority,
+        userTags: selectedUsers.map((u) => u.value),
+      });
+    },
+    onSuccess: () => {
+      alert('Issue submitted successfully!');
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myIssues });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+      navigate('/my-issues');
+    },
+    onError: (error) => {
+      console.error('Failed to submit issue:', error);
+      alert('Failed to submit issue. Please try again.');
+    },
+  });
 
   const handleChange = (
     e:
@@ -186,34 +205,14 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const priority = resolvePriority(
-        formData.urgencyLevel,
-        formData.impactLevel,
-      );
-      await coreService.createIssue({
-        subject: formData.subject,
-        description: formData.description,
-        type: formData.issueType,
-        priority: priority,
-        userTags: selectedUsers.map((u) => u.value),
-      });
-      alert('Issue submitted successfully!');
-      navigate('/my-issues');
-    } catch (error) {
-      console.error('Failed to submit issue:', error);
-      alert('Failed to submit issue. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+    createIssueMutation.mutate();
   };
 
   return {
     issueTypes,
     formData,
-    submitting,
-    loading,
+    submitting: createIssueMutation.isPending,
+    loading: issueTypesLoading,
     selectedUsers,
     loadOptionsRef,
     loadOptions,

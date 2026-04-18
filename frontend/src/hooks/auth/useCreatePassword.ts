@@ -1,6 +1,8 @@
 // Node modules
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 // Services
 import AuthService from '../../services/authService';
@@ -28,7 +30,6 @@ export const useCreatePassword = (): UseCreatePasswordReturn => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,42 +38,40 @@ export const useCreatePassword = (): UseCreatePasswordReturn => {
     }
   }, [token, email, navigate]);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setError('');
-    setIsLoading(true);
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
+  const passwordMutation = useMutation({
+    mutationFn: async () => {
       if (!email || !token) throw new Error('Missing email or token.');
       await AuthService.setPassword({ email, token, password });
+    },
+    onSuccess: () => {
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000);
-    } catch (error: unknown) {
-      const err = error as {
-        response?: { data?: { message?: string } };
-        message?: string;
-      };
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
       const message =
         err.response?.data?.message ||
         err.message ||
         'An unexpected error occurred';
       setError(message);
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (passwordMutation.isPending) return;
+    setError('');
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
     }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    passwordMutation.mutate();
   };
 
   // Determine if it looks like a reset or create flow based on URL path
@@ -85,7 +84,7 @@ export const useCreatePassword = (): UseCreatePasswordReturn => {
     confirmPassword,
     error,
     success,
-    isLoading,
+    isLoading: passwordMutation.isPending,
     isReset,
     setPassword,
     setConfirmPassword,

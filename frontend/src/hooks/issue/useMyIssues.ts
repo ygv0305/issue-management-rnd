@@ -1,15 +1,15 @@
 // Node modules
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
 
-// Context
+// Lib
 import { useUser } from '../../lib/context/UserContext';
-
-// RBAC
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 import { hasPermission } from '../../lib/rbac/hasPermission';
+import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
 // Types
 import type { IssueData } from '../../types/issueTypes';
@@ -26,26 +26,15 @@ interface UseMyIssuesReturn {
 
 export const useMyIssues = (): UseMyIssuesReturn => {
   const { user } = useUser();
-  const [myIssues, setMyIssues] = useState<IssueData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await coreService.getMyIssues();
-        if (res.success) {
-          setMyIssues(res.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch issues, ', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { data: myIssues = [], isLoading: loading } = useQuery({
+    queryKey: QUERY_KEYS.myIssues,
+    queryFn: async () => {
+      const res = await coreService.getMyIssues();
+      return res.success ? res.data : [];
+    },
+  });
 
   // Filter issues by submitted, assigned (PaperLeader only), tagged
   const currentUserId = user?._id;

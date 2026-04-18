@@ -40,6 +40,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     if (!existingUser && email !== config.ADMIN_MAIL) {
       res.status(404).json({
         message: 'Account with this email does not exist',
+        code: 'UserNotFound',
         success: false,
       });
       return;
