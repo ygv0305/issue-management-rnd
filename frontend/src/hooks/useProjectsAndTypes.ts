@@ -17,7 +17,6 @@ import type { ProjectData } from '../types/projectTypes';
 
 /**
  * Hook to fetch and manage issue types.
- * Synchronizes with localStorage for persistent state across sessions.
  */
 export const useIssueTypes = () => {
   return useQuery<IssueTypeData[]>({

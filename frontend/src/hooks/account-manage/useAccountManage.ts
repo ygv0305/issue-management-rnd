@@ -7,7 +7,7 @@ import { AxiosError } from 'axios';
 import adminService from '../../services/adminService';
 
 // Hooks
-import { useProjects } from '../useSyncGlobalData';
+import { useProjects } from '../useProjectsAndTypes';
 
 // MUI
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -87,7 +87,7 @@ export const useAccountManage = (): UseAccountManageReturn => {
       }
     },
     onError: (error: AxiosError<{ message?: string }>) => {
-      console.error('Error whitelisting user:', error);
+      console.error('Error whitelisting user, ', error);
       const errorMsg =
         error.response?.data?.message ||
         'Failed to whitelist user. Please try again.';

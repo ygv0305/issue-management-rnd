@@ -18,7 +18,10 @@ import type {
 import StatusBadge from '../atoms/StatusBadge';
 
 // Hooks
-import { useIssueTypes } from '../../hooks/useSyncGlobalData';
+import { useIssueTypes } from '../../hooks/useProjectsAndTypes';
+
+// Utils
+import { calculatePriority } from '../../utils/calculatePriority';
 
 interface IssueTableProps {
   title?: string;
@@ -42,6 +45,16 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
     () => issueTypes.map((t) => t.name),
     [issueTypes],
   );
+
+  const rows = useMemo(
+    () =>
+      issues.map((issue) => ({
+        ...issue,
+        priority: calculatePriority(issue.urgency, issue.impact),
+      })),
+    [issues],
+  );
+
   const columns = useMemo<GridColDef[]>(
     () => [
       {
@@ -133,7 +146,7 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         }}
       >
         <DataGrid
-          rows={issues}
+          rows={rows}
           columns={columns}
           getRowId={(row) => row._id}
           onRowClick={(params) => onIssueSelect(params.row as IssueData)}

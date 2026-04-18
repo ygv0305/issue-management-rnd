@@ -64,7 +64,9 @@ function ProjectManage() {
           <Table>
             <TableHead sx={{ bgcolor: 'background.default' }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', width: '30%' }}>
+                  ID
+                </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               </TableRow>
             </TableHead>
@@ -127,7 +129,9 @@ function ProjectManage() {
           <Table>
             <TableHead sx={{ bgcolor: 'background.default' }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', width: '30%' }}>
+                  ID
+                </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               </TableRow>
             </TableHead>

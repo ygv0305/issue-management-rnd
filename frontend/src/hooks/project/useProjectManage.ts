@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import pLeaderService from '../../services/pLeaderService';
 
 // Hooks
-import { useProjects, useIssueTypes } from '../useSyncGlobalData';
+import { useProjects, useIssueTypes } from '../useProjectsAndTypes';
 
 // Types
 import type { IssueTypeData } from '../../types/issueTypes';

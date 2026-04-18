@@ -87,9 +87,10 @@ export default function OverviewTab({ issue }: OverviewTabProps) {
           variant="caption"
           sx={{ display: 'block', mb: 0.5, color: 'text.secondary' }}
         >
-          Priority
+          Urgency & Impact
         </Typography>
-        <StatusBadge priority={issue.priority} />
+        <StatusBadge priority={issue.urgency} />
+        <StatusBadge priority={issue.impact} />
       </Grid>
       <Grid size={12}>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>

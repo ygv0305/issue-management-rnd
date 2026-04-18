@@ -15,7 +15,7 @@ import type {
   IssueData,
   CommentData,
   IssueStatus,
-  IssuePriority,
+  IssueUrgencyAndImpact,
 } from '../../types/issueTypes';
 
 type ActiveTab = 'details' | 'comments' | 'actions';
@@ -27,18 +27,20 @@ interface UseIssueModalReturn {
   isLoadingComments: boolean;
   activeTab: ActiveTab;
   newStatus: IssueStatus | '';
-  newPriority: IssuePriority | '';
+  newUrgency: IssueUrgencyAndImpact | '';
+  newImpact: IssueUrgencyAndImpact | '';
   isUpdating: boolean;
   isChanged: boolean;
   isPaperLeader: boolean;
   statusOptions: IssueStatus[];
-  priorityOptions: IssuePriority[];
+  priorityOptions: IssueUrgencyAndImpact[];
   showTaggedUsers: boolean;
   taggedUsersRef: React.RefObject<HTMLDivElement | null>;
   setCommentMsg: (msg: string) => void;
   handleTabChange: (event: React.SyntheticEvent, newValue: string) => void;
   setNewStatus: (status: IssueStatus) => void;
-  setNewPriority: (priority: IssuePriority) => void;
+  setNewUrgency: (urgency: IssueUrgencyAndImpact) => void;
+  setNewImpact: (impact: IssueUrgencyAndImpact) => void;
   setShowTaggedUsers: React.Dispatch<React.SetStateAction<boolean>>;
   handlePostComment: (e: React.SubmitEvent) => Promise<void>;
   handleUpdateIssue: () => Promise<void>;
@@ -60,8 +62,11 @@ export const useIssueModal = (
   const [newStatus, setNewStatus] = useState<IssueStatus | ''>(
     issue?.status ?? '',
   );
-  const [newPriority, setNewPriority] = useState<IssuePriority | ''>(
-    issue?.priority ?? '',
+  const [newUrgency, setNewUrgency] = useState<IssueUrgencyAndImpact | ''>(
+    issue?.urgency ?? '',
+  );
+  const [newImpact, setNewImpact] = useState<IssueUrgencyAndImpact | ''>(
+    issue?.impact ?? '',
   );
 
   // Tagged Users State
@@ -80,7 +85,8 @@ export const useIssueModal = (
     if (issue && open) {
       setActiveTab('details');
       setNewStatus(issue.status);
-      setNewPriority(issue.priority);
+      setNewUrgency(issue.urgency);
+      setNewImpact(issue.impact);
       setCommentMsg('');
     }
   }
@@ -124,8 +130,9 @@ export const useIssueModal = (
       return await pLeaderService.changeStatus({
         issueId: issue._id,
         ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
-        ...(newPriority !== issue.priority &&
-          newPriority !== '' && { newPriority }),
+        ...(newUrgency !== issue.urgency &&
+          newUrgency !== '' && { newUrgency }),
+        ...(newImpact !== issue.impact && newImpact !== '' && { newImpact }),
       });
     },
     onSuccess: (res) => {
@@ -139,7 +146,10 @@ export const useIssueModal = (
   });
 
   const isChanged =
-    !!issue && (newStatus !== issue.status || newPriority !== issue.priority);
+    !!issue &&
+    (newStatus !== issue.status ||
+      newUrgency !== issue.urgency ||
+      newImpact !== issue.impact);
   const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
 
   const statusOptions: IssueStatus[] = [
@@ -149,12 +159,7 @@ export const useIssueModal = (
     'ReOpen',
     'Closed',
   ];
-  const priorityOptions: IssuePriority[] = [
-    'Low',
-    'Medium',
-    'High',
-    'Critical',
-  ];
+  const priorityOptions: IssueUrgencyAndImpact[] = ['Low', 'Medium', 'High'];
 
   const handlePostComment = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -178,7 +183,8 @@ export const useIssueModal = (
     isLoadingComments,
     activeTab,
     newStatus,
-    newPriority,
+    newUrgency,
+    newImpact,
     isUpdating: updateIssueMutation.isPending,
     isChanged,
     isPaperLeader,
@@ -189,7 +195,8 @@ export const useIssueModal = (
     setCommentMsg,
     handleTabChange,
     setNewStatus,
-    setNewPriority,
+    setNewUrgency,
+    setNewImpact,
     setShowTaggedUsers,
     handlePostComment,
     handleUpdateIssue,

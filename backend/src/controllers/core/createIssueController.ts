@@ -6,6 +6,7 @@
 
 // Types
 import type { Request, Response } from 'express';
+import { IssuePriority } from '../../models/issueSchema.js';
 
 // Services
 import {
@@ -45,6 +46,16 @@ export const createIssueRules = [
     .withMessage('Issue type is required')
     .isMongoId()
     .withMessage('Issue type must be a valid MongoDB ID'),
+  body('urgency')
+    .notEmpty()
+    .withMessage('Urgency level is required')
+    .isIn(Object.values(IssuePriority))
+    .withMessage('Invalid urgency value'),
+  body('impact')
+    .notEmpty()
+    .withMessage('Impact level is required')
+    .isIn(Object.values(IssuePriority))
+    .withMessage('Invalid impact value'),
   body('attachments')
     .optional()
     .isArray()
@@ -75,8 +86,15 @@ export const createIssueRules = [
  */
 const createIssue = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { subject, description, type, priority, attachments, userTags } =
-      req.body;
+    const {
+      subject,
+      description,
+      type,
+      urgency,
+      impact,
+      attachments,
+      userTags,
+    } = req.body;
     const author = req.userId;
 
     if (!author) {
@@ -104,7 +122,8 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
       subject,
       description,
       type,
-      priority,
+      urgency,
+      impact,
       author,
       attachments: attachments || [],
       userTags: userTags || [],

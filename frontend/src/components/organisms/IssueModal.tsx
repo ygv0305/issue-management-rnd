@@ -57,7 +57,8 @@ export default function IssueModal({
     isLoadingComments,
     activeTab,
     newStatus,
-    newPriority,
+    newUrgency,
+    newImpact,
     isUpdating,
     isChanged,
     isPaperLeader,
@@ -66,7 +67,8 @@ export default function IssueModal({
     setCommentMsg,
     handleTabChange,
     setNewStatus,
-    setNewPriority,
+    setNewUrgency,
+    setNewImpact,
     handlePostComment,
     handleUpdateIssue,
   } = useIssueModal(issue, originAllIssue, open, onClose, onIssueUpdated);
@@ -133,13 +135,15 @@ export default function IssueModal({
           {isPaperLeader && (
             <ActionsPanel
               newStatus={newStatus}
-              newPriority={newPriority}
+              newUrgency={newUrgency}
+              newImpact={newImpact}
               statusOptions={statusOptions}
               priorityOptions={priorityOptions}
               isChanged={isChanged}
               isUpdating={isUpdating}
               onStatusChange={setNewStatus}
-              onPriorityChange={setNewPriority}
+              onUrgencyChange={setNewUrgency}
+              onImpactChange={setNewImpact}
               onConfirm={handleUpdateIssue}
             />
           )}

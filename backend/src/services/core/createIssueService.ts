@@ -28,7 +28,8 @@ interface CreateIssueInput {
   /** Reference to the issue type/category. */
   type: Types.ObjectId;
   /** Priority level of the issue. */
-  priority: IssuePriority;
+  urgency: IssuePriority;
+  impact: IssuePriority;
   /** Reference to the user creating the issue. */
   author: Types.ObjectId;
   /** Optional array of file attachments with URL and Cloudinary public ID. */
@@ -38,7 +39,8 @@ interface CreateIssueInput {
   status?: IssueStatus;
   history?: {
     status?: IssueStatus;
-    priority?: IssuePriority;
+    urgency?: IssuePriority;
+    impact?: IssuePriority;
     timestamp: Date;
   }[];
 }
@@ -62,7 +64,8 @@ export const createIssueDb = async (data: CreateIssueInput) => {
     history: [
       {
         status: IssueStatus.New,
-        priority: data.priority,
+        urgency: data.urgency,
+        impact: data.impact,
         timestamp: new Date(),
       },
     ],

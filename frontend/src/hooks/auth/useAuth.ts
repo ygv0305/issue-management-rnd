@@ -58,18 +58,18 @@ export const useAuth = (): UseAuthReturn => {
         authModeChange('login');
       }
     },
-    onError: (err: AxiosError<{ message?: string; code?: string }>) => {
+    onError: (error: AxiosError<{ message?: string; code?: string }>) => {
       if (
         authMode === 'signup' &&
-        err.response?.data?.code === 'UserNotFound'
+        error.response?.data?.code === 'UserNotFound'
       ) {
         alert(
           'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
         );
       } else {
         const message =
-          err.response?.data?.message ||
-          err.message ||
+          error.response?.data?.message ||
+          error.message ||
           'An unexpected error occurred';
         setError(message);
       }

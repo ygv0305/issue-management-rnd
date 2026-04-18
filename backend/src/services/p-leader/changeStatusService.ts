@@ -21,19 +21,23 @@ import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
 
 interface UpdateData {
   status?: IssueStatus;
-  priority?: IssuePriority;
+  urgency?: IssuePriority;
+  impact?: IssuePriority;
+  resolvedAt?: Date;
 }
 
 interface HistoryEntry {
   status?: IssueStatus;
-  priority?: IssuePriority;
+  urgency?: IssuePriority;
+  impact?: IssuePriority;
   timestamp: Date;
 }
 
 export const updateIssueStatus = async (
   issueId: string,
   newStatus?: IssueStatus,
-  newPriority?: IssuePriority,
+  newUrgency?: IssuePriority,
+  newImpact?: IssuePriority,
 ) => {
   const updateData: UpdateData = {};
   const historyEntry: HistoryEntry = { timestamp: new Date() };
@@ -41,10 +45,17 @@ export const updateIssueStatus = async (
   if (newStatus) {
     updateData.status = newStatus;
     historyEntry.status = newStatus;
+    if (newStatus === 'Resolved') {
+      updateData.resolvedAt = new Date();
+    }
   }
-  if (newPriority) {
-    updateData.priority = newPriority;
-    historyEntry.priority = newPriority;
+  if (newUrgency) {
+    updateData.urgency = newUrgency;
+    historyEntry.urgency = newUrgency;
+  }
+  if (newImpact) {
+    updateData.impact = newImpact;
+    historyEntry.impact = newImpact;
   }
 
   // If nothing to update, return the original issue

@@ -29,17 +29,22 @@ export const changeStatusRules = [
     .optional()
     .isIn(Object.values(IssueStatus))
     .withMessage('Invalid status value'),
-  body('newPriority')
+  body('newUrgency')
     .optional()
     .isIn(Object.values(IssuePriority))
-    .withMessage('Invalid priority value'),
+    .withMessage('Invalid urgency value'),
+  body('newImpact')
+    .optional()
+    .isIn(Object.values(IssuePriority))
+    .withMessage('Invalid impact value'),
 ];
 
 /** Represents the expected shape of the change status request body. */
 interface ChangeStatusData {
   issueId: string;
   newStatus?: IssueStatus;
-  newPriority?: IssuePriority;
+  newUrgency?: IssuePriority;
+  newImpact?: IssuePriority;
 }
 
 /**
@@ -50,13 +55,15 @@ interface ChangeStatusData {
  * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const changeStatus = async (req: Request, res: Response): Promise<void> => {
-  const { issueId, newStatus, newPriority } = req.body as ChangeStatusData;
+  const { issueId, newStatus, newUrgency, newImpact } =
+    req.body as ChangeStatusData;
 
   try {
     const updatedIssue = await updateIssueStatus(
       issueId,
       newStatus,
-      newPriority,
+      newUrgency,
+      newImpact,
     );
 
     if (!updatedIssue) {

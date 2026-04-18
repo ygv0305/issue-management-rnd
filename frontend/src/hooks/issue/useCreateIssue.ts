@@ -10,7 +10,7 @@ import coreService from '../../services/coreService';
 import searchService from '../../services/searchService';
 
 // Hooks
-import { useIssueTypes } from '../useSyncGlobalData';
+import { useIssueTypes } from '../useProjectsAndTypes';
 
 // Types
 import type { IssueTypeData } from '../../types/issueTypes';
@@ -70,24 +70,6 @@ const INITIAL_FORM_DATA: CreateIssueFormData = {
   description: '',
   urgencyLevel: '',
   impactLevel: '',
-};
-
-const resolvePriority = (urgency: string, impact: string): string => {
-  if (urgency === 'Low') {
-    if (impact === 'Low' || impact === 'Medium') return 'Low';
-    if (impact === 'High') return 'Medium';
-  }
-  if (urgency === 'Medium') {
-    if (impact === 'Low') return 'Low';
-    if (impact === 'Medium') return 'Medium';
-    if (impact === 'High') return 'High';
-  }
-  if (urgency === 'High') {
-    if (impact === 'Low') return 'Medium';
-    if (impact === 'Medium') return 'High';
-    if (impact === 'High') return 'Critical';
-  }
-  return '';
 };
 
 export const useCreateIssue = (): UseCreateIssueReturn => {
@@ -155,15 +137,12 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
 
   const createIssueMutation = useMutation({
     mutationFn: async () => {
-      const priority = resolvePriority(
-        formData.urgencyLevel,
-        formData.impactLevel,
-      );
       return await coreService.createIssue({
         subject: formData.subject,
         description: formData.description,
         type: formData.issueType,
-        priority: priority,
+        urgency: formData.urgencyLevel,
+        impact: formData.impactLevel,
         userTags: selectedUsers.map((u) => u.value),
       });
     },
@@ -174,8 +153,10 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
       navigate('/my-issues');
     },
     onError: (error) => {
-      console.error('Failed to submit issue:', error);
-      alert('Failed to submit issue. Please try again.');
+      console.error('Failed to submit issue, ', error);
+      alert(
+        'Failed to submit issue. Please try again. A common reason is that you were not tagging a valid user.',
+      );
     },
   });
 

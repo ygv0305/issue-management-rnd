@@ -9,29 +9,36 @@ import Box from '@mui/material/Box';
 import Select from '../../atoms/CustomSelect';
 
 // Types
-import type { IssueStatus, IssuePriority } from '../../../types/issueTypes';
+import type {
+  IssueStatus,
+  IssueUrgencyAndImpact,
+} from '../../../types/issueTypes';
 
 interface ActionsPanelProps {
   newStatus: IssueStatus | '';
-  newPriority: IssuePriority | '';
+  newUrgency: IssueUrgencyAndImpact | '';
+  newImpact: IssueUrgencyAndImpact | '';
   statusOptions: IssueStatus[];
-  priorityOptions: IssuePriority[];
+  priorityOptions: IssueUrgencyAndImpact[];
   isChanged: boolean | null;
   isUpdating: boolean;
   onStatusChange: (status: IssueStatus) => void;
-  onPriorityChange: (priority: IssuePriority) => void;
+  onUrgencyChange: (priority: IssueUrgencyAndImpact) => void;
+  onImpactChange: (priority: IssueUrgencyAndImpact) => void;
   onConfirm: () => void;
 }
 
 export default function ActionsPanel({
   newStatus,
-  newPriority,
+  newUrgency,
+  newImpact,
   statusOptions,
   priorityOptions,
   isChanged,
   isUpdating,
   onStatusChange,
-  onPriorityChange,
+  onUrgencyChange,
+  onImpactChange,
   onConfirm,
 }: ActionsPanelProps) {
   return (
@@ -62,12 +69,37 @@ export default function ActionsPanel({
           variant="caption"
           sx={{ mb: 1, display: 'block', color: 'text.secondary' }}
         >
-          Change Priority
+          Change Urgency
         </Typography>
         <Select
           fullWidth
-          value={newPriority}
-          onChange={(e) => onPriorityChange(e.target.value as IssuePriority)}
+          value={newUrgency}
+          onChange={(e) =>
+            onUrgencyChange(e.target.value as IssueUrgencyAndImpact)
+          }
+          size="small"
+        >
+          {priorityOptions.map((opt) => (
+            <MenuItem key={opt} value={opt}>
+              {opt}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Box>
+        <Typography
+          variant="caption"
+          sx={{ mb: 1, display: 'block', color: 'text.secondary' }}
+        >
+          Change Impact
+        </Typography>
+        <Select
+          fullWidth
+          value={newImpact}
+          onChange={(e) =>
+            onImpactChange(e.target.value as IssueUrgencyAndImpact)
+          }
           size="small"
         >
           {priorityOptions.map((opt) => (

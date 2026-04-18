@@ -70,7 +70,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     try {
       await authService.logout();
     } catch (error) {
-      console.error('Logout error', error);
+      console.error('Logout error, ', error);
     } finally {
       // Clear cache and localStorage
       localStorage.clear();

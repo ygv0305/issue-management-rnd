@@ -47,10 +47,10 @@ export const useCreatePassword = (): UseCreatePasswordReturn => {
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000);
     },
-    onError: (err: AxiosError<{ message?: string }>) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       const message =
-        err.response?.data?.message ||
-        err.message ||
+        error.response?.data?.message ||
+        error.message ||
         'An unexpected error occurred';
       setError(message);
     },
