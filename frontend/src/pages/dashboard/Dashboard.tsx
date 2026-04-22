@@ -2,11 +2,11 @@
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 import withPermission from '../../lib/rbac/withPermission';
 
-// MUI
-import Box from '@mui/material/Box';
+// Components
+import DashboardContent from '../../components/organisms/dashboard/DashboardContent';
 
 function Dashboard() {
-  return <Box></Box>;
+  return <DashboardContent />;
 }
 
 export default withPermission(Dashboard, PERMISSIONS.VIEW_DASHBOARD);

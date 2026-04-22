@@ -10,4 +10,9 @@ export const QUERY_KEYS = {
   allIssues: ['allIssues'],
   myIssues: ['myIssues'],
   comments: (issueId: string) => ['comments', issueId],
+  dashboard: {
+    quickStats: ['dashboard', 'quickStats'],
+    priorityMatrix: ['dashboard', 'priorityMatrix'],
+    issuesByType: ['dashboard', 'issuesByType'],
+  },
 } as const;

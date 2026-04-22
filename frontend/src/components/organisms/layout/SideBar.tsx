@@ -20,6 +20,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircle';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import PeopleIcon from '@mui/icons-material/People';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 // Context
 import { useUser } from '../../../lib/context/UserContext';
@@ -152,7 +153,7 @@ export default function SideBar() {
               }
             >
               <ListItemIcon>
-                <AssignmentIcon color="inherit" />
+                <DashboardIcon color="inherit" />
               </ListItemIcon>
               <ListItemText
                 primary={
