@@ -44,14 +44,19 @@ const PriorityMatrixFrame = () => {
         p: 3,
         borderRadius: 3,
         boxShadow: '0 4px 20px 0 rgba(0,0,0,0.05)',
-        // height: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ mb: 3, fontWeight: 700 }}>
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
         Priority Matrix
       </Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ mb: 4 }}>
+        Number of Non-Closed issues by Urgency and Impact levels
+      </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2, minHeight: 300 }}>
         {/* Y-Axis Label (Urgency) */}
         <Box
           sx={{

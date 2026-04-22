@@ -14,5 +14,6 @@ export const QUERY_KEYS = {
     quickStats: ['dashboard', 'quickStats'],
     priorityMatrix: ['dashboard', 'priorityMatrix'],
     issuesByType: ['dashboard', 'issuesByType'],
+    issueTypePercentage: ['dashboard', 'issueTypePercentage'],
   },
 } as const;

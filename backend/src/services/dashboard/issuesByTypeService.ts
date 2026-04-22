@@ -36,3 +36,30 @@ export const getIssuesByType = async () => {
     averageResolutionTimeHours: item.avgTimeMs / (1000 * 60 * 60),
   }));
 };
+
+export const getTypePercentage = async () => {
+  const result = await Issue.aggregate([
+    {
+      $lookup: {
+        from: 'issuetypes',
+        localField: 'type',
+        foreignField: '_id',
+        as: 'typeData',
+      },
+    },
+    {
+      $unwind: '$typeData',
+    },
+    {
+      $group: {
+        _id: '$typeData.name',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return result.map((item) => ({
+    type: item._id,
+    count: item.count,
+  }));
+};

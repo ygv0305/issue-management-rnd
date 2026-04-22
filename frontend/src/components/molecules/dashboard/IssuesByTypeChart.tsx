@@ -46,10 +46,10 @@ const IssuesByTypeChart = () => {
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
-        Issues By Type
+        Issues Volume vs Resolution by Type
       </Typography>
       <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }}>
-        Comparison between volume and resolution efficiency
+        Comparison between volume and resolution efficiency for all issue types
       </Typography>
 
       <Box sx={{ flexGrow: 1, minHeight: 300 }}>
@@ -78,7 +78,7 @@ const IssuesByTypeChart = () => {
             },
           ]}
           height={320}
-          margin={{ top: 20, bottom: 50, left: 60, right: 60 }}
+          margin={{ top: 20, bottom: 40, left: 40, right: 40 }}
         />
       </Box>
     </Paper>

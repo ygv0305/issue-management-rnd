@@ -20,3 +20,8 @@ export interface IssuesByTypeItem {
   count: number;
   averageResolutionTimeHours: number;
 }
+
+export interface IssueTypePercentageItem {
+  type: string;
+  count: number;
+}
