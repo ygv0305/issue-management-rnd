@@ -7,6 +7,9 @@
 import User from '../../models/userSchema.js';
 import VerificationToken from '../../models/verificationTokenSchema.js';
 
+// Types
+import type { Types } from 'mongoose';
+
 /**
  * Verifies that a token exists for the given email address.
  *
@@ -27,7 +30,7 @@ export const verifyToken = async (email: string, token: string) => {
  * @returns The newly created User document.
  * @async
  */
-export const createAdmin = async (email: string, password: any) => {
+export const createAdmin = async (email: string, password: string) => {
   return await User.create({ email, password, role: 'Admin' });
 };
 
@@ -40,7 +43,7 @@ export const createAdmin = async (email: string, password: any) => {
  * @returns The updated User document, or null if the user was not found.
  * @async
  */
-export const updatePassword = async (email: string, password: any) => {
+export const updatePassword = async (email: string, password: string) => {
   const user = await User.findOne({ email }).exec();
   if (!user) return null;
 
@@ -55,6 +58,6 @@ export const updatePassword = async (email: string, password: any) => {
  * @param tokenId - The MongoDB ObjectId of the token to delete.
  * @async
  */
-export const deleteToken = async (tokenId: any) => {
+export const deleteToken = async (tokenId: Types.ObjectId) => {
   await VerificationToken.deleteOne({ _id: tokenId });
 };

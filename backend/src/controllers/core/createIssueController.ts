@@ -1,14 +1,18 @@
 /**
  * @fileoverview Controller module handling issue creation requests.
- * Validates the issue data (subject, description, type, attachments) and
+ * Validates the issue data (subject, description, type, attachments, userTags) and
  * creates a new issue in the database associated with the authenticated user.
  */
 
 // Types
 import type { Request, Response } from 'express';
+import { IssuePriority } from '../../models/issueSchema.js';
 
 // Services
-import { createIssueDb } from '../../services/core/createIssueService.js';
+import {
+  createIssueDb,
+  validateUserTags,
+} from '../../services/core/createIssueService.js';
 
 // Node modules
 import { body } from 'express-validator';
@@ -22,6 +26,7 @@ import validationError from '../../middlewares/validationError.js';
  * - `description`: Required, trimmed, max 1000 characters.
  * - `type`: Required, must be a valid MongoDB ObjectId.
  * - `attachments`: Optional array; each item requires a valid `url` and `publicId`.
+ * - `userTags`: Optional array;.
  */
 export const createIssueRules = [
   body('subject')
@@ -41,6 +46,16 @@ export const createIssueRules = [
     .withMessage('Issue type is required')
     .isMongoId()
     .withMessage('Issue type must be a valid MongoDB ID'),
+  body('urgency')
+    .notEmpty()
+    .withMessage('Urgency level is required')
+    .isIn(Object.values(IssuePriority))
+    .withMessage('Invalid urgency value'),
+  body('impact')
+    .notEmpty()
+    .withMessage('Impact level is required')
+    .isIn(Object.values(IssuePriority))
+    .withMessage('Invalid impact value'),
   body('attachments')
     .optional()
     .isArray()
@@ -55,11 +70,15 @@ export const createIssueRules = [
     .if(body('attachments').exists())
     .notEmpty()
     .withMessage('Attachment publicId is required'),
+  body('userTags')
+    .optional()
+    .isArray()
+    .withMessage('User tags must be an array'),
 ];
 
 /**
  * Handles the create issue request by extracting data from the request body
- * and the authenticated user's ID, then persisting the issue to the database.
+ * and the authenticated user's ID, check for valid userTags, then persisting the issue to the database.
  *
  * @param {Request} req - Express request object containing subject, description, type, priority, and attachments in the body.
  * @param {Response} res - Express response object used to send back the created issue data.
@@ -67,7 +86,15 @@ export const createIssueRules = [
  */
 const createIssue = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { subject, description, type, priority, attachments } = req.body;
+    const {
+      subject,
+      description,
+      type,
+      urgency,
+      impact,
+      attachments,
+      userTags,
+    } = req.body;
     const author = req.userId;
 
     if (!author) {
@@ -78,13 +105,28 @@ const createIssue = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Validate if tagged users valid and exist
+    if (userTags && userTags.length > 0) {
+      const validUsers = await validateUserTags(userTags);
+
+      if (validUsers.length !== userTags.length) {
+        res.status(400).json({
+          message: 'One or more tagged users are invalid',
+          success: false,
+        });
+        return;
+      }
+    }
+
     const newIssue = await createIssueDb({
       subject,
       description,
       type,
-      priority,
+      urgency,
+      impact,
       author,
       attachments: attachments || [],
+      userTags: userTags || [],
     });
 
     res.status(201).json({

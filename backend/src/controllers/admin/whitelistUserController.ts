@@ -103,7 +103,7 @@ const whitelistUser = async (req: Request, res: Response): Promise<void> => {
     }
     res.status(201).json({ success: true, message: 'User whitelisted' });
   } catch (error) {
-    console.error('Error white-listing user:', error);
+    console.error('Error white-listing user, ', error);
     res.status(500).json({
       message: 'Internal server error',
       success: false,

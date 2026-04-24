@@ -12,7 +12,8 @@
  */
 
 // Node modules
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import authService from '../../services/authService';
@@ -20,9 +21,12 @@ import authService from '../../services/authService';
 // Types
 import type { User } from '../../types/authTypes';
 
+// Lib
+import { QUERY_KEYS } from '../react-query/queryKeys';
+
 interface UserContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setUser: (user: User | null) => void; // Wrapped to update query cache
   loading: boolean;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
@@ -31,48 +35,60 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const checkAuth = async () => {
-    setLoading(true);
-    const token = localStorage.getItem('accessToken');
-    if (token) {
+  // Use query to manage user state
+  const {
+    data: user,
+    isLoading: loading,
+    refetch,
+  } = useQuery({
+    queryKey: QUERY_KEYS.auth,
+    queryFn: async () => {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return null;
       try {
         const response = await authService.autoLogin();
-        if (response.success && response.user) {
-          setUser(response.user);
-        } else {
-          setUser(null);
-        }
+        return response.success && response.user ? response.user : null;
       } catch (error) {
         console.error('Auto login failed, ', error);
-        setUser(null);
+        return null;
       }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
+    },
+    staleTime: Infinity, // Keep auth state until manually invalidated
+  });
+
+  const checkAuth = async () => {
+    await refetch();
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const setUser = (newUser: User | null) => {
+    queryClient.setQueryData(QUERY_KEYS.auth, newUser);
+  };
 
   const logout = async () => {
     try {
       await authService.logout();
     } catch (error) {
-      console.error('Logout error', error);
+      console.error('Logout error, ', error);
     } finally {
-      // Clear all data from localStorage
+      // Clear cache and localStorage
       localStorage.clear();
-      setUser(null);
+      queryClient.setQueryData(QUERY_KEYS.auth, null);
+      queryClient.clear(); // Clear all other queries too on logout
     }
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, checkAuth, logout }}>
+    <UserContext.Provider
+      value={{
+        user: user ?? null,
+        setUser,
+        loading,
+        checkAuth,
+        logout,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

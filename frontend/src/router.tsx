@@ -5,11 +5,12 @@ import { createBrowserRouter, Outlet } from 'react-router';
 import { UserProvider } from './lib/context/UserContext';
 
 // Pages
-import Auth from './pages/auth-pages/Auth';
-import CreatePassword from './pages/auth-pages/CreatePassword';
+import Auth from './pages/auth/Auth';
+import CreatePassword from './pages/auth/CreatePassword';
 import MyIssueView from './pages/issue-view/MyIssueView';
-import AllIssueView from './pages/issue-view/AllIssueView';
 import CreateIssue from './pages/create-issue/CreateIssue';
+import AllIssueView from './pages/issue-view/AllIssueView';
+import Dashboard from './pages/dashboard/Dashboard';
 import ProjectManage from './pages/project/ProjectManage';
 import AccountManage from './pages/account-manage/AccountManage';
 
@@ -18,7 +19,7 @@ import { PERMISSIONS } from './lib/rbac/allPermission';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/layout/Layout';
+import LayoutTemplate from './components/templates/LayoutTemplate';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
       </UserProvider>
     ),
     children: [
+      // Auth routes
       {
         path: '/',
         element: <Auth />,
@@ -40,15 +42,20 @@ export const router = createBrowserRouter([
         path: '/reset-password',
         element: <CreatePassword />,
       },
+      // Main protected routes
       {
         element: <ProtectedRoute />,
         children: [
           {
-            element: <Layout />,
+            element: <LayoutTemplate />,
             children: [
               {
                 path: '/my-issues',
                 element: <MyIssueView />,
+              },
+              {
+                path: '/create-issue',
+                element: <CreateIssue />,
               },
               {
                 element: (
@@ -64,8 +71,17 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                path: '/create-issue',
-                element: <CreateIssue />,
+                element: (
+                  <ProtectedRoute
+                    requiredPermission={PERMISSIONS.VIEW_DASHBOARD}
+                  />
+                ),
+                children: [
+                  {
+                    path: '/dashboard',
+                    element: <Dashboard />,
+                  },
+                ],
               },
               {
                 element: (

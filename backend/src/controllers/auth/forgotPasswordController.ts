@@ -7,9 +7,6 @@
 // Types
 import type { Request, Response } from 'express';
 
-// Node modules
-import { body } from 'express-validator';
-
 // Services
 import * as forgotPasswordService from '../../services/auth/forgotPasswordService.js';
 

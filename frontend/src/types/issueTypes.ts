@@ -14,7 +14,9 @@ export interface CreateIssueData {
   subject: string;
   description: string;
   type: string;
-  priority: string;
+  urgency: string;
+  impact: string;
+  userTags?: string[];
   attachments?: { url: string; publicId: string }[];
 }
 
@@ -32,7 +34,8 @@ export interface CreateCommentData {
 export interface ChangeStatusData {
   issueId: string;
   newStatus?: IssueStatus;
-  newPriority?: IssuePriority;
+  newUrgency?: IssueUrgencyAndImpact;
+  newImpact?: IssueUrgencyAndImpact;
 }
 
 // Response
@@ -106,6 +109,7 @@ export type IssueStatus =
  * Issue priority levels used for triage and sorting.
  */
 export type IssuePriority = 'Low' | 'Medium' | 'High' | 'Critical';
+export type IssueUrgencyAndImpact = 'Low' | 'Medium' | 'High';
 
 /**
  * Issue type definition (e.g., Bug, Feature Request, Documentation).
@@ -126,10 +130,12 @@ export interface IssueData {
   description: string;
   type: IssueTypeData;
   status: IssueStatus;
-  priority: IssuePriority;
+  urgency: IssueUrgencyAndImpact;
+  impact: IssueUrgencyAndImpact;
   author: User;
   createdAt: string;
   assignedTo?: User;
+  userTags: User[];
   commentCount: number;
 }
 

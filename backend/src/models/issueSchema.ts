@@ -29,7 +29,6 @@ export enum IssuePriority {
   Low = 'Low',
   Medium = 'Medium',
   High = 'High',
-  Critical = 'Critical',
 }
 
 /**
@@ -42,11 +41,12 @@ export interface IIssue {
   /** Detailed description of the issue */
   description: string;
   /** Reference to the issue's type/category */
-  type: Schema.Types.ObjectId;
+  type: Types.ObjectId;
   /** Current status of the issue */
   status: IssueStatus;
   /** Priority level of the issue */
-  priority: IssuePriority;
+  urgency: IssuePriority;
+  impact: IssuePriority;
   /** Reference to the user who created the issue */
   author: Types.ObjectId;
   /** Reference to the Paper Leader assigned to handle the issue */
@@ -63,9 +63,11 @@ export interface IIssue {
   /** Audit trail recording status and priority changes over time */
   history: {
     status?: IssueStatus;
-    priority?: IssuePriority;
+    urgency?: IssuePriority;
+    impact?: IssuePriority;
     timestamp: Date;
   }[];
+  resolvedAt: Date;
 }
 
 /** Mongoose schema for Issue documents */
@@ -91,10 +93,15 @@ const issueSchema = new Schema<IIssue>(
       enum: Object.values(IssueStatus),
       default: IssueStatus.New,
     },
-    priority: {
+    urgency: {
       type: String,
       enum: Object.values(IssuePriority),
-      required: [true, 'Issue priority is required'],
+      required: [true, 'Urgency level is required'],
+    },
+    impact: {
+      type: String,
+      enum: Object.values(IssuePriority),
+      required: [true, 'Impact level is required'],
     },
     author: {
       type: Schema.Types.ObjectId,
@@ -109,6 +116,7 @@ const issueSchema = new Schema<IIssue>(
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        default: [],
       },
     ],
     attachments: [
@@ -133,7 +141,11 @@ const issueSchema = new Schema<IIssue>(
           type: String,
           enum: Object.values(IssueStatus),
         },
-        priority: {
+        urgency: {
+          type: String,
+          enum: Object.values(IssuePriority),
+        },
+        impact: {
           type: String,
           enum: Object.values(IssuePriority),
         },
@@ -143,9 +155,15 @@ const issueSchema = new Schema<IIssue>(
         },
       },
     ],
+    resolvedAt: {
+      type: Schema.Types.Date,
+    },
   },
   { timestamps: true },
 );
+
+/** IMPORTANT: Add an index for query performance */
+issueSchema.index({ userTags: 1 });
 
 /** Mongoose model for Issue documents */
 export default model<IIssue>('Issue', issueSchema);
