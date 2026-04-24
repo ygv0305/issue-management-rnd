@@ -56,7 +56,7 @@ const PriorityMatrixFrame = () => {
         Number of Non-Closed issues by Urgency and Impact levels
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, minHeight: 300 }}>
+      <Box sx={{ display: 'flex', gap: 2, minHeight: 300, px: 3 }}>
         {/* Y-Axis Label (Urgency) */}
         <Box
           sx={{

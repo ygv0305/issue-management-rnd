@@ -16,8 +16,8 @@ export const urgencyData: PriorityJustifyType = {
 export const impactData: PriorityJustifyType = {
   content:
     'How many students or personnel are affected, and how severely it disrupts your project operations.',
-  high: 'Need to discuss with team on what to write here.',
+  high: 'Affecting a group of students, personnel or client, and causes significant delay or frustration.',
   medium:
-    'Limited to a group of students or personnel, but still causes significant delay or frustration.',
-  low: 'Affects only a few individuals or a low-impact blockage, with negligible effect.',
+    'Affects a few individuals or a minimal blockage, with adequate effect.',
+  low: 'Affects only one or two individuals, with negligible effect.',
 };

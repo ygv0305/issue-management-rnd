@@ -41,8 +41,8 @@ export default function StatusBadge({
     label = priority;
     switch (priority) {
       case 'Low':
-        backgroundColor = '#f0f4ec';
-        textColor = '#4e6a3b';
+        backgroundColor = '#e6f0fa';
+        textColor = '#2c5f8a';
         break;
       case 'Medium':
         backgroundColor = '#fff2e0';

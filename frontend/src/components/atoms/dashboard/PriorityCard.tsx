@@ -20,20 +20,20 @@ const PriorityCard = ({ urgency, impact, count }: PriorityCardProps) => {
     switch (p) {
       case 'Low':
         return {
-          bgColor: theme.palette.success.light,
-          borderColor: theme.palette.success.main,
-          color: theme.palette.success.contrastText,
-        };
-      case 'Medium':
-        return {
           bgColor: theme.palette.info.light,
           borderColor: theme.palette.info.main,
           color: theme.palette.info.contrastText,
         };
-      case 'High':
+      case 'Medium':
         return {
           bgColor: theme.palette.warning.light,
           borderColor: theme.palette.warning.main,
+          color: theme.palette.warning.contrastText,
+        };
+      case 'High':
+        return {
+          bgColor: '#ba55d3',
+          borderColor: '#9932cc',
           color: theme.palette.warning.contrastText,
         };
       case 'Critical':

@@ -70,17 +70,17 @@ const DashboardContent = () => {
           <QuickStatsGroup />
         </Grid>
 
-        {/* Row 2: Matrix and Bar Chart */}
-        <Grid size={{ xs: 12, lg: 5 }}>
+        {/* Row 2: Matrix and Pie Chart */}
+        <Grid size={{ xs: 12, lg: 6 }}>
           <PriorityMatrixFrame />
         </Grid>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <IssuesByTypeChart />
-        </Grid>
-
-        {/* Row 3: Pie Chart */}
         <Grid size={{ xs: 12, lg: 6 }}>
           <IssueTypePieChart />
+        </Grid>
+
+        {/* Row 3: Bar Chart */}
+        <Grid size={12}>
+          <IssuesByTypeChart />
         </Grid>
       </Grid>
     </Box>

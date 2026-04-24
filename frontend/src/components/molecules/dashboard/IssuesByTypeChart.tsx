@@ -68,13 +68,11 @@ const IssuesByTypeChart = () => {
               data: countData,
               label: 'Issue Count',
               yAxisId: 'countAxis',
-              color: '#1a2027',
             },
             {
               data: timeData,
               label: 'Avg. Resolution',
               yAxisId: 'timeAxis',
-              color: '#e65100',
             },
           ]}
           height={320}
