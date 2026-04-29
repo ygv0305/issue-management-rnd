@@ -25,3 +25,9 @@ export interface IssueTypePercentageItem {
   type: string;
   count: number;
 }
+
+export interface TrendItem {
+  week: string;
+  submitted: number;
+  resolved: number;
+}
