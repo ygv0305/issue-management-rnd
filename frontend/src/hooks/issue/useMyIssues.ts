@@ -1,6 +1,6 @@
 // Node modules
-import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
@@ -22,11 +22,13 @@ interface UseMyIssuesReturn {
   selectedIssue: IssueData | null;
   canViewAssigned: boolean;
   setSelectedIssue: (issue: IssueData | null) => void;
+  handleIssueUpdated: (updatedIssue: IssueData) => void;
 }
 
 export const useMyIssues = (): UseMyIssuesReturn => {
   const { user } = useUser();
   const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: myIssues = [], isLoading: loading } = useQuery({
     queryKey: QUERY_KEYS.myIssues,
@@ -35,6 +37,17 @@ export const useMyIssues = (): UseMyIssuesReturn => {
       return res.success ? res.data : [];
     },
   });
+
+  const handleIssueUpdated = useCallback(
+    (updatedIssue: IssueData) => {
+      queryClient.setQueryData(QUERY_KEYS.myIssues, (old: IssueData[] = []) =>
+        old.map((issue) =>
+          issue._id === updatedIssue._id ? updatedIssue : issue,
+        ),
+      );
+    },
+    [queryClient],
+  );
 
   // Filter issues by submitted, assigned (PaperLeader only), tagged
   const currentUserId = user?._id;
@@ -67,5 +80,6 @@ export const useMyIssues = (): UseMyIssuesReturn => {
     selectedIssue,
     canViewAssigned,
     setSelectedIssue,
+    handleIssueUpdated,
   };
 };

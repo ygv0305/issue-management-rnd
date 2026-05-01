@@ -6,7 +6,7 @@
 
 // Types
 import type { Request, Response } from 'express';
-import { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
+import { IssuePriority } from '../../models/issueSchema.js';
 
 // Services
 import { updateIssueStatus } from '../../services/p-leader/changeStatusService.js';
@@ -23,11 +23,18 @@ import validationError from '../../middlewares/validationError.js';
  * - `newStatus`: Optional, must be a valid IssueStatus enum value.
  * - `newPriority`: Optional, must be a valid IssuePriority enum value.
  */
+export enum PLeaderStatusChange {
+  InProgress = 'InProgress',
+  Resolved = 'Resolved',
+  ReOpen = 'ReOpen',
+  Closed = 'Closed',
+}
+
 export const changeStatusRules = [
   body('issueId').isMongoId().withMessage('Invalid issue ID'),
   body('newStatus')
     .optional()
-    .isIn(Object.values(IssueStatus))
+    .isIn(Object.values(PLeaderStatusChange))
     .withMessage('Invalid status value'),
   body('newUrgency')
     .optional()
@@ -42,7 +49,7 @@ export const changeStatusRules = [
 /** Represents the expected shape of the change status request body. */
 interface ChangeStatusData {
   issueId: string;
-  newStatus?: IssueStatus;
+  newStatus?: PLeaderStatusChange;
   newUrgency?: IssuePriority;
   newImpact?: IssuePriority;
 }

@@ -56,11 +56,32 @@ export default function ActionsPanel({
           onChange={(e) => onStatusChange(e.target.value as IssueStatus)}
           size="small"
         >
-          {statusOptions.map((opt) => (
-            <MenuItem key={opt} value={opt}>
-              {opt}
-            </MenuItem>
-          ))}
+          {statusOptions.map((opt) => {
+            let isDisabled = false;
+
+            if (newStatus === 'New') {
+              isDisabled = ![
+                'New',
+                'InProgress',
+                'Resolved',
+                'Closed',
+              ].includes(opt);
+            } else if (newStatus === 'InProgress') {
+              isDisabled = !['InProgress', 'Resolved', 'Closed'].includes(opt);
+            } else if (newStatus === 'Resolved') {
+              isDisabled = !['Resolved', 'ReOpen', 'Closed'].includes(opt);
+            } else if (newStatus === 'ReOpen') {
+              isDisabled = !['ReOpen', 'Resolved', 'Closed'].includes(opt);
+            } else if (newStatus === 'Closed') {
+              isDisabled = !['Closed', 'ReOpen'].includes(opt);
+            }
+
+            return (
+              <MenuItem key={opt} value={opt} disabled={isDisabled}>
+                {opt}
+              </MenuItem>
+            );
+          })}
         </Select>
       </Box>
 

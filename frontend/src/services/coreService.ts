@@ -54,6 +54,13 @@ class CoreService {
     );
     return response.data;
   }
+
+  async reOpenIssue(
+    data: IssueTypes.ChangeStatusData,
+  ): Promise<IssueTypes.ChangeStatusResponse> {
+    const response = await apiAuth.patch('/core-base/reopen-issue', data);
+    return response.data;
+  }
 }
 
 export default new CoreService();

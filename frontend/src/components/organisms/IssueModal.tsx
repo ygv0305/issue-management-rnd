@@ -5,6 +5,7 @@ import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // Hooks
 import { useIssueModal } from '../../hooks/issue/useIssueModal';
@@ -19,6 +20,7 @@ import OverviewTab from '../molecules/issue-modal/OverviewTab';
 import CommentList from '../molecules/issue-modal/CommentList';
 import CommentInput from '../atoms/issue-modal/CommentInput';
 import ActionsPanel from '../molecules/issue-modal/ActionsPanel';
+import Typography from '@mui/material/Typography';
 
 interface IssueModalProps {
   issue: IssueData | null;
@@ -75,6 +77,8 @@ export default function IssueModal({
 
   if (!issue) return null;
 
+  const allowCommentInput = ['Resolved', 'Closed'];
+
   return (
     <Dialog
       open={open}
@@ -122,12 +126,42 @@ export default function IssueModal({
               />
             </Box>
 
-            <CommentInput
-              value={commentMsg}
-              onChange={setCommentMsg}
-              onSubmit={handlePostComment}
-              isSubmitting={isSubmitting}
-            />
+            {!allowCommentInput.includes(issue.status) ? (
+              <CommentInput
+                value={commentMsg}
+                onChange={setCommentMsg}
+                onSubmit={handlePostComment}
+                isSubmitting={isSubmitting}
+              />
+            ) : (
+              <Box
+                sx={{
+                  bgcolor: 'background.default',
+                  mb: 2,
+                  p: 2,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography>
+                  {`This issue is already ${issue.status}.`}
+                </Typography>
+                {issue.status === 'Resolved' && (
+                  <>
+                    <Typography>
+                      Consider re-opening it to post new comments.
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ mt: 2 }}
+                      onClick={() => handleUpdateIssue(true)}
+                    >
+                      Re-Open
+                    </Button>
+                  </>
+                )}
+              </Box>
+            )}
           </Box>
         </TabPanel>
 
@@ -144,7 +178,7 @@ export default function IssueModal({
               onStatusChange={setNewStatus}
               onUrgencyChange={setNewUrgency}
               onImpactChange={setNewImpact}
-              onConfirm={handleUpdateIssue}
+              onConfirm={() => handleUpdateIssue(false)}
             />
           )}
         </TabPanel>

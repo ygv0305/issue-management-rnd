@@ -4,7 +4,10 @@
  */
 
 // Models
-import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
+import Issue, { type IssuePriority } from '../../models/issueSchema.js';
+
+// Types
+import { PLeaderStatusChange } from '../../controllers/p-leader/changeStatusController.js';
 
 /**
  * Update the status of an issue and log the change in the history array.
@@ -20,14 +23,14 @@ import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
  */
 
 interface UpdateData {
-  status?: IssueStatus;
+  status?: PLeaderStatusChange;
   urgency?: IssuePriority;
   impact?: IssuePriority;
   resolvedAt?: Date;
 }
 
 interface HistoryEntry {
-  status?: IssueStatus;
+  status?: PLeaderStatusChange;
   urgency?: IssuePriority;
   impact?: IssuePriority;
   timestamp: Date;
@@ -35,7 +38,7 @@ interface HistoryEntry {
 
 export const updateIssueStatus = async (
   issueId: string,
-  newStatus?: IssueStatus,
+  newStatus?: PLeaderStatusChange,
   newUrgency?: IssuePriority,
   newImpact?: IssuePriority,
 ) => {

@@ -14,6 +14,7 @@ import getIssueTypes from '../controllers/core/getIssueTypesController.js';
 import getMyIssues from '../controllers/core/getMyIssuesController.js';
 import createComment from '../controllers/core/createCommentController.js';
 import fetchComments from '../controllers/core/fetchCommentsController.js';
+import reopenIssue from '../controllers/core/reopenIssueController.js';
 
 /** Router for core endpoints (requires authentication only) */
 const router = Router();
@@ -28,5 +29,6 @@ router.get('/issue-types', getIssueTypes);
 router.post('/create-comment', ...createComment);
 /** GET /core-base/fetch-comments - Fetch comments for a specific issue */
 router.get('/fetch-comments', ...fetchComments);
+router.patch('/reopen-issue', ...reopenIssue);
 
 export default router;
