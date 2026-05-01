@@ -113,9 +113,10 @@ function AccountManage() {
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<WhitelistErrorResponse>;
+      const responseData = axiosError.response?.data as WhitelistErrorResponse | undefined;
       console.error('Error whitelisting user:', axiosError);
       const errorMsg =
-        axiosError.response?.data?.message ||
+        responseData?.message ||
         'Failed to whitelist user. Please try again.';
       setStatusMessage({ type: 'Error', text: errorMsg });
     } finally {

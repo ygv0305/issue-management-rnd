@@ -92,16 +92,17 @@ export default function Auth() {
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<AuthErrorResponse>;
+      const responseData = axiosError.response?.data as AuthErrorResponse | undefined;
       if (
         authMode === 'signup' &&
-        axiosError.response?.data?.code === 'UserNotFound'
+        responseData?.code === 'UserNotFound'
       ) {
         alert(
           'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
         );
       } else {
         const message =
-          axiosError.response?.data?.message ||
+          responseData?.message ||
           axiosError.message ||
           'An unexpected error occurred';
         setError(message);
