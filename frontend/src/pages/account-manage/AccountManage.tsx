@@ -2,6 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import type { AxiosError } from 'axios';
 
+type WhitelistErrorResponse = {
+  message?: string;
+};
+
 // Services
 import adminService from '../../services/adminService';
 
@@ -108,7 +112,7 @@ function AccountManage() {
         });
       }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
+      const axiosError = error as AxiosError<WhitelistErrorResponse>;
       console.error('Error whitelisting user:', axiosError);
       const errorMsg =
         axiosError.response?.data?.message ||

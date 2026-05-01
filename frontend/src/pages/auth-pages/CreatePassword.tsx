@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import type { AxiosError } from 'axios';
 
+type PasswordErrorResponse = {
+  message?: string;
+};
+
 // Services
 import AuthService from '../../services/authService';
 
@@ -54,7 +58,7 @@ export default function CreatePassword() {
       setSuccess(true);
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string }>;
+      const axiosError = error as AxiosError<PasswordErrorResponse>;
       const message =
         axiosError.response?.data?.message ||
         axiosError.message ||

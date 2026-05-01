@@ -3,6 +3,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import type { AxiosError } from 'axios';
 
+type AuthErrorResponse = {
+  message?: string;
+  code?: string;
+};
+
 // Services
 import AuthService from '../../services/authService';
 
@@ -86,7 +91,7 @@ export default function Auth() {
         authModeChange('login');
       }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message?: string; code?: string }>;
+      const axiosError = error as AxiosError<AuthErrorResponse>;
       if (
         authMode === 'signup' &&
         axiosError.response?.data?.code === 'UserNotFound'
