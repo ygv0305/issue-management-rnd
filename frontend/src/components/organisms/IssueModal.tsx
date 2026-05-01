@@ -71,6 +71,7 @@ export default function IssueModal({
     setNewImpact,
     handlePostComment,
     handleUpdateIssue,
+    handleAssignToMe,
   } = useIssueModal(issue, originAllIssue, open, onClose, onIssueUpdated);
 
   if (!issue) return null;
@@ -83,7 +84,12 @@ export default function IssueModal({
       fullWidth
       sx={{ '& .MuiDialog-paper': { borderRadius: 2, minHeight: '600px' } }}
     >
-      <IssueModalHeader issueId={issue._id} onClose={onClose} />
+      <IssueModalHeader
+        issueId={issue._id}
+        originAllIssue={originAllIssue}
+        onClose={onClose}
+        onClick={handleAssignToMe}
+      />
 
       <IssueModalTabs
         activeTab={activeTab}

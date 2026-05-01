@@ -14,6 +14,7 @@ import createIssueType from '../controllers/p-leader/createIssueTypeController.j
 import getAllIssues from '../controllers/p-leader/getAllIssuesController.js';
 import getProjects from '../controllers/p-leader/getProjectsController.js';
 import changeStatus from '../controllers/p-leader/changeStatusController.js';
+import assignToMe from '../controllers/p-leader/assignToMeController.js';
 
 /** Router for Paper Leader endpoints (requires PaperLeader or Admin role) */
 const router = Router();
@@ -28,5 +29,6 @@ router.get('/all-issues', getAllIssues);
 router.get('/projects', getProjects);
 /** PATCH /p-leader/change-status - Update an issue's status and/or priority */
 router.patch('/change-status', ...changeStatus);
+router.patch('/assign-to-me', ...assignToMe);
 
 export default router;

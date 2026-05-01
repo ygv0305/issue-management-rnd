@@ -38,6 +38,11 @@ export interface ChangeStatusData {
   newImpact?: IssueUrgencyAndImpact;
 }
 
+export interface AssignToMeData {
+  issueId: string;
+  isUnassign: boolean;
+}
+
 // Response
 /**
  * Response from fetching issues (my issues or all issues).
@@ -88,6 +93,12 @@ export interface FetchCommentsResponse {
  * Response from changing issue status or priority.
  */
 export interface ChangeStatusResponse {
+  success: boolean;
+  message: string;
+  data: IssueData;
+}
+
+export interface AssignToMeResponse {
   success: boolean;
   message: string;
   data: IssueData;

@@ -20,6 +20,8 @@ import type {
   CreateIssueTypeResponse,
   ChangeStatusData,
   ChangeStatusResponse,
+  AssignToMeData,
+  AssignToMeResponse,
 } from '../types/issueTypes';
 import type {
   GetProjectsResponse,
@@ -51,6 +53,11 @@ class PLeaderService {
 
   async changeStatus(data: ChangeStatusData): Promise<ChangeStatusResponse> {
     const response = await apiAuth.patch('/p-leader/change-status', data);
+    return response.data;
+  }
+
+  async assignToMe(data: AssignToMeData): Promise<AssignToMeResponse> {
+    const response = await apiAuth.patch('/p-leader/assign-to-me', data);
     return response.data;
   }
 }

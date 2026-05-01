@@ -44,6 +44,7 @@ interface UseIssueModalReturn {
   setShowTaggedUsers: React.Dispatch<React.SetStateAction<boolean>>;
   handlePostComment: (e: React.SubmitEvent) => Promise<void>;
   handleUpdateIssue: () => Promise<void>;
+  handleAssignToMe: () => void;
 }
 
 export const useIssueModal = (
@@ -176,6 +177,29 @@ export const useIssueModal = (
     updateIssueMutation.mutate();
   };
 
+  const assignIssueMutation = useMutation({
+    mutationFn: async () => {
+      if (!issue) return;
+      return await pLeaderService.assignToMe({
+        issueId: issue._id,
+        isUnassign: false,
+      });
+    },
+    onSuccess: (res) => {
+      if (res?.success) {
+        if (onIssueUpdated) {
+          onIssueUpdated(res.data);
+        }
+        onClose();
+      }
+    },
+  });
+
+  const handleAssignToMe = () => {
+    if (!issue) return;
+    assignIssueMutation.mutate();
+  };
+
   return {
     commentMsg,
     isSubmitting: postCommentMutation.isPending,
@@ -200,5 +224,6 @@ export const useIssueModal = (
     setShowTaggedUsers,
     handlePostComment,
     handleUpdateIssue,
+    handleAssignToMe,
   };
 };
