@@ -92,20 +92,23 @@ export default function Auth() {
       }
     } catch (error: unknown) {
       const axiosError = error as AxiosError<AuthErrorResponse>;
-      const responseData = axiosError.response?.data as AuthErrorResponse | undefined;
+      const responseData = axiosError.response?.data satisfies AuthErrorResponse | undefined;
+      const code = (responseData as AuthErrorResponse | undefined)?.code;
+      const message = (responseData as AuthErrorResponse | undefined)?.message;
+      
       if (
         authMode === 'signup' &&
-        responseData?.code === 'UserNotFound'
+        code === 'UserNotFound'
       ) {
         alert(
           'You are not authorised for this course. Contact your paper leader if you think it is a mistake.',
         );
       } else {
-        const message =
-          responseData?.message ||
+        const errorMessage =
+          message ||
           axiosError.message ||
           'An unexpected error occurred';
-        setError(message);
+        setError(errorMessage);
       }
     } finally {
       setIsLoading(false);

@@ -59,12 +59,13 @@ export default function CreatePassword() {
       setTimeout(() => navigate('/'), 1000); // Give user time to see success message
     } catch (error: unknown) {
       const axiosError = error as AxiosError<PasswordErrorResponse>;
-      const responseData = axiosError.response?.data as PasswordErrorResponse | undefined;
-      const message =
-        responseData?.message ||
+      const responseData = axiosError.response?.data satisfies PasswordErrorResponse | undefined;
+      const message = (responseData as PasswordErrorResponse | undefined)?.message;
+      const errorMessage =
+        message ||
         axiosError.message ||
         'An unexpected error occurred';
-      setError(message);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
