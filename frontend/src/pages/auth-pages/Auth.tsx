@@ -8,6 +8,7 @@ type AuthErrorResponse = {
   code?: string;
 };
 
+// This comment is intentionally added to trigger GitHub Actions for the current branch.
 // Services
 import AuthService from '../../services/authService';
 
