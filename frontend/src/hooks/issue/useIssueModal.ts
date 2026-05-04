@@ -43,7 +43,7 @@ interface UseIssueModalReturn {
   setNewImpact: (impact: IssueUrgencyAndImpact) => void;
   setShowTaggedUsers: React.Dispatch<React.SetStateAction<boolean>>;
   handlePostComment: (e: React.SubmitEvent) => Promise<void>;
-  handleUpdateIssue: () => Promise<void>;
+  handleUpdateIssue: (isReopen: boolean) => Promise<void>;
   handleAssignToMe: () => void;
 }
 
@@ -126,15 +126,22 @@ export const useIssueModal = (
 
   // Update Issue Mutation
   const updateIssueMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (isReopen: boolean) => {
       if (!issue) return;
-      return await pLeaderService.changeStatus({
-        issueId: issue._id,
-        ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
-        ...(newUrgency !== issue.urgency &&
-          newUrgency !== '' && { newUrgency }),
-        ...(newImpact !== issue.impact && newImpact !== '' && { newImpact }),
-      });
+      if (isReopen) {
+        return await coreService.reOpenIssue({
+          issueId: issue._id,
+          newStatus: 'ReOpen',
+        });
+      } else {
+        return await pLeaderService.changeStatus({
+          issueId: issue._id,
+          ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
+          ...(newUrgency !== issue.urgency &&
+            newUrgency !== '' && { newUrgency }),
+          ...(newImpact !== issue.impact && newImpact !== '' && { newImpact }),
+        });
+      }
     },
     onSuccess: (res) => {
       if (res?.success) {
@@ -172,9 +179,16 @@ export const useIssueModal = (
     setActiveTab(newValue as ActiveTab);
   };
 
-  const handleUpdateIssue = async () => {
-    if (!isChanged || !issue) return;
-    updateIssueMutation.mutate();
+  const handleUpdateIssue = async (isReopen: boolean) => {
+    if (!issue) return;
+    if (!isReopen) {
+      if (!isChanged) return;
+      if (newStatus === 'New') {
+        alert('You can not change an issue status back to "New".');
+        return;
+      }
+    }
+    updateIssueMutation.mutate(isReopen);
   };
 
   const assignIssueMutation = useMutation({

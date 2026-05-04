@@ -33,6 +33,7 @@ export default function MyIssueView() {
     selectedIssue,
     canViewAssigned,
     setSelectedIssue,
+    handleIssueUpdated,
   } = useMyIssues();
 
   // Ensures the onIssueSelect prop doesn’t create a new function on every render
@@ -76,6 +77,7 @@ export default function MyIssueView() {
         originAllIssue={false}
         open={!!selectedIssue}
         onClose={() => setSelectedIssue(null)}
+        onIssueUpdated={handleIssueUpdated}
       />
     </Box>
   );
