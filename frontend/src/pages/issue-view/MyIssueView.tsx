@@ -27,11 +27,9 @@ export default function MyIssueView() {
 
   const {
     submittedIssues,
-    assignedIssues,
     taggedIssues,
     loading,
     selectedIssue,
-    canViewAssigned,
     setSelectedIssue,
     handleIssueUpdated,
   } = useMyIssues();
@@ -54,20 +52,14 @@ export default function MyIssueView() {
 
       <IssueTable
         title="My Submitted Issues"
+        originAllIssue={false}
         issues={submittedIssues}
         onIssueSelect={handleIssueSelect}
       />
 
-      {canViewAssigned && (
-        <IssueTable
-          title="My Assigned Issues"
-          issues={assignedIssues}
-          onIssueSelect={handleIssueSelect}
-        />
-      )}
-
       <IssueTable
         title="Issues I'm Tagged In"
+        originAllIssue={false}
         issues={taggedIssues}
         onIssueSelect={handleIssueSelect}
       />

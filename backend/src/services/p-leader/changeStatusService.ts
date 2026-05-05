@@ -66,6 +66,8 @@ export const updateIssueStatus = async (
     return await Issue.findById(issueId)
       .populate('author', 'fullName email')
       .populate('type', 'name')
+      .populate('assignedTo', 'fullName email')
+      .populate('userTags', 'fullName email')
       .lean()
       .exec();
   }
@@ -80,6 +82,8 @@ export const updateIssueStatus = async (
   )
     .populate('author', 'fullName email')
     .populate('type', 'name')
+    .populate('assignedTo', 'fullName email')
+    .populate('userTags', 'fullName email')
     .lean()
     .exec();
 };

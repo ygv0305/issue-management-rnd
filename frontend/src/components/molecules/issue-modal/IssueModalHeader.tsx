@@ -15,6 +15,9 @@ import { PERMISSIONS } from '../../../lib/rbac/allPermission';
 interface IssueModalHeaderProps {
   issueId: string;
   originAllIssue: boolean;
+  isAssignedTo?: string;
+  isAssignedToMe: boolean;
+  isAssigning: boolean;
   onClose: () => void;
   onClick: () => void;
 }
@@ -22,6 +25,9 @@ interface IssueModalHeaderProps {
 export default function IssueModalHeader({
   issueId,
   originAllIssue,
+  isAssignedTo,
+  isAssignedToMe,
+  isAssigning,
   onClose,
   onClick,
 }: IssueModalHeaderProps) {
@@ -42,8 +48,19 @@ export default function IssueModalHeader({
           #{issueId.slice(-6).toUpperCase()}
         </Typography>
         {hasPermission(user, PERMISSIONS.ASSIGN_ISSUE) && originAllIssue && (
-          <Button variant="contained" color="primary" onClick={onClick}>
-            Assign To Me
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onClick}
+            disabled={isAssigning || (!isAssignedToMe && !!isAssignedTo)}
+          >
+            {isAssigning
+              ? 'Loading...'
+              : isAssignedToMe
+                ? 'Unassign To Me'
+                : isAssignedTo
+                  ? `Assigned To ${isAssignedTo}`
+                  : 'Assign To Me'}
           </Button>
         )}
       </Box>

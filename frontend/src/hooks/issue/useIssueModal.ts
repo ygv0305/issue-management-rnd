@@ -32,6 +32,9 @@ interface UseIssueModalReturn {
   isUpdating: boolean;
   isChanged: boolean;
   isPaperLeader: boolean;
+  isAssignedTo?: string;
+  isAssignedToMe: boolean;
+  isAssigning: boolean;
   statusOptions: IssueStatus[];
   priorityOptions: IssueUrgencyAndImpact[];
   showTaggedUsers: boolean;
@@ -159,6 +162,8 @@ export const useIssueModal = (
       newUrgency !== issue.urgency ||
       newImpact !== issue.impact);
   const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
+  const isAssignedTo = issue?.assignedTo?.fullName;
+  const isAssignedToMe = issue?.assignedTo?._id === user?._id;
 
   const statusOptions: IssueStatus[] = [
     'New',
@@ -196,7 +201,7 @@ export const useIssueModal = (
       if (!issue) return;
       return await pLeaderService.assignToMe({
         issueId: issue._id,
-        isUnassign: false,
+        isUnassign: isAssignedToMe,
       });
     },
     onSuccess: (res) => {
@@ -226,6 +231,9 @@ export const useIssueModal = (
     isUpdating: updateIssueMutation.isPending,
     isChanged,
     isPaperLeader,
+    isAssignedTo,
+    isAssignedToMe,
+    isAssigning: assignIssueMutation.isPending,
     statusOptions,
     priorityOptions,
     showTaggedUsers,

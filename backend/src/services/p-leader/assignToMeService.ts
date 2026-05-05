@@ -20,7 +20,13 @@ export const updateIssueAssign = async ({
     },
     { $set: { assignedTo: userId } },
     { returnDocument: 'after' },
-  );
+  )
+    .populate('author', 'fullName email')
+    .populate('type', 'name')
+    .populate('assignedTo', 'fullName email')
+    .populate('userTags', 'fullName email')
+    .lean()
+    .exec();
 };
 
 export const removeIssueAssign = async ({
@@ -34,5 +40,11 @@ export const removeIssueAssign = async ({
     },
     { $set: { assignedTo: null } },
     { returnDocument: 'after' },
-  );
+  )
+    .populate('author', 'fullName email')
+    .populate('type', 'name')
+    .populate('assignedTo', 'fullName email')
+    .populate('userTags', 'fullName email')
+    .lean()
+    .exec();
 };

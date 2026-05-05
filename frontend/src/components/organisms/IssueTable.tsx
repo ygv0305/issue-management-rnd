@@ -25,6 +25,7 @@ import { calculatePriority } from '../../utils/calculatePriority';
 
 interface IssueTableProps {
   title?: string;
+  originAllIssue: boolean;
   issues: IssueData[];
   onIssueSelect: (issue: IssueData) => void;
 }
@@ -39,7 +40,12 @@ const IssueStatusArr: IssueStatus[] = [
 
 const IssuePrioArr: IssuePriority[] = ['Low', 'Medium', 'High', 'Critical'];
 
-const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
+const IssueTableInner = ({
+  title,
+  originAllIssue,
+  issues,
+  onIssueSelect,
+}: IssueTableProps) => {
   const { data: issueTypes = [] } = useIssueTypes();
   const IssueTypeArr = useMemo(
     () => issueTypes.map((t) => t.name),
@@ -122,8 +128,19 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         type: 'singleSelect',
         valueOptions: IssuePrioArr,
       },
+      ...(originAllIssue
+        ? [
+            {
+              field: 'assignedTo',
+              headerName: 'Assigned To',
+              headerClassName: 'issue-table-header',
+              valueGetter: (_value, row) => row.assignedTo?.fullName || '',
+              width: 180,
+            } as GridColDef,
+          ]
+        : []),
     ],
-    [IssueTypeArr],
+    [IssueTypeArr, originAllIssue],
   );
 
   return (

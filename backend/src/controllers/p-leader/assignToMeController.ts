@@ -34,7 +34,7 @@ const assignToMe = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (isUnassign) {
-      const result = removeIssueAssign({ issueId, userId });
+      const result = await removeIssueAssign({ issueId, userId });
 
       if (!result) {
         res.status(400).json({
@@ -47,9 +47,10 @@ const assignToMe = async (req: Request, res: Response): Promise<void> => {
       res.status(200).json({
         message: 'Issue unassigned successfully',
         success: true,
+        data: result,
       });
     } else {
-      const result = updateIssueAssign({ issueId, userId });
+      const result = await updateIssueAssign({ issueId, userId });
 
       if (!result) {
         res.status(400).json({
@@ -62,10 +63,11 @@ const assignToMe = async (req: Request, res: Response): Promise<void> => {
       res.status(200).json({
         message: 'Issue assigned to me successfully',
         success: true,
+        data: result,
       });
     }
   } catch (error) {
-    console.error('Error assigning issue to me, ', error);
+    console.error('Error assigning/unassigning issue to me, ', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',

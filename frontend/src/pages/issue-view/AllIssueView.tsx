@@ -52,7 +52,11 @@ function AllIssueView() {
         All Submitted Issues
       </Typography>
 
-      <IssueTable issues={allIssues} onIssueSelect={handleIssueSelect} />
+      <IssueTable
+        originAllIssue={true}
+        issues={allIssues}
+        onIssueSelect={handleIssueSelect}
+      />
 
       <IssueModal
         issue={selectedIssue}

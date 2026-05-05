@@ -36,7 +36,7 @@ const DRAWER_WIDTH = 260;
 
 export default function SideBar() {
   const { user } = useUser();
-  const { handleLogout } = useSidebar();
+  const { handleLogout, isLoggingOut } = useSidebar();
 
   const getActiveStyle = (isActive: boolean) => ({
     color: isActive ? 'primary.main' : 'text.primary',
@@ -223,6 +223,7 @@ export default function SideBar() {
           color="secondary"
           startIcon={<LogoutIcon />}
           onClick={handleLogout}
+          disabled={isLoggingOut}
           sx={{ justifyContent: 'flex-start', py: 1 }}
         >
           Log Out

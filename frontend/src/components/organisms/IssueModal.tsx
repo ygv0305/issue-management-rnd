@@ -64,6 +64,9 @@ export default function IssueModal({
     isUpdating,
     isChanged,
     isPaperLeader,
+    isAssignedTo,
+    isAssignedToMe,
+    isAssigning,
     statusOptions,
     priorityOptions,
     setCommentMsg,
@@ -91,6 +94,9 @@ export default function IssueModal({
       <IssueModalHeader
         issueId={issue._id}
         originAllIssue={originAllIssue}
+        isAssignedTo={isAssignedTo}
+        isAssignedToMe={isAssignedToMe}
+        isAssigning={isAssigning}
         onClose={onClose}
         onClick={handleAssignToMe}
       />
@@ -161,8 +167,9 @@ export default function IssueModal({
                       color="primary"
                       sx={{ mt: 2 }}
                       onClick={() => handleUpdateIssue(true)}
+                      disabled={isUpdating}
                     >
-                      Re-Open
+                      {isUpdating ? 'Re-opening...' : 'Re-open'}
                     </Button>
                   </>
                 )}
