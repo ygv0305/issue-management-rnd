@@ -49,7 +49,7 @@ function AllIssueView() {
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-        All Submitted Issues
+        All Issues View
       </Typography>
 
       <IssueTable

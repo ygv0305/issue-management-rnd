@@ -116,6 +116,9 @@ const IssueTableInner = ({
         ),
         type: 'singleSelect',
         valueOptions: IssueStatusArr,
+        sortComparator: (v1: string, v2: string) =>
+          IssueStatusArr.indexOf(v1 as IssueStatus) -
+          IssueStatusArr.indexOf(v2 as IssueStatus),
       },
       {
         field: 'priority',
@@ -127,6 +130,9 @@ const IssueTableInner = ({
         ),
         type: 'singleSelect',
         valueOptions: IssuePrioArr,
+        sortComparator: (v1: string, v2: string) =>
+          IssuePrioArr.indexOf(v1 as IssuePriority) -
+          IssuePrioArr.indexOf(v2 as IssuePriority),
       },
       ...(originAllIssue
         ? [

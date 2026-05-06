@@ -17,7 +17,7 @@ export const useTopbar = (): UseTopbarReturn => {
 
   const handleProfileClick = () => {
     alert(
-      `My Profile\n\nName: ${user?.fullName || user?.email}\nRole: ${user?.role}`,
+      `My Profile\n\nName: ${user?.fullName || 'Guest'}\nEmail: ${user?.email}\nRole: ${user?.role}`,
     );
   };
 
