@@ -9,6 +9,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { createServer } from 'http';
 
 // Types
 import type { CorsOptions } from 'cors';
@@ -18,6 +19,7 @@ import rootRoute from './routes/index.js';
 
 // Lib
 import { databaseConnect, databaseDisconnect } from './lib/mongoose.js';
+import { initSocket } from './lib/socket.js';
 
 // DNS fix
 import dns from 'node:dns/promises';
@@ -25,6 +27,7 @@ dns.setServers(['1.1.1.1']); // Cloudflare DNS
 
 /** Express application instance */
 const app = express();
+const server = createServer(app);
 
 /** CORS configuration - currently allows all origins in development mode */
 const devMode = true;
@@ -59,8 +62,11 @@ const PORT = 3000;
   try {
     await databaseConnect();
 
+    // Initialise Socket.io
+    initSocket(server);
+
     app.use('/api', rootRoute);
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Running on port ${PORT}`);
     });
   } catch (error) {

@@ -117,7 +117,6 @@ export const useIssueModal = (
     },
     onSuccess: (res) => {
       if (res?.success) {
-        // Optimistically update comments or invalidate
         queryClient.setQueryData(
           QUERY_KEYS.comments(issue?._id ?? ''),
           (old: CommentData[] = []) => [...old, res.data],

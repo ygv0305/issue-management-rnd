@@ -8,8 +8,9 @@ import pLeaderService from '../../services/pLeaderService';
 // Types
 import type { IssueData } from '../../types/issueTypes';
 
-// React Query
+// Lib
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
+import { useUser } from '../../lib/context/UserContext';
 
 interface UseAllIssuesReturn {
   allIssues: IssueData[];
@@ -22,6 +23,8 @@ interface UseAllIssuesReturn {
 export const useAllIssues = (): UseAllIssuesReturn => {
   const queryClient = useQueryClient();
   const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
+
+  const { user } = useUser();
 
   const { data: allIssues = [], isLoading: loading } = useQuery({
     queryKey: QUERY_KEYS.allIssues,
@@ -38,6 +41,18 @@ export const useAllIssues = (): UseAllIssuesReturn => {
           issue._id === updatedIssue._id ? updatedIssue : issue,
         ),
       );
+
+      // Update MyIssues page as well if current user owns or being tagged in updatedIssue
+      if (
+        updatedIssue.author._id === user?._id ||
+        updatedIssue.userTags.some((u) => u._id === user?._id)
+      ) {
+        queryClient.setQueryData(QUERY_KEYS.myIssues, (old: IssueData[] = []) =>
+          old.map((issue) =>
+            issue._id === updatedIssue._id ? updatedIssue : issue,
+          ),
+        );
+      }
     },
     [queryClient],
   );

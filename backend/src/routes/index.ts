@@ -16,6 +16,7 @@ import coreBaseRoutes from './coreBase.js';
 import adminRoutes from './admin.js';
 import searchRoutes from './search.js';
 import dashboardRoutes from './dashboard.js';
+import notificationRoutes from './notificationRoutes.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
@@ -61,5 +62,8 @@ router.use(
 
 /** Admin routes - requires authentication AND Admin role authorization */
 router.use('/admin', authenticateToken, authoriseRole(['Admin']), adminRoutes);
+
+/** Notification routes - requires authentication */
+router.use('/notifications', authenticateToken, notificationRoutes);
 
 export default router;

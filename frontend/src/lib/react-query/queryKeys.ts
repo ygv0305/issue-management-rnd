@@ -17,4 +17,5 @@ export const QUERY_KEYS = {
     issueTypePercentage: ['dashboard', 'issueTypePercentage'],
     trends: ['dashboard', 'trends'],
   },
+  notifications: ['notifications'],
 } as const;

@@ -41,6 +41,17 @@ export const useMyIssues = (): UseMyIssuesReturn => {
           issue._id === updatedIssue._id ? updatedIssue : issue,
         ),
       );
+
+      // Update AllIssues page as well if current user is PaperLeader
+      if (user?.role === 'PaperLeader') {
+        queryClient.setQueryData(
+          QUERY_KEYS.allIssues,
+          (old: IssueData[] = []) =>
+            old.map((issue) =>
+              issue._id === updatedIssue._id ? updatedIssue : issue,
+            ),
+        );
+      }
     },
     [queryClient],
   );

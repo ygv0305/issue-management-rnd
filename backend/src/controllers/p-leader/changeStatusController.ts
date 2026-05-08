@@ -64,6 +64,7 @@ interface ChangeStatusData {
 const changeStatus = async (req: Request, res: Response): Promise<void> => {
   const { issueId, newStatus, newUrgency, newImpact } =
     req.body as ChangeStatusData;
+  const userId = req.userId;
 
   try {
     const updatedIssue = await updateIssueStatus(
@@ -71,6 +72,7 @@ const changeStatus = async (req: Request, res: Response): Promise<void> => {
       newStatus,
       newUrgency,
       newImpact,
+      userId,
     );
 
     if (!updatedIssue) {

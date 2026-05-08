@@ -15,6 +15,11 @@ import { JSDOM } from 'jsdom';
 import type { Types } from 'mongoose';
 import { IssuePriority } from '../../models/issueSchema.js';
 import { IssueStatus } from '../../models/issueSchema.js';
+import { NotiTypeEnum } from '../../models/notificationSchema.js';
+import { SystemRoles } from '../../models/userSchema.js';
+
+// Services
+import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
 
 const window = new JSDOM('').window;
 const purify = DOMPurify(window);
@@ -53,7 +58,6 @@ interface CreateIssueInput {
  * @returns The newly created Issue document.
  * @async
  */
-
 export const createIssueDb = async (data: CreateIssueInput) => {
   const cleanDescription = purify.sanitize(data.description);
 
@@ -71,7 +75,27 @@ export const createIssueDb = async (data: CreateIssueInput) => {
     ],
   };
 
-  return await Issue.create(issueData);
+  const newIssue = await Issue.create(issueData);
+
+  // Notify all PaperLeaders
+  try {
+    const paperLeaders = await User.find({
+      role: SystemRoles.PaperLeader,
+    }).select('_id');
+    const recipientIds = paperLeaders.map((pl) => pl._id);
+
+    await dispatchBulkNotifications(
+      recipientIds,
+      data.author,
+      newIssue._id,
+      NotiTypeEnum.IssueCreated,
+      `New issue submitted: ${data.subject}`,
+    );
+  } catch (error) {
+    console.error('Failed to dispatch notifications for new issue, ', error);
+  }
+
+  return newIssue;
 };
 
 /**

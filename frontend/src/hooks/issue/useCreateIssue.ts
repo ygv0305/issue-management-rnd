@@ -18,6 +18,7 @@ import type { SearchedUserData } from '../../types/searchTypes';
 
 // Lib
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
+import { useUser } from '../../lib/context/UserContext';
 
 // MUI
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -75,6 +76,8 @@ const INITIAL_FORM_DATA: CreateIssueFormData = {
 export const useCreateIssue = (): UseCreateIssueReturn => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { user } = useUser();
 
   const { data: issueTypes = [], isLoading: issueTypesLoading } =
     useIssueTypes();
@@ -149,7 +152,9 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
     onSuccess: () => {
       alert('Issue submitted successfully!');
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myIssues });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+      if (user?.role === 'PaperLeader') {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+      }
       navigate('/my-issues');
     },
     onError: (error) => {
