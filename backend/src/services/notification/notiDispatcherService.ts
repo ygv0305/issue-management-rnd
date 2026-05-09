@@ -54,7 +54,12 @@ export const dispatchBulkNotifications = async (
   notiType: NotiTypeEnum,
   message: string,
 ) => {
-  const promises = recipients.map((recipient) =>
+  // Map to Set to prevent duplication of recipients
+  const uniqueRecipients = Array.from(
+    new Set(recipients.map((r) => r.toString())),
+  );
+
+  const promises = uniqueRecipients.map((recipient) =>
     dispatchNotification({
       recipient,
       actor,

@@ -162,15 +162,17 @@ export default function IssueModal({
                     <Typography>
                       Consider re-opening it to post new comments.
                     </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ mt: 2 }}
-                      onClick={() => handleUpdateIssue(true)}
-                      disabled={isUpdating}
-                    >
-                      {isUpdating ? 'Re-opening...' : 'Re-open'}
-                    </Button>
+                    {!originAllIssue && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ mt: 2 }}
+                        onClick={() => handleUpdateIssue(true)}
+                        disabled={isUpdating}
+                      >
+                        {isUpdating ? 'Re-Opening...' : 'Re-Open'}
+                      </Button>
+                    )}
                   </>
                 )}
               </Box>

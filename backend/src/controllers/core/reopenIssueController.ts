@@ -19,10 +19,16 @@ export const reopenIssueRules = [
 
 const reopenIssue = async (req: Request, res: Response): Promise<void> => {
   const { issueId } = req.body;
+  const userId = req.userId;
   const newStatus = PLeaderStatusChange.ReOpen;
 
   try {
-    const updatedIssue = await updateIssueStatus(issueId, newStatus);
+    const updatedIssue = await updateIssueStatus(
+      issueId,
+      true,
+      userId,
+      newStatus,
+    );
 
     if (!updatedIssue) {
       res.status(404).json({

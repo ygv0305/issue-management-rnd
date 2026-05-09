@@ -58,6 +58,9 @@ export const useTopbar = (): UseTopbarReturn => {
           queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
         } else if (newNoti.notiType === 'StatusChanged') {
           queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myIssues });
+          if (user.role === 'PaperLeader') {
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+          }
         }
       });
 

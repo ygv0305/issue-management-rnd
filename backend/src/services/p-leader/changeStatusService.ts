@@ -43,10 +43,11 @@ interface HistoryEntry {
 
 export const updateIssueStatus = async (
   issueId: string,
+  isReopen: boolean,
+  actorId?: Types.ObjectId,
   newStatus?: PLeaderStatusChange,
   newUrgency?: IssuePriority,
   newImpact?: IssuePriority,
-  actorId?: Types.ObjectId,
 ) => {
   const updateData: UpdateData = {};
   const historyEntry: HistoryEntry = { timestamp: new Date() };
@@ -96,10 +97,14 @@ export const updateIssueStatus = async (
   // Send notifications
   if (updatedIssue && actorId && (newStatus || newUrgency || newImpact)) {
     try {
-      const recipients = [
+      let recipients = [
         updatedIssue.author._id,
         ...(updatedIssue.userTags?.map((u) => u._id) || []),
       ];
+
+      if (isReopen && updatedIssue.assignedTo) {
+        recipients.push(updatedIssue.assignedTo._id);
+      }
 
       let message = `Issue updated: ${updatedIssue.subject}. `;
       if (newStatus) message += `Status changed to ${newStatus}. `;

@@ -69,10 +69,11 @@ const changeStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const updatedIssue = await updateIssueStatus(
       issueId,
+      false,
+      userId,
       newStatus,
       newUrgency,
       newImpact,
-      userId,
     );
 
     if (!updatedIssue) {
