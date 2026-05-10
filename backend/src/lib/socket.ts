@@ -4,6 +4,7 @@ import type { Server as HTTPServer } from 'http';
 
 // Types
 import type { INotification } from '../models/notificationSchema.js';
+import type { IComment } from '../models/commentSchema.js';
 
 let io: Server;
 
@@ -20,7 +21,8 @@ export const initSocket = (server: HTTPServer) => {
     },
   });
 
-  io.on('connection', (socket) => {
+  const notiNamespace = io.of('/noti');
+  notiNamespace.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     /**
@@ -35,6 +37,30 @@ export const initSocket = (server: HTTPServer) => {
 
     socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
+    });
+  });
+
+  // --- Comment Namespace ---
+  const commentNamespace = io.of('/comment');
+  commentNamespace.on('connection', (socket) => {
+    console.log('A user connected to /comment namespace:', socket.id);
+
+    socket.on('joinIssue', (issueId: string) => {
+      if (issueId) {
+        socket.join(issueId);
+        console.log(`Socket ${socket.id} joined issue room: ${issueId}`);
+      }
+    });
+
+    socket.on('leaveIssue', (issueId: string) => {
+      if (issueId) {
+        socket.leave(issueId);
+        console.log(`Socket ${socket.id} left issue room: ${issueId}`);
+      }
+    });
+
+    socket.on('disconnect', () => {
+      console.log('User disconnected from /comment namespace:', socket.id);
     });
   });
 
@@ -59,6 +85,17 @@ export const getIO = () => {
  */
 export const emitNotification = (userId: string, payload: INotification) => {
   if (io) {
-    io.to(userId).emit('notification', payload);
+    io.of('/noti').to(userId).emit('notification', payload);
+  }
+};
+
+/**
+ * Emits a new comment event to all users in the issue's room.
+ * @param issueId - The ID of the issue.
+ * @param comment - The populated comment data.
+ */
+export const emitNewComment = (issueId: string, comment: IComment) => {
+  if (io) {
+    io.of('/comment').to(issueId).emit('newComment', comment);
   }
 };

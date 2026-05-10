@@ -3,41 +3,57 @@ import { io, Socket } from 'socket.io-client';
 
 const SOCKET_URL = 'http://localhost:3000';
 
-let socket: Socket | null = null;
+let notiSocket: Socket | null = null;
+let commentSocket: Socket | null = null;
 
 /**
- * Initializes the Socket.io connection.
+ * Returns the noti namespace socket instance.
  */
-export const initSocket = (userId: string): Socket => {
-  if (!socket) {
-    socket = io(SOCKET_URL);
+export const getNotiSocket = (userId: string): Socket => {
+  if (!notiSocket) {
+    notiSocket = io(`${SOCKET_URL}/noti`);
 
-    socket.on('connect', () => {
+    notiSocket.on('connect', () => {
       console.log('Connected to socket server');
-      socket?.emit('join', userId);
+      notiSocket?.emit('join', userId);
     });
 
-    socket.on('disconnect', () => {
+    notiSocket.on('disconnect', () => {
       console.log('Disconnected from socket server');
     });
   }
 
-  return socket;
+  return notiSocket;
 };
 
 /**
- * Returns the socket instance.
+ * Returns the comment namespace socket instance.
  */
-export const getSocket = (): Socket | null => {
-  return socket;
+export const getCommentSocket = (): Socket => {
+  if (!commentSocket) {
+    commentSocket = io(`${SOCKET_URL}/comment`);
+
+    commentSocket.on('connect', () => {
+      console.log('Connected to comment socket namespace');
+    });
+
+    commentSocket.on('disconnect', () => {
+      console.log('Disconnected from comment socket namespace');
+    });
+  }
+  return commentSocket;
 };
 
 /**
- * Disconnects the socket.
+ * Disconnects the sockets.
  */
 export const disconnectSocket = () => {
-  if (socket) {
-    socket.disconnect();
-    socket = null;
+  if (notiSocket) {
+    notiSocket.disconnect();
+    notiSocket = null;
+  }
+  if (commentSocket) {
+    commentSocket.disconnect();
+    commentSocket = null;
   }
 };

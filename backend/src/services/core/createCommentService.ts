@@ -14,6 +14,9 @@ import { NotiTypeEnum } from '../../models/notificationSchema.js';
 // Services
 import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
 
+// Lib
+import { emitNewComment } from '../../lib/socket.js';
+
 /** Parameters required to create a new comment. */
 interface CreateCommentParams {
   /** The MongoDB ObjectId of the issue to comment on. */
@@ -95,7 +98,15 @@ const createCommentService = async ({
     }
   }
 
-  return await newComment.populate('userId', 'email fullName');
+  const populatedComment = await newComment.populate(
+    'userId',
+    'email fullName',
+  );
+
+  // Emit to socket room for real-time update
+  emitNewComment(issueId, populatedComment);
+
+  return populatedComment;
 };
 
 export default createCommentService;

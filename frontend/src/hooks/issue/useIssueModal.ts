@@ -1,5 +1,5 @@
 // Node modules
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Services
@@ -9,6 +9,7 @@ import pLeaderService from '../../services/pLeaderService';
 // Lib
 import { useUser } from '../../lib/context/UserContext';
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
+import { getCommentSocket } from '../../lib/socket';
 
 // Types
 import type {
@@ -59,6 +60,7 @@ export const useIssueModal = (
 ): UseIssueModalReturn => {
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [commentMsg, setCommentMsg] = useState('');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
@@ -96,15 +98,53 @@ export const useIssueModal = (
   }
 
   // Fetch comments
-  const { data: localThread = [], isLoading: isLoadingComments } = useQuery({
+  const { data: localThread = [] } = useQuery<CommentData[]>({
     queryKey: QUERY_KEYS.comments(issue?._id ?? ''),
-    queryFn: async () => {
-      if (!issue) return [];
-      const res = await coreService.fetchComments(issue._id);
-      return res.success ? res.data : [];
-    },
+    queryFn: () =>
+      queryClient.getQueryData(QUERY_KEYS.comments(issue?._id ?? '')) ?? [],
     enabled: !!issue && open,
   });
+
+  // Real-time and Fetch comments logic
+  useEffect(() => {
+    if (!issue || !open || activeTab !== 'comments') return;
+
+    let isMounted = true;
+    const issueId = issue._id;
+
+    const fetchInitialComments = async () => {
+      setIsLoadingComments(true);
+      const res = await coreService.fetchComments(issueId);
+      if (isMounted && res.success) {
+        queryClient.setQueryData(QUERY_KEYS.comments(issueId), res.data);
+      }
+      if (isMounted) setIsLoadingComments(false);
+    };
+
+    fetchInitialComments();
+
+    const socket = getCommentSocket();
+    socket.emit('joinIssue', issueId);
+
+    const handleNewComment = (newComment: CommentData) => {
+      queryClient.setQueryData(
+        QUERY_KEYS.comments(issueId),
+        (old: CommentData[] = []) => {
+          // Avoid duplicate comments if the user is the one who posted it
+          if (old.some((c) => c._id === newComment._id)) return old;
+          return [...old, newComment];
+        },
+      );
+    };
+
+    socket.on('newComment', handleNewComment);
+
+    return () => {
+      isMounted = false;
+      socket.emit('leaveIssue', issueId);
+      socket.off('newComment', handleNewComment);
+    };
+  }, [issue?._id, open, activeTab, queryClient]);
 
   // Post Comment Mutation
   const postCommentMutation = useMutation({
@@ -119,7 +159,10 @@ export const useIssueModal = (
       if (res?.success) {
         queryClient.setQueryData(
           QUERY_KEYS.comments(issue?._id ?? ''),
-          (old: CommentData[] = []) => [...old, res.data],
+          (old: CommentData[] = []) => {
+            if (old.some((c) => c._id === res.data._id)) return old;
+            return [...old, res.data];
+          },
         );
         setCommentMsg('');
       }

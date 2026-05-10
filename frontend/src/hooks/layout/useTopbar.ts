@@ -8,7 +8,7 @@ import notificationService, {
 } from '../../services/notificationService';
 
 // Lib
-import { initSocket, disconnectSocket } from '../../lib/socket';
+import { getNotiSocket, disconnectSocket } from '../../lib/socket';
 import { useUser } from '../../lib/context/UserContext';
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
@@ -45,7 +45,7 @@ export const useTopbar = (): UseTopbarReturn => {
   // Real-time notifications via Socket.io
   useEffect(() => {
     if (user?._id) {
-      const socket = initSocket(user._id);
+      const socket = getNotiSocket(user._id);
 
       socket.on('notification', (newNoti: INotification) => {
         // Update React Query cache when new notification arrives
