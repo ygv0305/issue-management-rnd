@@ -1,5 +1,5 @@
 // Node modules
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // RBAC
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
@@ -7,9 +7,6 @@ import withPermission from '../../lib/rbac/withPermission';
 
 // Hooks
 import { useAllIssues } from '../../hooks/issue/useAllIssues';
-
-// Types
-import type { IssueData } from '../../types/issueTypes';
 
 // Components
 import IssueModal from '../../components/organisms/IssueModal';
@@ -37,11 +34,6 @@ function AllIssueView() {
     handleIssueUpdated,
   } = useAllIssues();
 
-  const handleIssueSelect = useCallback(
-    (issue: IssueData) => setSelectedIssue(issue),
-    [setSelectedIssue],
-  );
-
   if (loading || isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
@@ -55,7 +47,7 @@ function AllIssueView() {
       <IssueTable
         originAllIssue={true}
         issues={allIssues}
-        onIssueSelect={handleIssueSelect}
+        onIssueSelect={setSelectedIssue}
       />
 
       <IssueModal

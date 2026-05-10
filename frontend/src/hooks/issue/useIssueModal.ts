@@ -55,7 +55,6 @@ export const useIssueModal = (
   issue: IssueData | null,
   originAllIssue: boolean,
   open: boolean,
-  onClose: () => void,
   onIssueUpdated?: (updatedIssue: IssueData) => void,
 ): UseIssueModalReturn => {
   const { user } = useUser();
@@ -193,7 +192,6 @@ export const useIssueModal = (
         if (onIssueUpdated) {
           onIssueUpdated(res.data);
         }
-        onClose();
       }
     },
   });
@@ -251,7 +249,6 @@ export const useIssueModal = (
         if (onIssueUpdated) {
           onIssueUpdated(res.data);
         }
-        onClose();
       }
     },
   });

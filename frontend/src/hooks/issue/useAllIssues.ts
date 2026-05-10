@@ -1,5 +1,5 @@
 // Node modules
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
@@ -22,7 +22,7 @@ interface UseAllIssuesReturn {
 
 export const useAllIssues = (): UseAllIssuesReturn => {
   const queryClient = useQueryClient();
-  const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
 
   const { user } = useUser();
 
@@ -33,6 +33,15 @@ export const useAllIssues = (): UseAllIssuesReturn => {
       return res.success ? res.data : [];
     },
   });
+
+  const selectedIssue = useMemo(
+    () => allIssues.find((issue) => issue._id === selectedIssueId) || null,
+    [allIssues, selectedIssueId],
+  );
+
+  const setSelectedIssue = useCallback((issue: IssueData | null) => {
+    setSelectedIssueId(issue?._id || null);
+  }, []);
 
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
@@ -54,7 +63,7 @@ export const useAllIssues = (): UseAllIssuesReturn => {
         );
       }
     },
-    [queryClient],
+    [queryClient, user?._id],
   );
 
   return {

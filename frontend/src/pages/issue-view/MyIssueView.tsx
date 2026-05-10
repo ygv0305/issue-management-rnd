@@ -1,11 +1,8 @@
 // Node modules
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // Hooks
 import { useMyIssues } from '../../hooks/issue/useMyIssues';
-
-// Types
-import type { IssueData } from '../../types/issueTypes';
 
 // Components
 import IssueModal from '../../components/organisms/IssueModal';
@@ -34,12 +31,6 @@ export default function MyIssueView() {
     handleIssueUpdated,
   } = useMyIssues();
 
-  // Ensures the onIssueSelect prop doesn’t create a new function on every render
-  const handleIssueSelect = useCallback(
-    (issue: IssueData) => setSelectedIssue(issue),
-    [setSelectedIssue],
-  );
-
   if (loading || isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
@@ -54,14 +45,14 @@ export default function MyIssueView() {
         title="My Submitted Issues"
         originAllIssue={false}
         issues={submittedIssues}
-        onIssueSelect={handleIssueSelect}
+        onIssueSelect={setSelectedIssue}
       />
 
       <IssueTable
         title="Issues I'm Tagged In"
         originAllIssue={false}
         issues={taggedIssues}
-        onIssueSelect={handleIssueSelect}
+        onIssueSelect={setSelectedIssue}
       />
 
       <IssueModal

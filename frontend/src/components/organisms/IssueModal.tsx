@@ -77,7 +77,7 @@ export default function IssueModal({
     handlePostComment,
     handleUpdateIssue,
     handleAssignToMe,
-  } = useIssueModal(issue, originAllIssue, open, onClose, onIssueUpdated);
+  } = useIssueModal(issue, originAllIssue, open, onIssueUpdated);
 
   if (!issue) return null;
 

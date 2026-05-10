@@ -23,7 +23,7 @@ interface UseMyIssuesReturn {
 
 export const useMyIssues = (): UseMyIssuesReturn => {
   const { user } = useUser();
-  const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: myIssues = [], isLoading: loading } = useQuery({
@@ -33,6 +33,15 @@ export const useMyIssues = (): UseMyIssuesReturn => {
       return res.success ? res.data : [];
     },
   });
+
+  const selectedIssue = useMemo(
+    () => myIssues.find((issue) => issue._id === selectedIssueId) || null,
+    [myIssues, selectedIssueId],
+  );
+
+  const setSelectedIssue = useCallback((issue: IssueData | null) => {
+    setSelectedIssueId(issue?._id || null);
+  }, []);
 
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
@@ -53,7 +62,7 @@ export const useMyIssues = (): UseMyIssuesReturn => {
         );
       }
     },
-    [queryClient],
+    [queryClient, user?.role],
   );
 
   // Filter issues by submitted or tagged

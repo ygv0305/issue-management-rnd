@@ -97,7 +97,7 @@ export const updateIssueStatus = async (
   // Send notifications
   if (updatedIssue && actorId && (newStatus || newUrgency || newImpact)) {
     try {
-      let recipients = [
+      const recipients = [
         updatedIssue.author._id,
         ...(updatedIssue.userTags?.map((u) => u._id) || []),
       ];
