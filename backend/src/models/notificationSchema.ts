@@ -14,6 +14,7 @@ export interface INotification {
   notiType: NotiTypeEnum;
   message: string;
   isRead: boolean;
+  stacked: number;
 }
 
 const notificationSchema = new Schema<INotification>(
@@ -45,6 +46,10 @@ const notificationSchema = new Schema<INotification>(
     isRead: {
       type: Boolean,
       default: false,
+    },
+    stacked: {
+      type: Number,
+      default: 1,
     },
   },
   { timestamps: true },

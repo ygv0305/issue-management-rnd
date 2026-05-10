@@ -88,7 +88,8 @@ const createCommentService = async ({
         actorId,
         issue._id,
         NotiTypeEnum.NewComment,
-        `New comment on issue ${issue.subject}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        // `New comment on issue ${issue.subject}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        `New comment on issue ${issue.subject}.`,
       );
     } catch (error) {
       console.error(

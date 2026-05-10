@@ -108,7 +108,7 @@ export const updateIssueStatus = async (
 
       let message = `Issue updated: ${updatedIssue.subject}. `;
       if (newStatus) message += `Status changed to ${newStatus}. `;
-      if (newUrgency || newImpact) message += `Priority updated.`;
+      if (newUrgency || newImpact) message += `Priority changed.`;
 
       await dispatchBulkNotifications(
         recipients,

@@ -51,7 +51,20 @@ export const useTopbar = (): UseTopbarReturn => {
         // Update React Query cache when new notification arrives
         queryClient.setQueryData<INotification[]>(
           QUERY_KEYS.notifications,
-          (prev) => (prev ? [newNoti, ...prev] : [newNoti]),
+          (prev) => {
+            if (!prev) return [newNoti];
+
+            // If it's a stacked notification, update the existing one in the list
+            if (newNoti.stacked > 1) {
+              const exists = prev.some((n) => n._id === newNoti._id);
+              if (exists) {
+                return prev.map((n) => (n._id === newNoti._id ? newNoti : n));
+              }
+            }
+
+            // Otherwise, add to the top
+            return [newNoti, ...prev];
+          },
         );
 
         if (newNoti.notiType === 'IssueCreated') {

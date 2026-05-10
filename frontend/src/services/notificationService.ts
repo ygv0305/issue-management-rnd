@@ -15,6 +15,7 @@ export interface INotification {
   notiType: 'IssueCreated' | 'StatusChanged' | 'NewComment';
   message: string;
   isRead: boolean;
+  stacked: number;
   createdAt: string;
 }
 

@@ -16,7 +16,7 @@ import coreBaseRoutes from './coreBase.js';
 import adminRoutes from './admin.js';
 import searchRoutes from './search.js';
 import dashboardRoutes from './dashboard.js';
-import notificationRoutes from './notificationRoutes.js';
+import notificationRoutes from './notification.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
