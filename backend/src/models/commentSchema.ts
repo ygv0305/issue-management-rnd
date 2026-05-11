@@ -50,5 +50,7 @@ const commentSchema = new Schema<IComment>(
   { timestamps: true },
 );
 
+commentSchema.index({ issueId: 1, timestamp: 1 });
+
 /** Mongoose model for Comment documents */
 export default model<IComment>('Comment', commentSchema);

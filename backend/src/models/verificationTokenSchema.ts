@@ -44,6 +44,8 @@ const verificationTokenSchema = new Schema<IVerificationToken>(
   { timestamps: true },
 );
 
+verificationTokenSchema.index({ token: 1 }, { unique: true });
+
 /** Mongoose model for VerificationToken documents */
 export default model<IVerificationToken>(
   'VerificationToken',

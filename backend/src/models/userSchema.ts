@@ -71,6 +71,9 @@ const userSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
+userSchema.index({ fullName: 'text', email: 'text' });
+userSchema.index({ project: 1 });
+
 /**
  * Pre-save middleware that automatically hashes the password before
  * storing it in the database. Only runs when the password field is modified.

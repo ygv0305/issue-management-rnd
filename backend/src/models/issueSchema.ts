@@ -162,8 +162,11 @@ const issueSchema = new Schema<IIssue>(
   { timestamps: true },
 );
 
-/** IMPORTANT: Add an index for query performance */
 issueSchema.index({ userTags: 1 });
+issueSchema.index({ author: 1, createdAt: -1 });
+issueSchema.index({ assignedTo: 1, createdAt: -1 });
+issueSchema.index({ status: 1, createdAt: -1 });
+issueSchema.index({ resolvedAt: 1 }, { sparse: true });
 
 /** Mongoose model for Issue documents */
 export default model<IIssue>('Issue', issueSchema);

@@ -39,5 +39,7 @@ const refreshTokenSchema = new Schema<IRefreshToken>({
   },
 });
 
+refreshTokenSchema.index({ token: 1 }, { unique: true });
+
 /** Mongoose model for RefreshToken documents */
 export default model<IRefreshToken>('RefreshToken', refreshTokenSchema);
