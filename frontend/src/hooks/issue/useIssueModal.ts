@@ -104,7 +104,7 @@ export const useIssueModal = (
     enabled: !!issue && open,
   });
 
-  // Real-time and Fetch comments logic
+  // Real-time and fetch comments logic
   useEffect(() => {
     if (!issue || !open || activeTab !== 'comments') return;
 
@@ -143,7 +143,7 @@ export const useIssueModal = (
       socket.emit('leaveIssue', issueId);
       socket.off('newComment', handleNewComment);
     };
-  }, [issue?._id, open, activeTab, queryClient]);
+  }, [issue, open, activeTab, queryClient]);
 
   // Post Comment Mutation
   const postCommentMutation = useMutation({

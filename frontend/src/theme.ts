@@ -1,6 +1,7 @@
 // Node modules
 import { createTheme } from '@mui/material/styles';
 
+/* Configure MUI's global theme */
 const theme = createTheme({
   palette: {
     primary: {
@@ -45,6 +46,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 4,
   },
+  // Disable all MUI default transitions globally
   transitions: {
     create: () => 'none',
   },

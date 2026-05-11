@@ -82,7 +82,7 @@ export const useTopbar = (): UseTopbarReturn => {
         disconnectSocket();
       };
     }
-  }, [user?._id, queryClient]);
+  }, [user, queryClient]);
 
   // Mutation for marking a single notification as read
   const markAsReadMutation = useMutation({
