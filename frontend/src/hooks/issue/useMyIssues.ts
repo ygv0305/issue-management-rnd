@@ -65,14 +65,13 @@ export const useMyIssues = (): UseMyIssuesReturn => {
     [queryClient, user?.role],
   );
 
-  // Filter issues by submitted or tagged
   const currentUserId = user?._id;
 
+  // Filter issues by submitted or tagged
   const submittedIssues = useMemo(
     () => myIssues.filter((issue) => issue.author._id === currentUserId),
     [myIssues, currentUserId],
   );
-
   const taggedIssues = useMemo(
     () =>
       myIssues.filter((issue) =>

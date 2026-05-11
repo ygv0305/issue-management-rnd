@@ -30,7 +30,7 @@ export const useTopbar = (): UseTopbarReturn => {
   const queryClient = useQueryClient();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  // Fetch notifications with React Query
+  // Fetch initial notifications
   const { data: notifications = [] } = useQuery({
     queryKey: QUERY_KEYS.notifications,
     queryFn: async () => {
@@ -62,11 +62,12 @@ export const useTopbar = (): UseTopbarReturn => {
               }
             }
 
-            // Otherwise, add to the top
+            // Otherwise add to the top
             return [newNoti, ...prev];
           },
         );
 
+        // Invalidate queries to trigger refetch
         if (newNoti.notiType === 'IssueCreated') {
           queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
         } else if (newNoti.notiType === 'StatusChanged') {

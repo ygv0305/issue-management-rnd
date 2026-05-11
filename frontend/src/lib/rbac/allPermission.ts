@@ -1,6 +1,3 @@
-/**
- * All system roles. Values must match the role strings returned by the backend.
- */
 export const ROLES = {
   STUDENT: 'Student',
   SUPERVISOR: 'Supervisor',

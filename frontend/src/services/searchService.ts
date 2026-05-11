@@ -4,7 +4,7 @@
  * Methods:
  * - searchUsers(): Search for users by name or email (server-side, debounced)
  *
- * Available to all authenticated users
+ * Available to all authenticated users.
  */
 
 // API

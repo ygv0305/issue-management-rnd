@@ -23,11 +23,10 @@ import { useUser } from '../../lib/context/UserContext';
 // MUI
 import type { SelectChangeEvent } from '@mui/material/Select';
 
-/** Shape of a react-select option for user tagging */
+// Shape of a react-select option for user tagging
 export type UserOption = {
   value: string;
   label: string;
-  /** Raw email for custom rendering */
   email?: string;
 };
 
@@ -62,7 +61,7 @@ interface CreateIssueFormData {
   impactLevel: string;
 }
 
-/** Strips the '@autuni.ac.nz' suffix for display */
+// Strips the '@autuni.ac.nz' suffix for display
 const trimEmail = (email: string) => email.replace(/@autuni\.ac\.nz$/i, '');
 
 const INITIAL_FORM_DATA: CreateIssueFormData = {

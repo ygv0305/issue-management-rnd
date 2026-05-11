@@ -1,4 +1,7 @@
+// MUI
 import Chip from '@mui/material/Chip';
+
+// Types
 import type { IssueStatus, IssuePriority } from '../../types/issueTypes';
 
 interface StatusBadgeProps {

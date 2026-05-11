@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 
-// Icons
+// MUI Icons
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 

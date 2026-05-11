@@ -7,8 +7,11 @@ import { AxiosError } from 'axios';
 // Services
 import AuthService from '../../services/authService';
 
-// Context
+// Lib
 import { useUser } from '../../lib/context/UserContext';
+
+// Utils
+import { isValidEmail } from '../../utils/checkValidEmail';
 
 type AuthMode = 'login' | 'signup' | 'reset';
 
@@ -23,9 +26,6 @@ interface UseAuthReturn {
   authModeChange: (mode: AuthMode) => void;
   handleSubmit: (e: React.SubmitEvent) => Promise<void>;
 }
-
-const isValidEmail = (email: string): boolean =>
-  email.endsWith('@autuni.ac.nz');
 
 export const useAuth = (): UseAuthReturn => {
   const [authMode, setAuthMode] = useState<AuthMode>('login');

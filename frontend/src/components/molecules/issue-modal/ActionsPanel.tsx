@@ -58,7 +58,7 @@ export default function ActionsPanel({
         >
           {statusOptions.map((opt) => {
             let isDisabled = false;
-
+            // Enforce rules when changing issue status
             if (newStatus === 'New') {
               isDisabled = ![
                 'New',

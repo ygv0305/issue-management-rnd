@@ -23,9 +23,9 @@ interface UseAllIssuesReturn {
 export const useAllIssues = (): UseAllIssuesReturn => {
   const queryClient = useQueryClient();
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
-
   const { user } = useUser();
 
+  // Fetch all issues
   const { data: allIssues = [], isLoading: loading } = useQuery({
     queryKey: QUERY_KEYS.allIssues,
     queryFn: async () => {
@@ -34,6 +34,7 @@ export const useAllIssues = (): UseAllIssuesReturn => {
     },
   });
 
+  // Memoize the selected issue used by issue modal by finding it from allIssues array
   const selectedIssue = useMemo(
     () => allIssues.find((issue) => issue._id === selectedIssueId) || null,
     [allIssues, selectedIssueId],

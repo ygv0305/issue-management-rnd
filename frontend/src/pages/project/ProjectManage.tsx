@@ -1,4 +1,4 @@
-// RBAC
+// Lib
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 

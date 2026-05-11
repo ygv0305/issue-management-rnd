@@ -63,7 +63,7 @@ export const useIssueModal = (
   const [commentMsg, setCommentMsg] = useState('');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
-  // Actions Tab State
+  // Actions tab states
   const [newStatus, setNewStatus] = useState<IssueStatus | ''>(
     issue?.status ?? '',
   );
@@ -74,7 +74,7 @@ export const useIssueModal = (
     issue?.impact ?? '',
   );
 
-  // Tagged Users State
+  // Tagged users states
   const [showTaggedUsers, setShowTaggedUsers] = useState(false);
   const taggedUsersRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +96,7 @@ export const useIssueModal = (
     }
   }
 
-  // Fetch comments
+  // Update local comments thread using getQueryData
   const { data: localThread = [] } = useQuery<CommentData[]>({
     queryKey: QUERY_KEYS.comments(issue?._id ?? ''),
     queryFn: () =>
@@ -145,7 +145,7 @@ export const useIssueModal = (
     };
   }, [issue, open, activeTab, queryClient]);
 
-  // Post Comment Mutation
+  // Post comment mutation
   const postCommentMutation = useMutation({
     mutationFn: async (message: string) => {
       if (!issue) return;
@@ -159,6 +159,7 @@ export const useIssueModal = (
         queryClient.setQueryData(
           QUERY_KEYS.comments(issue?._id ?? ''),
           (old: CommentData[] = []) => {
+            // Avoid duplicate comments if the user is the one who posted it
             if (old.some((c) => c._id === res.data._id)) return old;
             return [...old, res.data];
           },
@@ -168,7 +169,7 @@ export const useIssueModal = (
     },
   });
 
-  // Update Issue Mutation
+  // Update issue mutation
   const updateIssueMutation = useMutation({
     mutationFn: async (isReopen: boolean) => {
       if (!issue) return;
@@ -196,6 +197,7 @@ export const useIssueModal = (
     },
   });
 
+  // Check if actions tab states are changed (used to disable 'Confirm/Submit' button if unchanged)
   const isChanged =
     !!issue &&
     (newStatus !== issue.status ||
@@ -224,6 +226,7 @@ export const useIssueModal = (
     setActiveTab(newValue as ActiveTab);
   };
 
+  // isReopen: Check if it is triggered by "ReOpen" from Discussion tab
   const handleUpdateIssue = async (isReopen: boolean) => {
     if (!issue) return;
     if (!isReopen) {

@@ -1,7 +1,7 @@
 // Node modules
 import { useState, useEffect } from 'react';
 
-// RBAC
+// Lib
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 import withPermission from '../../lib/rbac/withPermission';
 

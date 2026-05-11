@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-// Context
+// Lib
 import { useUser } from '../../lib/context/UserContext';
 
 interface UseSidebarReturn {

@@ -7,8 +7,9 @@
  * - createProject(): Create a new project
  * - createIssueType(): Define a new issue type
  * - changeStatus(): Change issue status or priority (Admin action)
+ * - assignToMe(): Mark an issue as assigned to themselves
  *
- * Restricted to Paper Leader and Admin roles.
+ * Restricted to Paper Leader role only.
  */
 
 // API

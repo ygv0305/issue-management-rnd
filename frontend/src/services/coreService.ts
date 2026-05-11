@@ -7,8 +7,9 @@
  * - createIssue(): Create a new issue with attachments
  * - createComment(): Add a comment to an issue
  * - fetchComments(): Get all comments for a specific issue
+ * - reOpenIssue(): Change an issue status from Resolved to ReOpen
  *
- * Available to all authenticated users (Student, Supervisor, Moderator, etc.)
+ * Available to all authenticated users.
  */
 
 // API

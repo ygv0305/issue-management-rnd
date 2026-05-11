@@ -1,10 +1,8 @@
 // Node modules
 import React from 'react';
 
-// Context
+// Lib
 import { useUser } from '../context/UserContext';
-
-// RBAC
 import { hasPermission } from './hasPermission';
 
 /**

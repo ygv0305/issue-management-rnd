@@ -16,6 +16,9 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import type { SystemRoles, WhitelistUserData } from '../../types/authTypes';
 import type { ProjectData } from '../../types/projectTypes';
 
+// Utils
+import { isValidEmail } from '../../utils/checkValidEmail';
+
 const ROLES: SystemRoles[] = [
   'Student',
   'Supervisor',
@@ -52,9 +55,6 @@ interface UseAccountManageReturn {
   ) => void;
   handleSubmit: (e: React.SubmitEvent) => Promise<void>;
 }
-
-const isValidEmail = (email: string): boolean =>
-  email.endsWith('@autuni.ac.nz');
 
 export const useAccountManage = (): UseAccountManageReturn => {
   const [formData, setFormData] =
