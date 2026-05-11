@@ -4,10 +4,8 @@
  * if the refresh token is still valid and not expired.
  */
 
-// Types
-import type { Request, Response } from 'express';
-
 // Node modules
+import type { Request, Response } from 'express';
 import { cookie } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
@@ -17,10 +15,6 @@ import * as renewTokenService from '../../services/auth/renewTokenService.js';
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-/**
- * Validation rules for the renew token request cookie.
- * - `refreshToken`: Must not be empty and must be a valid JWT.
- */
 export const renewTokenRules = [
   cookie('refreshToken')
     .notEmpty()
@@ -32,10 +26,6 @@ export const renewTokenRules = [
 /**
  * Handles the token renewal request by verifying the refresh token,
  * generating a new access token, and cleaning up expired tokens.
- *
- * @param {Request} req - Express request object containing the refreshToken in cookies.
- * @param {Response} res - Express response object used to send back the new access token.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const renewToken = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
@@ -85,8 +75,4 @@ const renewToken = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/**
- * Middleware pipeline for the renew token endpoint.
- * Runs cookie validation, error handling, and the renew token controller.
- */
 export default [renewTokenRules, validationError, renewToken];

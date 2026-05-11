@@ -4,7 +4,7 @@ import Notification, { NotiTypeEnum } from '../../models/notificationSchema.js';
 // Lib
 import { emitNotification } from '../../lib/socket.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 interface CreateNotificationInput {
@@ -59,7 +59,7 @@ export const dispatchNotification = async (data: CreateNotificationInput) => {
     if (latestNoti) {
       const newStacked = (latestNoti.stacked || 1) + 1;
       latestNoti.stacked = newStacked;
-      // Cast to unknown to force TS to safely handles the populated subject from latestNoti
+      // Cast to unknown forcing TS to safely handles the populated subject from latestNoti
       const subject = (latestNoti.issue as unknown as { subject: string })
         .subject;
 

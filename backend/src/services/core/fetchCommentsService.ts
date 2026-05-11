@@ -6,7 +6,7 @@
 // Models
 import Comment from '../../models/commentSchema.js';
 
-// Types
+// Node modules
 import { Types } from 'mongoose';
 
 /**

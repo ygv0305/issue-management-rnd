@@ -8,7 +8,7 @@
 // Node modules
 import jwt from 'jsonwebtoken';
 
-// Custom modules
+// Lib
 import { verifyAccessToken } from '../lib/jwt.js';
 
 // Types

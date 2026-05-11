@@ -1,5 +1,5 @@
 /**
- * @fileoverview Role-based authorization middleware.
+ * @fileoverview Role-based authorisation middleware.
  * Checks the authenticated user's role against a list of allowed roles,
  * returning 403 Forbidden if the user's role is not permitted.
  * @module middlewares/authoriseRole
@@ -12,7 +12,7 @@ import type { Request, Response, NextFunction } from 'express';
 import User from '../models/userSchema.js';
 
 /**
- * Factory function that creates role-based authorization middleware.
+ * Factory function that creates role-based authorisation middleware.
  * @param {string[]} allowedRoles - Array of roles that are permitted to access the route
  * @returns {Function} Express middleware function that checks user role
  */

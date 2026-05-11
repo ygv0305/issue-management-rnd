@@ -4,9 +4,6 @@
  * project in the database.
  */
 
-// Types
-import type { Request, Response } from 'express';
-
 // Services
 import {
   checkProjectExist,
@@ -15,14 +12,11 @@ import {
 
 // Node modules
 import { body } from 'express-validator';
+import type { Request, Response } from 'express';
 
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-/**
- * Validation rules for the create project request body.
- * - `name`: Required, trimmed, max 50 characters.
- */
 export const createProjectRules = [
   body('name')
     .trim()
@@ -32,7 +26,6 @@ export const createProjectRules = [
     .withMessage('Project name must be less than 50 characters'),
 ];
 
-/** Represents the expected shape of the create project request body. */
 interface CreateProjectsData {
   name: string;
 }
@@ -40,10 +33,6 @@ interface CreateProjectsData {
 /**
  * Handles the create project request by validating the name uniqueness
  * and persisting the new project to the database.
- *
- * @param {Request} req - Express request object containing the project name in the body.
- * @param {Response} res - Express response object used to send back the created project data.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const createProject = async (req: Request, res: Response): Promise<void> => {
   const { name } = req.body as CreateProjectsData;
@@ -75,8 +64,4 @@ const createProject = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/**
- * Middleware pipeline for the create project endpoint.
- * Runs body validation, error handling, and the create project controller.
- */
 export default [createProjectRules, validationError, createProject];

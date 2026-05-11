@@ -1,4 +1,4 @@
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 // Models

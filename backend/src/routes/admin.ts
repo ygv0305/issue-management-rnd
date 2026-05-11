@@ -10,10 +10,9 @@ import { Router } from 'express';
 // Controllers
 import whitelistUser from '../controllers/admin/whitelistUserController.js';
 
-/** Router for admin endpoints (requires Admin role) */
 const router = Router();
 
-/** POST /admin/whitelist-user - Create and whitelist a new user */
+// POST /admin/whitelist-user - Create and whitelist a new user
 router.post('/whitelist-user', ...whitelistUser);
 
 export default router;

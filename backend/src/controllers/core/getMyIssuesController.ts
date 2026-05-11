@@ -3,7 +3,7 @@
  * user's assigned issues. Retrieves all issues associated with the user's ID.
  */
 
-// Types
+// Node modules
 import type { Request, Response } from 'express';
 
 // Services
@@ -11,10 +11,6 @@ import { fetchMyIssues } from '../../services/core/getMyIssuesService.js';
 
 /**
  * Handles the request to fetch all issues assigned to the authenticated user.
- *
- * @param {Request} req - Express request object containing the userId (attached by auth middleware).
- * @param {Response} res - Express response object used to send back the list of issues.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const getMyIssues = async (req: Request, res: Response): Promise<void> => {
   try {

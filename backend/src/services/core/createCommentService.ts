@@ -8,8 +8,10 @@ import Issue from '../../models/issueSchema.js';
 import Comment from '../../models/commentSchema.js';
 
 // Types
-import { Types } from 'mongoose';
 import { NotiTypeEnum } from '../../models/notificationSchema.js';
+
+// Node modules
+import { Types } from 'mongoose';
 
 // Services
 import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
@@ -17,13 +19,9 @@ import { dispatchBulkNotifications } from '../notification/notiDispatcherService
 // Lib
 import { emitNewComment } from '../../lib/socket.js';
 
-/** Parameters required to create a new comment. */
 interface CreateCommentParams {
-  /** The MongoDB ObjectId of the issue to comment on. */
   issueId: string;
-  /** The MongoDB ObjectId of the user creating the comment. */
   userId: string | Types.ObjectId;
-  /** The comment message text. */
   message: string;
 }
 

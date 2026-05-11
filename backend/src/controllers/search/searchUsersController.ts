@@ -6,8 +6,6 @@
 
 // Node modules
 import { query } from 'express-validator';
-
-// Types
 import type { Request, Response } from 'express';
 
 // Services
@@ -16,9 +14,6 @@ import { findMatchingUsers } from '../../services/search/searchUsersService.js';
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-/**
- * Validation rules for the search users query parameter.
- */
 export const searchUsersRules = [
   query('q')
     .optional()
@@ -32,10 +27,6 @@ export const searchUsersRules = [
  * Handles the request to search for users by name or email.
  * Returns an empty array if query is missing or less than 2 characters
  * without hitting the database.
- *
- * @param {Request} req - Express request object containing userId and query param `q`.
- * @param {Response} res - Express response object used to send back the search results.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const searchUsers = async (req: Request, res: Response): Promise<void> => {
   try {

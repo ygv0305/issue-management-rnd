@@ -5,6 +5,7 @@
 
 // Node modules
 import bcrypt from 'bcrypt';
+import type { Types } from 'mongoose';
 
 // Models
 import User from '../../models/userSchema.js';
@@ -12,9 +13,6 @@ import RefreshToken from '../../models/refreshTokenSchema.js';
 
 // Lib
 import { genAccessToken, genRefreshToken } from '../../lib/jwt.js';
-
-// Types
-import type { Types } from 'mongoose';
 
 /**
  * Verifies a user's credentials by looking up the email and comparing

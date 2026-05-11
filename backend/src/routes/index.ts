@@ -1,7 +1,7 @@
 /**
  * @fileoverview Root router for the API.
- * Mounts all sub-routes (auth, core, p-leader, admin, search) under the `/api` path
- * and applies authentication/authorization middleware at the appropriate levels.
+ * Mounts all sub-routes (auth, core, p-leader, admin, search, etc) under the `/api`
+ * path and applies authentication/authorisation middleware at the appropriate levels.
  * Also provides a health-check endpoint at the root.
  * @module routes/index
  */
@@ -22,10 +22,9 @@ import notificationRoutes from './notification.js';
 import authenticateToken from '../middlewares/authenticateToken.js';
 import authoriseRole from '../middlewares/authoriseRole.js';
 
-/** Main API router that organizes and mounts all sub-route modules */
 const router = Router();
 
-/** Health check endpoint - returns API status and timestamp */
+// Health check endpoint - returns API status and timestamp
 router.get('/', (req, res) => {
   res.status(200).json({
     message: 'API is live',
@@ -33,18 +32,18 @@ router.get('/', (req, res) => {
   });
 });
 
-/** Authentication routes (login, register, etc.) - no auth required */
+// Authentication routes (login, register, etc.) - no auth required
 router.use('/auth', authRoutes);
 
-/** Core base routes (issues, comments, issue types) - requires authentication */
+// Core base routes (issues, comments, issue types) - requires authentication
 router.use('/core-base', authenticateToken, coreBaseRoutes);
 
-/** Search routes (users) - requires authentication */
+// Search routes (users) - requires authentication
 router.use('/search', authenticateToken, searchRoutes);
 
 /**
  * Paper Leader routes - requires authentication AND
- * PaperLeader or Admin role authorization
+ * PaperLeader or Admin role authorisation
  */
 router.use(
   '/p-leader',
@@ -53,6 +52,7 @@ router.use(
   pLeaderRoutes,
 );
 
+// Dashboard routes - requires authentication AND PaperLeader role authorisation
 router.use(
   '/dashboard',
   authenticateToken,
@@ -60,10 +60,10 @@ router.use(
   dashboardRoutes,
 );
 
-/** Admin routes - requires authentication AND Admin role authorization */
+// Admin routes - requires authentication AND Admin role authorisation
 router.use('/admin', authenticateToken, authoriseRole(['Admin']), adminRoutes);
 
-/** Notification routes - requires authentication */
+// Notification routes - requires authentication
 router.use('/notifications', authenticateToken, notificationRoutes);
 
 export default router;

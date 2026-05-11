@@ -5,12 +5,12 @@
  * @module types/express
  */
 
-// Types
+// Node modules
 import { Types } from 'mongoose';
 
 declare module 'express-serve-static-core' {
   interface Request {
-    /** User ID extracted from the verified JWT access token */
+    // User ID extracted from the verified JWT access token
     userId: Types.ObjectId;
   }
 }

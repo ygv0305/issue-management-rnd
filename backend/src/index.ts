@@ -10,8 +10,6 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
-
-// Types
 import type { CorsOptions } from 'cors';
 
 // Router
@@ -25,11 +23,11 @@ import { initSocket } from './lib/socket.js';
 import dns from 'node:dns/promises';
 dns.setServers(['1.1.1.1']); // Cloudflare DNS
 
-/** Express application instance */
+// Express application instance
 const app = express();
 const server = createServer(app);
 
-/** CORS configuration - currently allows all origins in development mode */
+// CORS configuration - currently allows all origins in development mode
 const devMode = true;
 const corsOptions: CorsOptions = {
   origin(requestOrigin, callback) {
@@ -49,7 +47,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/** HTTP port the server listens on */
 const PORT = 3000;
 
 /**

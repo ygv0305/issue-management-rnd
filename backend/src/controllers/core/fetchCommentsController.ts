@@ -3,22 +3,16 @@
  * Fetches all comments for a given issue ID provided as a query parameter.
  */
 
-// Types
-import type { Request, Response } from 'express';
-
 // Services
 import fetchCommentsService from '../../services/core/fetchCommentsService.js';
 
 // Node modules
 import { query } from 'express-validator';
+import type { Request, Response } from 'express';
 
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-/**
- * Validation rules for the fetch comments request query parameters.
- * - `issueId`: Required, must be a valid MongoDB ObjectId.
- */
 export const fetchCommentsRules = [
   query('issueId')
     .notEmpty()
@@ -29,10 +23,6 @@ export const fetchCommentsRules = [
 
 /**
  * Handles the request to fetch all comments for a specific issue.
- *
- * @param {Request} req - Express request object containing issueId in the query parameters.
- * @param {Response} res - Express response object used to send back the list of comments.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const fetchComments = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -62,8 +52,4 @@ const fetchComments = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/**
- * Middleware pipeline for the fetch comments endpoint.
- * Runs query validation, error handling, and the fetch comments controller.
- */
 export default [fetchCommentsRules, validationError, fetchComments];

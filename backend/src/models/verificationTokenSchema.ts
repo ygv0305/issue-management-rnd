@@ -8,21 +8,14 @@
 // Node modules
 import { Schema, model } from 'mongoose';
 
-/**
- * Interface representing a verification token document in the database.
- * Used for verifying user email addresses during registration or password reset.
- * @interface
- */
 export interface IVerificationToken {
-  /** The email address this verification token is for */
+  // The email address this verification token is for
   email: string;
-  /** The verification token string */
   token: string;
-  /** Expiration date/time for the token (MongoDB TTL index auto-deletes) */
+  // Expiration date/time for the token (MongoDB TTL index auto-deletes)
   expiresAt: Date;
 }
 
-/** Mongoose schema for VerificationToken documents with TTL-based auto-expiration */
 const verificationTokenSchema = new Schema<IVerificationToken>(
   {
     email: {
@@ -46,7 +39,6 @@ const verificationTokenSchema = new Schema<IVerificationToken>(
 
 verificationTokenSchema.index({ token: 1 }, { unique: true });
 
-/** Mongoose model for VerificationToken documents */
 export default model<IVerificationToken>(
   'VerificationToken',
   verificationTokenSchema,

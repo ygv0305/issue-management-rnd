@@ -7,7 +7,7 @@
 // Models
 import User from '../../models/userSchema.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 /**

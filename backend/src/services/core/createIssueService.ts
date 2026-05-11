@@ -10,9 +10,9 @@ import User from '../../models/userSchema.js';
 // Node modules
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import type { Types } from 'mongoose';
 
 // Types
-import type { Types } from 'mongoose';
 import { IssuePriority } from '../../models/issueSchema.js';
 import { IssueStatus } from '../../models/issueSchema.js';
 import { NotiTypeEnum } from '../../models/notificationSchema.js';
@@ -24,22 +24,16 @@ import { dispatchBulkNotifications } from '../notification/notiDispatcherService
 const window = new JSDOM('').window;
 const purify = DOMPurify(window);
 
-/** Input data required to create a new issue. */
 interface CreateIssueInput {
-  /** Brief title for the issue. */
   subject: string;
-  /** Detailed description (HTML content, will be sanitized). */
   description: string;
-  /** Reference to the issue type/category. */
   type: Types.ObjectId;
-  /** Priority level of the issue. */
   urgency: IssuePriority;
   impact: IssuePriority;
-  /** Reference to the user creating the issue. */
   author: Types.ObjectId;
-  /** Optional array of file attachments with URL and Cloudinary public ID. */
+  // Optional array of file attachments with URL and Cloudinary public ID
   attachments?: { url: string; publicId: string }[];
-  /** Optional array of users tagged in the issue */
+  // Optional array of users tagged in the issue
   userTags?: Types.ObjectId[];
   status?: IssueStatus;
   history?: {

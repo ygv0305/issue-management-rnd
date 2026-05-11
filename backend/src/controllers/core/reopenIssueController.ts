@@ -1,11 +1,9 @@
 // Node modules
 import type { Request, Response } from 'express';
+import { body } from 'express-validator';
 
 // Services
 import { updateIssueStatus } from '../../services/p-leader/changeStatusService.js';
-
-// Node modules
-import { body } from 'express-validator';
 
 // Middlewares
 import validationError from '../../middlewares/validationError.js';

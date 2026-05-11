@@ -21,13 +21,12 @@ export const initSocket = (server: HTTPServer) => {
     },
   });
 
+  // Noti Namespace
   const notiNamespace = io.of('/noti');
   notiNamespace.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    /**
-     * Users join a room named after their userId
-     */
+    // Users join a room named after their userId
     socket.on('join', (userId: string) => {
       if (userId) {
         socket.join(userId);
@@ -40,7 +39,7 @@ export const initSocket = (server: HTTPServer) => {
     });
   });
 
-  // --- Comment Namespace ---
+  // Comment Namespace
   const commentNamespace = io.of('/comment');
   commentNamespace.on('connection', (socket) => {
     console.log('A user connected to /comment namespace:', socket.id);
@@ -68,8 +67,8 @@ export const initSocket = (server: HTTPServer) => {
 };
 
 /**
- * Returns the initialized IO instance.
- * @throws Error if socket is not initialized.
+ * Returns the initialised IO instance.
+ * @throws Error if socket is not initialised.
  */
 export const getIO = () => {
   if (!io) {

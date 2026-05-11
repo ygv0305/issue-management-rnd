@@ -6,7 +6,7 @@
 // Models
 import Issue from '../../models/issueSchema.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 /**

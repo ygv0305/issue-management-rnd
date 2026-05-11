@@ -8,24 +8,13 @@ import Issue, { type IssuePriority } from '../../models/issueSchema.js';
 
 // Types
 import { PLeaderStatusChange } from '../../controllers/p-leader/changeStatusController.js';
-import type { Types } from 'mongoose';
 import { NotiTypeEnum } from '../../models/notificationSchema.js';
+
+// Node modules
+import type { Types } from 'mongoose';
 
 // Services
 import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
-
-/**
- * Update the status of an issue and log the change in the history array.
- * If both newStatus and newPriority are undefined, the original issue is
- * returned without modification.
- *
- * @param issueId - ID of the issue to update.
- * @param newStatus - The new status value (optional).
- * @param newPriority - The new priority value (optional).
- * @returns The updated Issue document with populated author and type,
- *          or the original issue if no updates were provided.
- * @async
- */
 
 interface UpdateData {
   status?: PLeaderStatusChange;
@@ -41,6 +30,18 @@ interface HistoryEntry {
   timestamp: Date;
 }
 
+/**
+ * Update the status of an issue and log the change in the history array.
+ * If both newStatus and newPriority are undefined, the original issue is
+ * returned without modification.
+ *
+ * @param issueId - ID of the issue to update.
+ * @param newStatus - The new status value (optional).
+ * @param newPriority - The new priority value (optional).
+ * @returns The updated Issue document with populated author and type,
+ *          or the original issue if no updates were provided.
+ * @async
+ */
 export const updateIssueStatus = async (
   issueId: string,
   isReopen: boolean,
