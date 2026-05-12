@@ -15,6 +15,8 @@ export interface INotification {
   message: string;
   isRead: boolean;
   stacked: number;
+  // Expiration date/time for the notification (MongoDB TTL index auto-deletes)
+  expiresAt: Date;
 }
 
 const notificationSchema = new Schema<INotification>(
@@ -50,6 +52,11 @@ const notificationSchema = new Schema<INotification>(
     stacked: {
       type: Number,
       default: 1,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      expires: 0, // TTL index: document expires at the exact time of `expiresAt`
     },
   },
   { timestamps: true },

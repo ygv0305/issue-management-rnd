@@ -27,7 +27,7 @@ const refreshTokenSchema = new Schema<IRefreshToken>({
   expiresAt: {
     type: Date,
     required: true,
-    expires: 0,
+    expires: 0, // TTL index: document expires at the exact time of `expiresAt`
   },
 });
 

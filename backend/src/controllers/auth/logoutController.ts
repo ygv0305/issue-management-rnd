@@ -7,7 +7,7 @@
 import type { Request, Response } from 'express';
 
 // Services
-import { revokeRefreshToken } from '../../services/auth/logoutService.js';
+import { removeRefreshToken } from '../../services/auth/renewTokenService.js';
 
 // Config
 import config from '../../config/env.js';
@@ -19,7 +19,7 @@ import config from '../../config/env.js';
 const logout = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
   try {
-    await revokeRefreshToken(refreshToken);
+    await removeRefreshToken(refreshToken);
 
     const devMode = config.NODE_ENV === 'development';
     res.clearCookie('refreshToken', {
