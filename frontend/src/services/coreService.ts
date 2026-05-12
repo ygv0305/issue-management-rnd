@@ -26,9 +26,22 @@ class CoreService {
     return response.data;
   }
 
-  async getMyIssues(): Promise<IssueTypes.GetIssuesResponse> {
+  async getMySubmittedIssues(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<IssueTypes.GetIssuesResponse> {
     const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
-      '/core-base/my-issues',
+      `/core-base/my-submitted-issues?page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  }
+
+  async getMyTaggedIssues(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<IssueTypes.GetIssuesResponse> {
+    const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
+      `/core-base/my-tagged-issues?page=${page}&limit=${limit}`,
     );
     return response.data;
   }
@@ -49,9 +62,11 @@ class CoreService {
 
   async fetchComments(
     issueId: string,
+    page: number = 1,
+    limit: number = 10,
   ): Promise<IssueTypes.FetchCommentsResponse> {
     const response = await apiAuth.get<IssueTypes.FetchCommentsResponse>(
-      `/core-base/fetch-comments?issueId=${issueId}`,
+      `/core-base/fetch-comments?issueId=${issueId}&page=${page}&limit=${limit}`,
     );
     return response.data;
   }

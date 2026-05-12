@@ -1,6 +1,11 @@
 // Node modules
-import { useState, useRef, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
@@ -17,6 +22,7 @@ import type {
   CommentData,
   IssueStatus,
   IssueUrgencyAndImpact,
+  FetchCommentsResponse,
 } from '../../types/issueTypes';
 
 type ActiveTab = 'details' | 'comments' | 'actions';
@@ -49,6 +55,9 @@ interface UseIssueModalReturn {
   handlePostComment: (e: React.SubmitEvent) => Promise<void>;
   handleUpdateIssue: (isReopen: boolean) => Promise<void>;
   handleAssignToMe: () => void;
+  fetchNextComments: () => void;
+  hasNextComments: boolean;
+  isFetchingNextComments: boolean;
 }
 
 export const useIssueModal = (
@@ -59,7 +68,6 @@ export const useIssueModal = (
 ): UseIssueModalReturn => {
   const { user } = useUser();
   const queryClient = useQueryClient();
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [commentMsg, setCommentMsg] = useState('');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
@@ -96,42 +104,73 @@ export const useIssueModal = (
     }
   }
 
-  // Update local comments thread using getQueryData
-  const { data: localThread = [] } = useQuery<CommentData[]>({
+  // Fetch comments with infinite query (for infinite scrolling)
+  const {
+    data: commentData,
+    fetchNextPage: fetchNextComments,
+    hasNextPage: hasNextComments,
+    isFetchingNextPage: isFetchingNextComments,
+    isLoading: isLoadingComments,
+  } = useInfiniteQuery({
     queryKey: QUERY_KEYS.comments(issue?._id ?? ''),
-    queryFn: () =>
-      queryClient.getQueryData(QUERY_KEYS.comments(issue?._id ?? '')) ?? [],
-    enabled: !!issue && open,
+    queryFn: async ({ pageParam = 1 }) => {
+      if (!issue)
+        return {
+          data: [],
+          pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            limit: 10,
+          },
+        };
+      const res = await coreService.fetchComments(
+        issue._id,
+        pageParam as number,
+        10,
+      );
+      return res;
+    },
+    getNextPageParam: (lastPage) => {
+      // Backend returns newest first, so page 2 contains older comments
+      const { currentPage, totalPages } = lastPage.pagination;
+      return currentPage < totalPages ? (currentPage as number) + 1 : undefined;
+    },
+    initialPageParam: 1,
+    enabled: !!issue && open && activeTab === 'comments',
   });
+
+  const localThread = useMemo(() => {
+    // Flatten paginated results
+    const allComments = commentData?.pages.flatMap((page) => page.data) || [];
+    // The backend returns newest first for efficient pagination (skip/limit).
+    // However to display in a chat-like interface, we need oldest first (bottom of list).
+    return [...allComments].reverse();
+  }, [commentData]);
 
   // Real-time and fetch comments logic
   useEffect(() => {
     if (!issue || !open || activeTab !== 'comments') return;
 
-    let isMounted = true;
     const issueId = issue._id;
-
-    const fetchInitialComments = async () => {
-      setIsLoadingComments(true);
-      const res = await coreService.fetchComments(issueId);
-      if (isMounted && res.success) {
-        queryClient.setQueryData(QUERY_KEYS.comments(issueId), res.data);
-      }
-      if (isMounted) setIsLoadingComments(false);
-    };
-
-    fetchInitialComments();
-
     const socket = getCommentSocket();
     socket.emit('joinIssue', issueId);
 
     const handleNewComment = (newComment: CommentData) => {
-      queryClient.setQueryData(
+      queryClient.setQueryData<InfiniteData<FetchCommentsResponse>>(
         QUERY_KEYS.comments(issueId),
-        (old: CommentData[] = []) => {
-          // Avoid duplicate comments if the user is the one who posted it
-          if (old.some((c) => c._id === newComment._id)) return old;
-          return [...old, newComment];
+        (prev) => {
+          if (!prev) return prev;
+
+          // Add new comment to the first page (newest)
+          const updatedPages = [...prev.pages];
+          const firstPage = { ...updatedPages[0] };
+
+          if (firstPage.data.some((c) => c._id === newComment._id)) return prev;
+
+          firstPage.data = [newComment, ...firstPage.data];
+          updatedPages[0] = firstPage;
+          return { ...prev, pages: updatedPages };
         },
       );
     };
@@ -139,7 +178,6 @@ export const useIssueModal = (
     socket.on('newComment', handleNewComment);
 
     return () => {
-      isMounted = false;
       socket.emit('leaveIssue', issueId);
       socket.off('newComment', handleNewComment);
     };
@@ -156,12 +194,19 @@ export const useIssueModal = (
     },
     onSuccess: (res) => {
       if (res?.success) {
-        queryClient.setQueryData(
+        queryClient.setQueryData<InfiniteData<FetchCommentsResponse>>(
           QUERY_KEYS.comments(issue?._id ?? ''),
-          (old: CommentData[] = []) => {
-            // Avoid duplicate comments if the user is the one who posted it
-            if (old.some((c) => c._id === res.data._id)) return old;
-            return [...old, res.data];
+          (prev) => {
+            if (!prev) return prev;
+
+            const updatedPages = [...prev.pages];
+            const firstPage = { ...updatedPages[0] };
+
+            if (firstPage.data.some((c) => c._id === res.data._id)) return prev;
+
+            firstPage.data = [res.data, ...firstPage.data];
+            updatedPages[0] = firstPage;
+            return { ...prev, pages: updatedPages };
           },
         );
         setCommentMsg('');
@@ -224,6 +269,12 @@ export const useIssueModal = (
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue as ActiveTab);
+    // Refetch comments every time we navigate to 'Discussion' tab
+    if (newValue === 'comments' && issue) {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments(issue._id),
+      });
+    }
   };
 
   // isReopen: Check if it is triggered by "ReOpen" from Discussion tab
@@ -289,5 +340,8 @@ export const useIssueModal = (
     handlePostComment,
     handleUpdateIssue,
     handleAssignToMe,
+    fetchNextComments,
+    hasNextComments,
+    isFetchingNextComments,
   };
 };

@@ -10,22 +10,32 @@ import Comment from '../../models/commentSchema.js';
 import { Types } from 'mongoose';
 
 /**
- * Fetches all comments for a given issue, sorted by timestamp in ascending
- * order (oldest first). Each comment is populated with the author's email
- * and fullName.
+ * Fetches comments for a given issue with pagination.
  *
- * @param issueId - The MongoDB ObjectId of the issue whose comments to fetch.
- * @returns An array of Comment documents sorted by timestamp.
+ * @param issueId - The MongoDB ObjectId of the issue.
+ * @param page - Current page number.
+ * @param limit - Number of items per page.
+ * @returns An object containing paginated comments and the total count.
  * @async
  */
-const fetchCommentsService = async (issueId: string) => {
-  const comments = await Comment.find({
-    issueId: new Types.ObjectId(issueId),
-  })
-    .populate('userId', 'email fullName')
-    .sort({ timestamp: 1 }); // Sort by timestamp ascending
+const fetchCommentsService = async (
+  issueId: string,
+  page: number,
+  limit: number,
+) => {
+  const skip = (page - 1) * limit;
 
-  return comments;
+  const [data, totalCount] = await Promise.all([
+    Comment.find({ issueId: new Types.ObjectId(issueId) })
+      .populate('userId', 'email fullName')
+      .sort({ timestamp: -1 }) // Sort by timestamp descending (newest first for pagination)
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Comment.countDocuments({ issueId: new Types.ObjectId(issueId) }),
+  ]);
+
+  return { data, totalCount };
 };
 
 export default fetchCommentsService;

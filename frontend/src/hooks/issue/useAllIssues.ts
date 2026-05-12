@@ -1,6 +1,10 @@
 // Node modules
 import { useState, useCallback, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 
 // Services
 import pLeaderService from '../../services/pLeaderService';
@@ -12,12 +16,18 @@ import type { IssueData } from '../../types/issueTypes';
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 import { useUser } from '../../lib/context/UserContext';
 
+// MUI
+import type { GridPaginationModel } from '@mui/x-data-grid';
+
 interface UseAllIssuesReturn {
   allIssues: IssueData[];
   loading: boolean;
   selectedIssue: IssueData | null;
   setSelectedIssue: (issue: IssueData | null) => void;
   handleIssueUpdated: (updatedIssue: IssueData) => void;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: (model: GridPaginationModel) => void;
+  totalCount: number;
 }
 
 export const useAllIssues = (): UseAllIssuesReturn => {
@@ -25,16 +35,34 @@ export const useAllIssues = (): UseAllIssuesReturn => {
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const { user } = useUser();
 
-  // Fetch all issues
-  const { data: allIssues = [], isLoading: loading } = useQuery({
-    queryKey: QUERY_KEYS.allIssues,
-    queryFn: async () => {
-      const res = await pLeaderService.getAllIssues();
-      return res.success ? res.data : [];
-    },
+  // Server-side pagination state for DataGrid
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0, // MUI DataGrid uses 0-based indexing for pages
+    pageSize: 10,
   });
 
-  // Memoize the selected issue used by issue modal by finding it from allIssues array
+  // Fetch issues from backend with pagination
+  const { data, isLoading: loading } = useQuery({
+    // Include page and pageSize in queryKey to trigger refetch when they change
+    queryKey: [
+      QUERY_KEYS.allIssues,
+      paginationModel.page,
+      paginationModel.pageSize,
+    ],
+    queryFn: async () => {
+      const res = await pLeaderService.getAllIssues(
+        paginationModel.page + 1, // Backend uses 1-based indexing
+        paginationModel.pageSize,
+      );
+      return res.success ? res : { data: [], pagination: { totalItems: 0 } };
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const allIssues = useMemo(() => data?.data || [], [data]);
+  const totalCount = data?.pagination?.totalItems || 0;
+
+  // Memoize the selected issue
   const selectedIssue = useMemo(
     () => allIssues.find((issue) => issue._id === selectedIssueId) || null,
     [allIssues, selectedIssueId],
@@ -46,22 +74,15 @@ export const useAllIssues = (): UseAllIssuesReturn => {
 
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
-      queryClient.setQueryData(QUERY_KEYS.allIssues, (old: IssueData[] = []) =>
-        old.map((issue) =>
-          issue._id === updatedIssue._id ? updatedIssue : issue,
-        ),
-      );
+      // Invalidate queries to ensure we get fresh data with correct pagination
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
 
-      // Update MyIssues page as well if current user owns or being tagged in updatedIssue
+      // Update MyIssues page as well
       if (
         updatedIssue.author._id === user?._id ||
         updatedIssue.userTags.some((u) => u._id === user?._id)
       ) {
-        queryClient.setQueryData(QUERY_KEYS.myIssues, (old: IssueData[] = []) =>
-          old.map((issue) =>
-            issue._id === updatedIssue._id ? updatedIssue : issue,
-          ),
-        );
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
       }
     },
     [queryClient, user?._id],
@@ -73,5 +94,8 @@ export const useAllIssues = (): UseAllIssuesReturn => {
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
+    paginationModel,
+    setPaginationModel,
+    totalCount,
   };
 };

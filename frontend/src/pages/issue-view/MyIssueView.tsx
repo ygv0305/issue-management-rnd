@@ -25,13 +25,20 @@ export default function MyIssueView() {
   const {
     submittedIssues,
     taggedIssues,
-    loading,
+    submittedLoading,
+    taggedLoading,
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
+    submittedPagination,
+    setSubmittedPagination,
+    submittedTotal,
+    taggedPagination,
+    setTaggedPagination,
+    taggedTotal,
   } = useMyIssues();
 
-  if (loading || isMounting) {
+  if (isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
@@ -46,6 +53,11 @@ export default function MyIssueView() {
         originAllIssue={false}
         issues={submittedIssues}
         onIssueSelect={setSelectedIssue}
+        // Pagination props for Submitted issues
+        totalCount={submittedTotal}
+        paginationModel={submittedPagination}
+        onPaginationModelChange={setSubmittedPagination}
+        isLoading={submittedLoading}
       />
 
       <IssueTable
@@ -53,6 +65,11 @@ export default function MyIssueView() {
         originAllIssue={false}
         issues={taggedIssues}
         onIssueSelect={setSelectedIssue}
+        // Pagination props for Tagged issues
+        totalCount={taggedTotal}
+        paginationModel={taggedPagination}
+        onPaginationModelChange={setTaggedPagination}
+        isLoading={taggedLoading}
       />
 
       <IssueModal

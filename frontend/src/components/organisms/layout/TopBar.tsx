@@ -37,6 +37,9 @@ export default function TopBar() {
     handleProfileClick,
     handleMarkAsRead,
     handleMarkAllAsRead,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useTopbar();
 
   const open = Boolean(anchorEl);
@@ -78,6 +81,8 @@ export default function TopBar() {
                   width: 360,
                   maxHeight: 500,
                   mt: 1.5,
+                  display: 'flex',
+                  flexDirection: 'column',
                   '& .MuiAvatar-root': {
                     width: 32,
                     height: 32,
@@ -111,50 +116,67 @@ export default function TopBar() {
               )}
             </Box>
             <Divider />
-            <List sx={{ p: 0 }}>
+            <List sx={{ p: 0, overflowY: 'auto', flex: 1 }}>
               {notifications.length === 0 ? (
                 <MenuItem disabled>
                   <Typography variant="body2">No notifications</Typography>
                 </MenuItem>
               ) : (
-                notifications.map((notification) => (
-                  <ListItemButton
-                    key={notification._id}
-                    onClick={() => {
-                      handleMarkAsRead(notification._id);
-                      // TODO: Navigation logic could go here
-                      handleClose();
-                    }}
-                    sx={{
-                      bgcolor: notification.isRead
-                        ? 'transparent'
-                        : 'action.hover',
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                      py: 1.5,
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
-                      {!notification.isRead && (
-                        <FiberManualRecordIcon
-                          color="primary"
-                          sx={{ fontSize: 10, mt: 0.5 }}
-                        />
-                      )}
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: notification.isRead ? 400 : 600 }}
-                        >
-                          {notification.message}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(notification.createdAt).toLocaleString()}
-                        </Typography>
+                <>
+                  {notifications.map((notification) => (
+                    <ListItemButton
+                      key={notification._id}
+                      onClick={() => {
+                        handleMarkAsRead(notification._id);
+                        // TODO: Navigation logic could go here
+                        handleClose();
+                      }}
+                      sx={{
+                        bgcolor: notification.isRead
+                          ? 'transparent'
+                          : 'action.hover',
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        py: 1.5,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
+                        {!notification.isRead && (
+                          <FiberManualRecordIcon
+                            color="primary"
+                            sx={{ fontSize: 10, mt: 0.5 }}
+                          />
+                        )}
+                        <Box sx={{ flex: 1 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: notification.isRead ? 400 : 600 }}
+                          >
+                            {notification.message}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(notification.createdAt).toLocaleString()}
+                          </Typography>
+                        </Box>
                       </Box>
+                    </ListItemButton>
+                  ))}
+                  {hasNextPage && (
+                    <Box sx={{ p: 1, textAlign: 'center' }}>
+                      <Button
+                        fullWidth
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent menu from closing on click
+                          fetchNextPage();
+                        }}
+                        disabled={isFetchingNextPage}
+                      >
+                        {isFetchingNextPage ? 'Loading...' : 'Load More'}
+                      </Button>
                     </Box>
-                  </ListItemButton>
-                ))
+                  )}
+                </>
               )}
             </List>
           </Menu>

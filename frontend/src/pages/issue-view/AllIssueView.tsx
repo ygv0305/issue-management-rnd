@@ -14,7 +14,6 @@ import IssueTable from '../../components/organisms/IssueTable';
 
 // MUI
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 function AllIssueView() {
   const [isMounting, setIsMounting] = useState(true);
@@ -32,22 +31,26 @@ function AllIssueView() {
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
+    paginationModel,
+    setPaginationModel,
+    totalCount,
   } = useAllIssues();
 
-  if (loading || isMounting) {
+  if (isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-        All Issues View
-      </Typography>
-
       <IssueTable
         originAllIssue={true}
         issues={allIssues}
         onIssueSelect={setSelectedIssue}
+        // Pagination props
+        totalCount={totalCount}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        isLoading={loading}
       />
 
       <IssueModal

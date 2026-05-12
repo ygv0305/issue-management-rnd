@@ -1,10 +1,16 @@
 // Node modules
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from '@tanstack/react-query';
 
 // Services
 import notificationService, {
   type INotification,
+  type GetNotificationsResponse,
 } from '../../services/notificationService';
 
 // Lib
@@ -23,6 +29,9 @@ interface UseTopbarReturn {
   handleProfileClick: () => void;
   handleMarkAsRead: (id: string) => Promise<void>;
   handleMarkAllAsRead: () => Promise<void>;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
 export const useTopbar = (): UseTopbarReturn => {
@@ -30,16 +39,31 @@ export const useTopbar = (): UseTopbarReturn => {
   const queryClient = useQueryClient();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  // Fetch initial notifications
-  const { data: notifications = [] } = useQuery({
-    queryKey: QUERY_KEYS.notifications,
-    queryFn: async () => {
-      const response = await notificationService.getNotifications();
-      return response.data;
-    },
-    enabled: !!user?._id,
-  });
+  // Fetch notifications with infinite query (Load More functionality)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: QUERY_KEYS.notifications,
+      queryFn: async ({ pageParam = 1 }) => {
+        // pageParam is automatically updated by getNextPageParam
+        const response = await notificationService.getNotifications(
+          pageParam as number,
+          10,
+        );
+        return response;
+      },
+      getNextPageParam: (lastPage) => {
+        // Return the next page number, or undefined if we've reached the end
+        const { currentPage, totalPages } = lastPage.pagination;
+        return currentPage < totalPages
+          ? (currentPage as number) + 1
+          : undefined;
+      },
+      initialPageParam: 1,
+      enabled: !!user?._id,
+    });
 
+  // Flatten the pages into a single array for display
+  const notifications = data?.pages.flatMap((page) => page.data) || [];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   // Real-time notifications via Socket.io
@@ -48,32 +72,46 @@ export const useTopbar = (): UseTopbarReturn => {
       const socket = getNotiSocket(user._id);
 
       socket.on('notification', (newNoti: INotification) => {
-        // Update React Query cache when new notification arrives
-        queryClient.setQueryData<INotification[]>(
+        // Update Infinite Query cache manually when a new notification arrives via socket
+        queryClient.setQueryData<InfiniteData<GetNotificationsResponse>>(
           QUERY_KEYS.notifications,
           (prev) => {
-            if (!prev) return [newNoti];
+            if (!prev) return prev;
 
-            // If it's a stacked notification, update the existing one in the list
+            const updatedPages = [...prev.pages];
+
             if (newNoti.stacked > 1) {
-              const exists = prev.some((n) => n._id === newNoti._id);
-              if (exists) {
-                return prev.map((n) => (n._id === newNoti._id ? newNoti : n));
-              }
+              // For stacked notifications, search through all loaded pages to find and update the existing one
+              let found = false;
+              updatedPages.forEach((page, pageIdx) => {
+                const itemIdx = page.data.findIndex(
+                  (n) => n._id === newNoti._id,
+                );
+                if (itemIdx !== -1) {
+                  const newData = [...page.data];
+                  newData[itemIdx] = newNoti;
+                  updatedPages[pageIdx] = { ...page, data: newData };
+                  found = true;
+                }
+              });
+              if (found) return { ...prev, pages: updatedPages };
             }
 
-            // Otherwise add to the top
-            return [newNoti, ...prev];
+            // For unique notifications prepend to the first (newest) page
+            const firstPage = { ...updatedPages[0] };
+            firstPage.data = [newNoti, ...firstPage.data];
+            updatedPages[0] = firstPage;
+            return { ...prev, pages: updatedPages };
           },
         );
 
-        // Invalidate queries to trigger refetch
+        // Invalidate other queries
         if (newNoti.notiType === 'IssueCreated') {
-          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
         } else if (newNoti.notiType === 'StatusChanged') {
-          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myIssues });
+          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
           if (user.role === 'PaperLeader') {
-            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
           }
         }
       });
@@ -85,28 +123,46 @@ export const useTopbar = (): UseTopbarReturn => {
     }
   }, [user, queryClient]);
 
-  // Mutation for marking a single notification as read
+  // Mutations
   const markAsReadMutation = useMutation({
     mutationFn: (id: string) => notificationService.markAsRead(id),
     onSuccess: (response, id) => {
       if (response.success) {
-        queryClient.setQueryData<INotification[]>(
+        queryClient.setQueryData<InfiniteData<GetNotificationsResponse>>(
           QUERY_KEYS.notifications,
-          (prev) =>
-            prev?.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
+          (prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.map((n) =>
+                  n._id === id ? { ...n, isRead: true } : n,
+                ),
+              })),
+            };
+          },
         );
       }
     },
   });
 
-  // Mutation for marking all notifications as read
   const markAllAsReadMutation = useMutation({
     mutationFn: () => notificationService.markAllAsRead(),
     onSuccess: (response) => {
       if (response.success) {
-        queryClient.setQueryData<INotification[]>(
+        queryClient.setQueryData<InfiniteData<GetNotificationsResponse>>(
           QUERY_KEYS.notifications,
-          (prev) => prev?.map((n) => ({ ...n, isRead: true })),
+          (prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.map((n) => ({ ...n, isRead: true })),
+              })),
+            };
+          },
         );
       }
     },
@@ -160,5 +216,8 @@ export const useTopbar = (): UseTopbarReturn => {
     handleProfileClick,
     handleMarkAsRead,
     handleMarkAllAsRead,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   };
 };

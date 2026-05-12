@@ -1,6 +1,10 @@
 // Node modules
 import { useState, useMemo, useCallback } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
@@ -12,13 +16,23 @@ import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 // Types
 import type { IssueData } from '../../types/issueTypes';
 
+// MUI
+import type { GridPaginationModel } from '@mui/x-data-grid';
+
 interface UseMyIssuesReturn {
   submittedIssues: IssueData[];
   taggedIssues: IssueData[];
-  loading: boolean;
+  submittedLoading: boolean;
+  taggedLoading: boolean;
   selectedIssue: IssueData | null;
   setSelectedIssue: (issue: IssueData | null) => void;
   handleIssueUpdated: (updatedIssue: IssueData) => void;
+  submittedPagination: GridPaginationModel;
+  setSubmittedPagination: (model: GridPaginationModel) => void;
+  submittedTotal: number;
+  taggedPagination: GridPaginationModel;
+  setTaggedPagination: (model: GridPaginationModel) => void;
+  taggedTotal: number;
 }
 
 export const useMyIssues = (): UseMyIssuesReturn => {
@@ -26,18 +40,76 @@ export const useMyIssues = (): UseMyIssuesReturn => {
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: myIssues = [], isLoading: loading } = useQuery({
-    queryKey: QUERY_KEYS.myIssues,
-    queryFn: async () => {
-      const res = await coreService.getMyIssues();
-      return res.success ? res.data : [];
+  // Separate pagination state for the "Submitted" table
+  const [submittedPagination, setSubmittedPagination] =
+    useState<GridPaginationModel>({
+      page: 0,
+      pageSize: 10,
+    });
+
+  // Separate pagination state for the "Tagged" table
+  const [taggedPagination, setTaggedPagination] = useState<GridPaginationModel>(
+    {
+      page: 0,
+      pageSize: 10,
     },
+  );
+
+  // Fetch only the issues created by the current user
+  const { data: submittedData, isLoading: submittedLoading } = useQuery({
+    queryKey: [
+      QUERY_KEYS.myIssues,
+      'submitted',
+      submittedPagination.page,
+      submittedPagination.pageSize,
+    ],
+    queryFn: async () => {
+      const res = await coreService.getMySubmittedIssues(
+        submittedPagination.page + 1,
+        submittedPagination.pageSize,
+      );
+      return res.success ? res : { data: [], pagination: { totalItems: 0 } };
+    },
+    enabled: !!user?._id,
+    placeholderData: keepPreviousData,
   });
 
-  const selectedIssue = useMemo(
-    () => myIssues.find((issue) => issue._id === selectedIssueId) || null,
-    [myIssues, selectedIssueId],
+  // Fetch only the issues where the current user is tagged
+  const { data: taggedData, isLoading: taggedLoading } = useQuery({
+    queryKey: [
+      QUERY_KEYS.myIssues,
+      'tagged',
+      taggedPagination.page,
+      taggedPagination.pageSize,
+    ],
+    queryFn: async () => {
+      const res = await coreService.getMyTaggedIssues(
+        taggedPagination.page + 1,
+        taggedPagination.pageSize,
+      );
+      return res.success ? res : { data: [], pagination: { totalItems: 0 } };
+    },
+    enabled: !!user?._id,
+    placeholderData: keepPreviousData,
+  });
+
+  const submittedIssues = useMemo(
+    () => submittedData?.data || [],
+    [submittedData],
   );
+  const submittedTotal = submittedData?.pagination?.totalItems || 0;
+
+  const taggedIssues = useMemo(() => taggedData?.data || [], [taggedData]);
+  const taggedTotal = taggedData?.pagination?.totalItems || 0;
+
+  // Memoize the selected issue (check both lists)
+  const selectedIssue = useMemo(() => {
+    return (
+      submittedIssues.find((issue) => issue._id === selectedIssueId) ||
+      taggedIssues.find((issue) => issue._id === selectedIssueId) ||
+      null
+    );
+  }, [submittedIssues, taggedIssues, selectedIssueId]);
 
   const setSelectedIssue = useCallback((issue: IssueData | null) => {
     setSelectedIssueId(issue?._id || null);
@@ -45,47 +117,29 @@ export const useMyIssues = (): UseMyIssuesReturn => {
 
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
-      queryClient.setQueryData(QUERY_KEYS.myIssues, (old: IssueData[] = []) =>
-        old.map((issue) =>
-          issue._id === updatedIssue._id ? updatedIssue : issue,
-        ),
-      );
+      // Invalidate queries to ensure we get fresh data with correct pagination
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
 
-      // Update AllIssues page as well if current user is PaperLeader
-      if (user?.role === 'PaperLeader') {
-        queryClient.setQueryData(
-          QUERY_KEYS.allIssues,
-          (old: IssueData[] = []) =>
-            old.map((issue) =>
-              issue._id === updatedIssue._id ? updatedIssue : issue,
-            ),
-        );
+      if (user?.role === 'PaperLeader' && updatedIssue) {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
       }
     },
     [queryClient, user?.role],
   );
 
-  const currentUserId = user?._id;
-
-  // Filter issues by submitted or tagged
-  const submittedIssues = useMemo(
-    () => myIssues.filter((issue) => issue.author._id === currentUserId),
-    [myIssues, currentUserId],
-  );
-  const taggedIssues = useMemo(
-    () =>
-      myIssues.filter((issue) =>
-        issue.userTags?.some((tag) => tag._id === currentUserId),
-      ),
-    [myIssues, currentUserId],
-  );
-
   return {
     submittedIssues,
     taggedIssues,
-    loading,
+    submittedLoading,
+    taggedLoading,
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
+    submittedPagination,
+    setSubmittedPagination,
+    submittedTotal,
+    taggedPagination,
+    setTaggedPagination,
+    taggedTotal,
   };
 };

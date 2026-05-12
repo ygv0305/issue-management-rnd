@@ -77,6 +77,9 @@ export default function IssueModal({
     handlePostComment,
     handleUpdateIssue,
     handleAssignToMe,
+    fetchNextComments,
+    hasNextComments,
+    isFetchingNextComments,
   } = useIssueModal(issue, originAllIssue, open, onIssueUpdated);
 
   if (!issue) return null;
@@ -104,7 +107,7 @@ export default function IssueModal({
       <IssueModalTabs
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        commentCount={localThread.length}
+        commentCount={issue.commentCount}
         showActionsTab={isPaperLeader}
       />
 
@@ -135,6 +138,9 @@ export default function IssueModal({
               <CommentList
                 comments={localThread}
                 isLoading={isLoadingComments}
+                fetchNextPage={fetchNextComments}
+                hasNextPage={hasNextComments}
+                isFetchingNextPage={isFetchingNextComments}
               />
             </Box>
 

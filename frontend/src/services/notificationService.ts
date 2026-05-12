@@ -1,6 +1,9 @@
 // Lib
 import apiAuth from '../lib/api/axiosAuth';
 
+// Types
+import type { PaginationData } from '../types/issueTypes';
+
 export interface INotification {
   _id: string;
   recipient: string;
@@ -19,16 +22,21 @@ export interface INotification {
   createdAt: string;
 }
 
-interface GetNotificationsResponse {
+export interface GetNotificationsResponse {
   success: boolean;
   message: string;
   data: INotification[];
+  pagination: PaginationData;
 }
 
 class NotificationService {
-  async getNotifications(): Promise<GetNotificationsResponse> {
-    const response =
-      await apiAuth.get<GetNotificationsResponse>('/notifications');
+  async getNotifications(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<GetNotificationsResponse> {
+    const response = await apiAuth.get<GetNotificationsResponse>(
+      `/notifications?page=${page}&limit=${limit}`,
+    );
     return response.data;
   }
 

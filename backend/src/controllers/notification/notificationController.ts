@@ -5,7 +5,7 @@ import type { Request, Response } from 'express';
 import * as notificationService from '../../services/notification/notificationService.js';
 
 /**
- * Fetches notifications for the authenticated user.
+ * Fetches notifications for the authenticated user with pagination.
  * Sorted by descending createdAt.
  */
 export const getNotifications = async (req: Request, res: Response) => {
@@ -19,13 +19,25 @@ export const getNotifications = async (req: Request, res: Response) => {
       return;
     }
 
-    const notifications =
-      await notificationService.getUserNotifications(userId);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const { data, totalCount } = await notificationService.getUserNotifications(
+      userId,
+      page,
+      limit,
+    );
 
     res.status(200).json({
       success: true,
       message: 'Notifications fetched successfully',
-      data: notifications,
+      data: data,
+      pagination: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit,
+      },
     });
   } catch (error) {
     console.error('Error fetching notifications, ', error);

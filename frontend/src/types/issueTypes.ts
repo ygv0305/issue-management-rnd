@@ -30,12 +30,20 @@ export interface AssignToMeData {
   isUnassign: boolean;
 }
 
+export interface PaginationData {
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+}
+
 /* Responses */
 
 export interface GetIssuesResponse {
   message: string;
   success: boolean;
   data: IssueData[];
+  pagination: PaginationData;
 }
 
 export interface GetIssueTypesResponse {
@@ -60,6 +68,7 @@ export interface FetchCommentsResponse {
   success: boolean;
   message: string;
   data: CommentData[];
+  pagination: PaginationData;
 }
 
 export interface ChangeStatusResponse {

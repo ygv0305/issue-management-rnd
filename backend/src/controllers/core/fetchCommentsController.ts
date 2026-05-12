@@ -22,11 +22,13 @@ export const fetchCommentsRules = [
 ];
 
 /**
- * Handles the request to fetch all comments for a specific issue.
+ * Handles the request to fetch comments for a specific issue with pagination.
  */
 const fetchComments = async (req: Request, res: Response): Promise<void> => {
   try {
     const { issueId } = req.query;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
     if (!issueId || typeof issueId !== 'string') {
       res.status(400).json({
@@ -36,12 +38,22 @@ const fetchComments = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const comments = await fetchCommentsService(issueId);
+    const { data, totalCount } = await fetchCommentsService(
+      issueId,
+      page,
+      limit,
+    );
 
     res.status(200).json({
       success: true,
       message: 'Comments fetched successfully',
-      data: comments,
+      data: data,
+      pagination: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit,
+      },
     });
   } catch (error) {
     console.error('Error fetching comments, ', error);

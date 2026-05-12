@@ -1,9 +1,3 @@
-// MUI
-import { DataGrid } from '@mui/x-data-grid';
-import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-
 // Node modules
 import React, { useMemo } from 'react';
 
@@ -23,11 +17,25 @@ import { useIssueTypes } from '../../hooks/useProjectsAndTypes';
 // Utils
 import { calculatePriority } from '../../utils/calculatePriority';
 
+// MUI
+import { DataGrid } from '@mui/x-data-grid';
+import type {
+  GridColDef,
+  GridRenderCellParams,
+  GridPaginationModel,
+} from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+
 interface IssueTableProps {
   title?: string;
   originAllIssue: boolean;
   issues: IssueData[];
   onIssueSelect: (issue: IssueData) => void;
+  totalCount?: number;
+  paginationModel?: GridPaginationModel;
+  onPaginationModelChange?: (model: GridPaginationModel) => void;
+  isLoading?: boolean;
 }
 
 const IssueStatusArr: IssueStatus[] = [
@@ -45,6 +53,10 @@ const IssueTableInner = ({
   originAllIssue,
   issues,
   onIssueSelect,
+  totalCount = 0,
+  paginationModel,
+  onPaginationModelChange,
+  isLoading = false,
 }: IssueTableProps) => {
   const { data: issueTypes = [] } = useIssueTypes();
   const IssueTypeArr = useMemo(
@@ -150,16 +162,16 @@ const IssueTableInner = ({
   );
 
   return (
-    <Box sx={{ width: '100%', mb: 4 }}>
+    <Box sx={{ width: '100%' }}>
       {title && (
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 500 }}>
+        <Typography variant="h5" sx={{ my: 2, fontWeight: 500 }}>
           {title}
         </Typography>
       )}
 
       <Box
         sx={{
-          maxHeight: '80vh',
+          maxHeight: '84vh',
           width: '100%',
           bgcolor: 'background.paper',
           border: 1,
@@ -174,12 +186,14 @@ const IssueTableInner = ({
           getRowId={(row) => row._id}
           onRowClick={(params) => onIssueSelect(params.row as IssueData)}
           showToolbar
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 15 },
-            },
-          }}
-          pageSizeOptions={[15, 30, 50]}
+          // Server-side pagination config
+          paginationMode="server"
+          rowCount={totalCount} // Tells DataGrid how many total rows exist on the server
+          paginationModel={paginationModel} // Current page and pageSize
+          onPaginationModelChange={onPaginationModelChange} // Callback when page or pageSize changes
+          loading={isLoading} // Show loading overlay when fetching
+          // ------------------------------
+          pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick
           sx={{
             border: 'none',
