@@ -149,8 +149,10 @@ export const useCreateIssue = (): UseCreateIssueReturn => {
       });
     },
     onSuccess: () => {
-      alert('Issue submitted successfully!');
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myIssues });
+      alert('Issue submitted successfully');
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.myIssues.mySubmitted,
+      });
       if (user?.role === 'PaperLeader') {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
       }

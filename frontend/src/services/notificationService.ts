@@ -15,7 +15,7 @@ export interface INotification {
     _id: string;
     subject: string;
   };
-  notiType: 'IssueCreated' | 'StatusChanged' | 'NewComment';
+  notiType: 'IssueCreated' | 'IssueTagged' | 'StatusChanged' | 'NewComment';
   message: string;
   isRead: boolean;
   stacked: number;

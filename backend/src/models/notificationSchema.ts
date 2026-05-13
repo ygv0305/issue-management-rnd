@@ -3,6 +3,7 @@ import { Schema, Types, model } from 'mongoose';
 
 export enum NotiTypeEnum {
   IssueCreated = 'IssueCreated',
+  IssueTagged = 'IssueTagged',
   StatusChanged = 'StatusChanged',
   NewComment = 'NewComment',
 }

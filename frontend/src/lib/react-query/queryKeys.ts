@@ -8,7 +8,10 @@ export const QUERY_KEYS = {
   issueTypes: ['issueTypes'],
   projects: ['projects'],
   allIssues: ['allIssues'],
-  myIssues: ['myIssues'],
+  myIssues: {
+    mySubmitted: ['myIssues', 'submitted'],
+    myTagged: ['myIssues', 'tagged'],
+  },
   comments: (issueId: string) => ['comments', issueId],
   dashboard: {
     quickStats: ['dashboard', 'quickStats'],

@@ -107,12 +107,16 @@ export const useTopbar = (): UseTopbarReturn => {
 
         // Invalidate other queries
         if (newNoti.notiType === 'IssueCreated') {
-          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
         } else if (newNoti.notiType === 'StatusChanged') {
-          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
+          queryClient.invalidateQueries({ queryKey: ['myIssues'] });
           if (user.role === 'PaperLeader') {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
           }
+        } else if (newNoti.notiType === 'IssueTagged') {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.myIssues.myTagged,
+          });
         }
       });
 

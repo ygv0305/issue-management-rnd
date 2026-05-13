@@ -45,7 +45,7 @@ export const useAllIssues = (): UseAllIssuesReturn => {
   const { data, isLoading: loading } = useQuery({
     // Include page and pageSize in queryKey to trigger refetch when they change
     queryKey: [
-      QUERY_KEYS.allIssues,
+      ...QUERY_KEYS.allIssues,
       paginationModel.page,
       paginationModel.pageSize,
     ],
@@ -75,14 +75,14 @@ export const useAllIssues = (): UseAllIssuesReturn => {
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
       // Invalidate queries to ensure we get fresh data with correct pagination
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
 
       // Update MyIssues page as well
       if (
         updatedIssue.author._id === user?._id ||
         updatedIssue.userTags.some((u) => u._id === user?._id)
       ) {
-        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
+        queryClient.invalidateQueries({ queryKey: ['myIssues'] });
       }
     },
     [queryClient, user?._id],

@@ -58,8 +58,7 @@ export const useMyIssues = (): UseMyIssuesReturn => {
   // Fetch only the issues created by the current user
   const { data: submittedData, isLoading: submittedLoading } = useQuery({
     queryKey: [
-      QUERY_KEYS.myIssues,
-      'submitted',
+      ...QUERY_KEYS.myIssues.mySubmitted,
       submittedPagination.page,
       submittedPagination.pageSize,
     ],
@@ -77,8 +76,7 @@ export const useMyIssues = (): UseMyIssuesReturn => {
   // Fetch only the issues where the current user is tagged
   const { data: taggedData, isLoading: taggedLoading } = useQuery({
     queryKey: [
-      QUERY_KEYS.myIssues,
-      'tagged',
+      ...QUERY_KEYS.myIssues.myTagged,
       taggedPagination.page,
       taggedPagination.pageSize,
     ],
@@ -118,10 +116,10 @@ export const useMyIssues = (): UseMyIssuesReturn => {
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
       // Invalidate queries to ensure we get fresh data with correct pagination
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.myIssues] });
+      queryClient.invalidateQueries({ queryKey: ['myIssues'] });
 
       if (user?.role === 'PaperLeader' && updatedIssue) {
-        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.allIssues] });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
       }
     },
     [queryClient, user?.role],

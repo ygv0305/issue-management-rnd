@@ -86,7 +86,30 @@ export const createIssueDb = async (data: CreateIssueInput) => {
       `New issue submitted: ${data.subject}`,
     );
   } catch (error) {
-    console.error('Failed to dispatch notifications for new issue, ', error);
+    console.error(
+      'Failed to dispatch notifications to PaperLeaders for new issue, ',
+      error,
+    );
+  }
+
+  // Notify all tagged users
+  if (data.userTags && data.userTags.length > 0) {
+    try {
+      const recipientIds = data.userTags;
+
+      await dispatchBulkNotifications(
+        recipientIds,
+        data.author,
+        newIssue._id,
+        NotiTypeEnum.IssueTagged,
+        `You are tagged in an issue: ${data.subject}`,
+      );
+    } catch (error) {
+      console.error(
+        'Failed to dispatch notifications to tagged users for new issue, ',
+        error,
+      );
+    }
   }
 
   return newIssue;
