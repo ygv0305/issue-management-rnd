@@ -14,12 +14,7 @@ export const getNotiSocket = (userId: string): Socket => {
     notiSocket = io(`${SOCKET_URL}/noti`);
 
     notiSocket.on('connect', () => {
-      console.log('Connected to socket server');
       notiSocket?.emit('join', userId);
-    });
-
-    notiSocket.on('disconnect', () => {
-      console.log('Disconnected from socket server');
     });
   }
 
@@ -32,14 +27,6 @@ export const getNotiSocket = (userId: string): Socket => {
 export const getCommentSocket = (): Socket => {
   if (!commentSocket) {
     commentSocket = io(`${SOCKET_URL}/comment`);
-
-    commentSocket.on('connect', () => {
-      console.log('Connected to comment socket namespace');
-    });
-
-    commentSocket.on('disconnect', () => {
-      console.log('Disconnected from comment socket namespace');
-    });
   }
   return commentSocket;
 };

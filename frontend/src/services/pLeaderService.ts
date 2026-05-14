@@ -30,12 +30,9 @@ import type {
 } from '../types/projectTypes';
 
 class PLeaderService {
-  async getAllIssues(
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<GetIssuesResponse> {
+  async getAllIssues(): Promise<GetIssuesResponse> {
     const response = await apiAuth.get<GetIssuesResponse>(
-      `/p-leader/all-issues?page=${page}&limit=${limit}`,
+      '/p-leader/all-issues',
     );
     return response.data;
   }

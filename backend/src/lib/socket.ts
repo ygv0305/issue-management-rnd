@@ -24,42 +24,27 @@ export const initSocket = (server: HTTPServer) => {
   // Noti Namespace
   const notiNamespace = io.of('/noti');
   notiNamespace.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
     // Users join a room named after their userId
     socket.on('join', (userId: string) => {
       if (userId) {
         socket.join(userId);
-        console.log(`User ${userId} joined room ${userId}`);
       }
-    });
-
-    socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
     });
   });
 
   // Comment Namespace
   const commentNamespace = io.of('/comment');
   commentNamespace.on('connection', (socket) => {
-    console.log('A user connected to /comment namespace:', socket.id);
-
     socket.on('joinIssue', (issueId: string) => {
       if (issueId) {
         socket.join(issueId);
-        console.log(`Socket ${socket.id} joined issue room: ${issueId}`);
       }
     });
 
     socket.on('leaveIssue', (issueId: string) => {
       if (issueId) {
         socket.leave(issueId);
-        console.log(`Socket ${socket.id} left issue room: ${issueId}`);
       }
-    });
-
-    socket.on('disconnect', () => {
-      console.log('User disconnected from /comment namespace:', socket.id);
     });
   });
 

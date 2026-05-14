@@ -19,21 +19,13 @@ import { calculatePriority } from '../../utils/calculatePriority';
 
 // MUI
 import { DataGrid } from '@mui/x-data-grid';
-import type {
-  GridColDef,
-  GridRenderCellParams,
-  GridPaginationModel,
-} from '@mui/x-data-grid';
+import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
 interface IssueTableProps {
   originAllIssue: boolean;
   issues: IssueData[];
   onIssueSelect: (issue: IssueData) => void;
-  totalCount?: number;
-  paginationModel?: GridPaginationModel;
-  onPaginationModelChange?: (model: GridPaginationModel) => void;
-  isLoading?: boolean;
 }
 
 const IssueStatusArr: IssueStatus[] = [
@@ -50,10 +42,6 @@ const IssueTableInner = ({
   originAllIssue,
   issues,
   onIssueSelect,
-  totalCount = 0,
-  paginationModel,
-  onPaginationModelChange,
-  isLoading = false,
 }: IssueTableProps) => {
   const { data: issueTypes = [] } = useIssueTypes();
   const IssueTypeArr = useMemo(
@@ -162,7 +150,6 @@ const IssueTableInner = ({
     <Box sx={{ width: '100%' }}>
       <Box
         sx={{
-          maxHeight: '84vh',
           width: '100%',
           bgcolor: 'background.paper',
           border: 1,
@@ -177,13 +164,11 @@ const IssueTableInner = ({
           getRowId={(row) => row._id}
           onRowClick={(params) => onIssueSelect(params.row as IssueData)}
           showToolbar
-          // Server-side pagination config
-          paginationMode="server"
-          rowCount={totalCount} // Tells DataGrid how many total rows exist on the server
-          paginationModel={paginationModel} // Current page and pageSize
-          onPaginationModelChange={onPaginationModelChange} // Callback when page or pageSize changes
-          loading={isLoading} // Show loading overlay when fetching
-          // ------------------------------
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10 },
+            },
+          }}
           pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick
           sx={{

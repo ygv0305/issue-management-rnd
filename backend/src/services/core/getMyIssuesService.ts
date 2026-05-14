@@ -10,65 +10,37 @@ import Issue from '../../models/issueSchema.js';
 import type { Types } from 'mongoose';
 
 /**
- * Fetches issues authored by the given user with pagination.
+ * Fetches issues authored by the given user.
  *
  * @param userId - The MongoDB ObjectId of the user.
- * @param page - Current page number.
- * @param limit - Number of items per page.
- * @returns An object containing paginated submitted issues and the total count.
+ * @returns An array of Issue documents with populated references.
  * @async
  */
 export const fetchMySubmittedIssues = async (
   userId: string | Types.ObjectId,
-  page: number,
-  limit: number,
 ) => {
-  const skip = (page - 1) * limit;
-
-  const [data, totalCount] = await Promise.all([
-    Issue.find({ author: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('author', 'fullName email')
-      .populate('type', 'name')
-      .populate('userTags', 'fullName email')
-      .lean()
-      .exec(),
-    Issue.countDocuments({ author: userId }),
-  ]);
-
-  return { data, totalCount };
+  return await Issue.find({ author: userId })
+    .sort({ createdAt: -1 })
+    .populate('author', 'fullName email')
+    .populate('type', 'name')
+    .populate('userTags', 'fullName email')
+    .lean()
+    .exec();
 };
 
 /**
- * Fetches issues where the given user is tagged with pagination.
+ * Fetches issues where the given user is tagged.
  *
  * @param userId - The MongoDB ObjectId of the user.
- * @param page - Current page number.
- * @param limit - Number of items per page.
- * @returns An object containing paginated tagged issues and the total count.
+ * @returns An array of Issue documents with populated references.
  * @async
  */
-export const fetchMyTaggedIssues = async (
-  userId: string | Types.ObjectId,
-  page: number,
-  limit: number,
-) => {
-  const skip = (page - 1) * limit;
-
-  const [data, totalCount] = await Promise.all([
-    Issue.find({ userTags: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('author', 'fullName email')
-      .populate('type', 'name')
-      .populate('userTags', 'fullName email')
-      .lean()
-      .exec(),
-    Issue.countDocuments({ userTags: userId }),
-  ]);
-
-  return { data, totalCount };
+export const fetchMyTaggedIssues = async (userId: string | Types.ObjectId) => {
+  return await Issue.find({ userTags: userId })
+    .sort({ createdAt: -1 })
+    .populate('author', 'fullName email')
+    .populate('type', 'name')
+    .populate('userTags', 'fullName email')
+    .lean()
+    .exec();
 };

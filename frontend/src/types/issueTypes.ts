@@ -43,7 +43,6 @@ export interface GetIssuesResponse {
   message: string;
   success: boolean;
   data: IssueData[];
-  pagination: PaginationData;
 }
 
 export interface GetIssueTypesResponse {

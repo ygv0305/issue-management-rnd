@@ -29,25 +29,12 @@ export const getMySubmittedIssues = async (
       return;
     }
 
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-
-    const { data, totalCount } = await fetchMySubmittedIssues(
-      userId,
-      page,
-      limit,
-    );
+    const data = await fetchMySubmittedIssues(userId);
 
     res.status(200).json({
       success: true,
       message: 'Submitted issues fetched successfully',
       data: data,
-      pagination: {
-        totalItems: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: page,
-        limit: limit,
-      },
     });
   } catch (error) {
     console.error('Error fetching submitted issues, ', error);
@@ -75,21 +62,12 @@ export const getMyTaggedIssues = async (
       return;
     }
 
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-
-    const { data, totalCount } = await fetchMyTaggedIssues(userId, page, limit);
+    const data = await fetchMyTaggedIssues(userId);
 
     res.status(200).json({
       success: true,
       message: 'Tagged issues fetched successfully',
       data: data,
-      pagination: {
-        totalItems: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: page,
-        limit: limit,
-      },
     });
   } catch (error) {
     console.error('Error fetching tagged issues, ', error);

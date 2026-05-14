@@ -14,6 +14,8 @@ import IssueTable from '../../components/organisms/IssueTable';
 
 // MUI
 import Box from '@mui/material/Box';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 function AllIssueView() {
   const [isMounting, setIsMounting] = useState(true);
@@ -27,31 +29,68 @@ function AllIssueView() {
 
   const {
     allIssues,
+    assignedIssues,
     loading,
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
-    paginationModel,
-    setPaginationModel,
-    totalCount,
+    viewMode,
+    handleViewChange,
   } = useAllIssues();
 
-  if (isMounting) {
+  if (loading || isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <IssueTable
-        originAllIssue={true}
-        issues={allIssues}
-        onIssueSelect={setSelectedIssue}
-        // Pagination props
-        totalCount={totalCount}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        isLoading={loading}
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={handleViewChange}
+          aria-label="issue view mode"
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            p: 0.5,
+            borderRadius: '12px',
+            '& .MuiToggleButton-root': {
+              px: 3,
+              py: 1,
+              borderRadius: '8px',
+              border: 'none',
+              textTransform: 'none',
+              fontWeight: 500,
+              gap: 1,
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              },
+            },
+          }}
+        >
+          <ToggleButton value="all">All Issues</ToggleButton>
+          <ToggleButton value="assigned">Assigned To Me</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
+      {viewMode === 'all' ? (
+        <IssueTable
+          originAllIssue={true}
+          issues={allIssues}
+          onIssueSelect={setSelectedIssue}
+        />
+      ) : (
+        <IssueTable
+          originAllIssue={true}
+          issues={assignedIssues}
+          onIssueSelect={setSelectedIssue}
+        />
+      )}
 
       <IssueModal
         issue={selectedIssue}

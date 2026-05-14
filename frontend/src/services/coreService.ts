@@ -26,22 +26,16 @@ class CoreService {
     return response.data;
   }
 
-  async getMySubmittedIssues(
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<IssueTypes.GetIssuesResponse> {
+  async getMySubmittedIssues(): Promise<IssueTypes.GetIssuesResponse> {
     const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
-      `/core-base/my-submitted-issues?page=${page}&limit=${limit}`,
+      '/core-base/my-submitted-issues',
     );
     return response.data;
   }
 
-  async getMyTaggedIssues(
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<IssueTypes.GetIssuesResponse> {
+  async getMyTaggedIssues(): Promise<IssueTypes.GetIssuesResponse> {
     const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
-      `/core-base/my-tagged-issues?page=${page}&limit=${limit}`,
+      '/core-base/my-tagged-issues',
     );
     return response.data;
   }

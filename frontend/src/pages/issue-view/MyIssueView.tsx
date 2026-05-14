@@ -31,23 +31,17 @@ export default function MyIssueView() {
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
-    submittedPagination,
-    setSubmittedPagination,
-    submittedTotal,
-    taggedPagination,
-    setTaggedPagination,
-    taggedTotal,
     viewMode,
     handleViewChange,
   } = useMyIssues();
 
-  if (isMounting) {
+  if (submittedLoading || taggedLoading || isMounting) {
     return <Box sx={{ p: 3 }}>Loading...</Box>;
   }
 
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <ToggleButtonGroup
           value={viewMode}
           exclusive
@@ -86,20 +80,12 @@ export default function MyIssueView() {
           originAllIssue={false}
           issues={submittedIssues}
           onIssueSelect={setSelectedIssue}
-          totalCount={submittedTotal}
-          paginationModel={submittedPagination}
-          onPaginationModelChange={setSubmittedPagination}
-          isLoading={submittedLoading}
         />
       ) : (
         <IssueTable
           originAllIssue={false}
           issues={taggedIssues}
           onIssueSelect={setSelectedIssue}
-          totalCount={taggedTotal}
-          paginationModel={taggedPagination}
-          onPaginationModelChange={setTaggedPagination}
-          isLoading={taggedLoading}
         />
       )}
 

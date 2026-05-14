@@ -1,10 +1,6 @@
 // Node modules
 import { useState, useMemo, useCallback } from 'react';
-import {
-  useQuery,
-  useQueryClient,
-  keepPreviousData,
-} from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
@@ -16,9 +12,6 @@ import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 // Types
 import type { IssueData } from '../../types/issueTypes';
 
-// MUI
-import type { GridPaginationModel } from '@mui/x-data-grid';
-
 interface UseMyIssuesReturn {
   submittedIssues: IssueData[];
   taggedIssues: IssueData[];
@@ -27,12 +20,6 @@ interface UseMyIssuesReturn {
   selectedIssue: IssueData | null;
   setSelectedIssue: (issue: IssueData | null) => void;
   handleIssueUpdated: (updatedIssue: IssueData) => void;
-  submittedPagination: GridPaginationModel;
-  setSubmittedPagination: (model: GridPaginationModel) => void;
-  submittedTotal: number;
-  taggedPagination: GridPaginationModel;
-  setTaggedPagination: (model: GridPaginationModel) => void;
-  taggedTotal: number;
   viewMode: 'submitted' | 'tagged';
   handleViewChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -46,65 +33,25 @@ export const useMyIssues = (): UseMyIssuesReturn => {
   const [viewMode, setViewMode] = useState<'submitted' | 'tagged'>('submitted');
   const queryClient = useQueryClient();
 
-  // Separate pagination state for the "Submitted" table
-  const [submittedPagination, setSubmittedPagination] =
-    useState<GridPaginationModel>({
-      page: 0,
-      pageSize: 10,
-    });
-
-  // Separate pagination state for the "Tagged" table
-  const [taggedPagination, setTaggedPagination] = useState<GridPaginationModel>(
-    {
-      page: 0,
-      pageSize: 10,
-    },
-  );
-
   // Fetch only the issues created by the current user
-  const { data: submittedData, isLoading: submittedLoading } = useQuery({
-    queryKey: [
-      ...QUERY_KEYS.myIssues.mySubmitted,
-      submittedPagination.page,
-      submittedPagination.pageSize,
-    ],
+  const { data: submittedIssues = [], isLoading: submittedLoading } = useQuery({
+    queryKey: QUERY_KEYS.myIssues.mySubmitted,
     queryFn: async () => {
-      const res = await coreService.getMySubmittedIssues(
-        submittedPagination.page + 1,
-        submittedPagination.pageSize,
-      );
-      return res.success ? res : { data: [], pagination: { totalItems: 0 } };
+      const res = await coreService.getMySubmittedIssues();
+      return res.success ? res.data : [];
     },
     enabled: !!user?._id,
-    placeholderData: keepPreviousData,
   });
 
   // Fetch only the issues where the current user is tagged
-  const { data: taggedData, isLoading: taggedLoading } = useQuery({
-    queryKey: [
-      ...QUERY_KEYS.myIssues.myTagged,
-      taggedPagination.page,
-      taggedPagination.pageSize,
-    ],
+  const { data: taggedIssues = [], isLoading: taggedLoading } = useQuery({
+    queryKey: QUERY_KEYS.myIssues.myTagged,
     queryFn: async () => {
-      const res = await coreService.getMyTaggedIssues(
-        taggedPagination.page + 1,
-        taggedPagination.pageSize,
-      );
-      return res.success ? res : { data: [], pagination: { totalItems: 0 } };
+      const res = await coreService.getMyTaggedIssues();
+      return res.success ? res.data : [];
     },
     enabled: !!user?._id,
-    placeholderData: keepPreviousData,
   });
-
-  const submittedIssues = useMemo(
-    () => submittedData?.data || [],
-    [submittedData],
-  );
-  const submittedTotal = submittedData?.pagination?.totalItems || 0;
-
-  const taggedIssues = useMemo(() => taggedData?.data || [], [taggedData]);
-  const taggedTotal = taggedData?.pagination?.totalItems || 0;
 
   // Memoize the selected issue (check both lists)
   const selectedIssue = useMemo(() => {
@@ -121,11 +68,30 @@ export const useMyIssues = (): UseMyIssuesReturn => {
 
   const handleIssueUpdated = useCallback(
     (updatedIssue: IssueData) => {
-      // Invalidate queries to ensure we get fresh data with correct pagination
-      queryClient.invalidateQueries({ queryKey: ['myIssues'] });
+      queryClient.setQueryData(
+        QUERY_KEYS.myIssues.mySubmitted,
+        (old: IssueData[] = []) =>
+          old.map((issue) =>
+            issue._id === updatedIssue._id ? updatedIssue : issue,
+          ),
+      );
+      queryClient.setQueryData(
+        QUERY_KEYS.myIssues.myTagged,
+        (old: IssueData[] = []) =>
+          old.map((issue) =>
+            issue._id === updatedIssue._id ? updatedIssue : issue,
+          ),
+      );
 
+      // Update AllIssues page as well if current user is PaperLeader
       if (user?.role === 'PaperLeader' && updatedIssue) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allIssues });
+        queryClient.setQueryData(
+          QUERY_KEYS.allIssues,
+          (old: IssueData[] = []) =>
+            old.map((issue) =>
+              issue._id === updatedIssue._id ? updatedIssue : issue,
+            ),
+        );
       }
     },
     [queryClient, user?.role],
@@ -151,12 +117,6 @@ export const useMyIssues = (): UseMyIssuesReturn => {
     selectedIssue,
     setSelectedIssue,
     handleIssueUpdated,
-    submittedPagination,
-    setSubmittedPagination,
-    submittedTotal,
-    taggedPagination,
-    setTaggedPagination,
-    taggedTotal,
     viewMode,
     handleViewChange,
   };
