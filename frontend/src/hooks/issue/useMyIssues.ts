@@ -33,11 +33,17 @@ interface UseMyIssuesReturn {
   taggedPagination: GridPaginationModel;
   setTaggedPagination: (model: GridPaginationModel) => void;
   taggedTotal: number;
+  viewMode: 'submitted' | 'tagged';
+  handleViewChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newView: 'submitted' | 'tagged' | null,
+  ) => void;
 }
 
 export const useMyIssues = (): UseMyIssuesReturn => {
   const { user } = useUser();
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'submitted' | 'tagged'>('submitted');
   const queryClient = useQueryClient();
 
   // Separate pagination state for the "Submitted" table
@@ -125,6 +131,18 @@ export const useMyIssues = (): UseMyIssuesReturn => {
     [queryClient, user?.role],
   );
 
+  const handleViewChange = useCallback(
+    (
+      _event: React.MouseEvent<HTMLElement>,
+      newView: 'submitted' | 'tagged' | null,
+    ) => {
+      if (newView !== null) {
+        setViewMode(newView);
+      }
+    },
+    [],
+  );
+
   return {
     submittedIssues,
     taggedIssues,
@@ -139,5 +157,7 @@ export const useMyIssues = (): UseMyIssuesReturn => {
     taggedPagination,
     setTaggedPagination,
     taggedTotal,
+    viewMode,
+    handleViewChange,
   };
 };

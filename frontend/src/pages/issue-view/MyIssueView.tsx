@@ -10,7 +10,8 @@ import IssueTable from '../../components/organisms/IssueTable';
 
 // MUI
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 export default function MyIssueView() {
   const [isMounting, setIsMounting] = useState(true);
@@ -36,6 +37,8 @@ export default function MyIssueView() {
     taggedPagination,
     setTaggedPagination,
     taggedTotal,
+    viewMode,
+    handleViewChange,
   } = useMyIssues();
 
   if (isMounting) {
@@ -44,33 +47,61 @@ export default function MyIssueView() {
 
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-        My Issues View
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={handleViewChange}
+          aria-label="issue view mode"
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            p: 0.5,
+            borderRadius: '12px',
+            '& .MuiToggleButton-root': {
+              px: 3,
+              py: 1,
+              borderRadius: '8px',
+              border: 'none',
+              textTransform: 'none',
+              fontWeight: 500,
+              gap: 1,
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              },
+            },
+          }}
+        >
+          <ToggleButton value="submitted">My Submitted Issues</ToggleButton>
+          <ToggleButton value="tagged">My Tagged Issues</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-      <IssueTable
-        title="My Submitted Issues"
-        originAllIssue={false}
-        issues={submittedIssues}
-        onIssueSelect={setSelectedIssue}
-        // Pagination props for Submitted issues
-        totalCount={submittedTotal}
-        paginationModel={submittedPagination}
-        onPaginationModelChange={setSubmittedPagination}
-        isLoading={submittedLoading}
-      />
-
-      <IssueTable
-        title="Issues I'm Tagged In"
-        originAllIssue={false}
-        issues={taggedIssues}
-        onIssueSelect={setSelectedIssue}
-        // Pagination props for Tagged issues
-        totalCount={taggedTotal}
-        paginationModel={taggedPagination}
-        onPaginationModelChange={setTaggedPagination}
-        isLoading={taggedLoading}
-      />
+      {viewMode === 'submitted' ? (
+        <IssueTable
+          originAllIssue={false}
+          issues={submittedIssues}
+          onIssueSelect={setSelectedIssue}
+          totalCount={submittedTotal}
+          paginationModel={submittedPagination}
+          onPaginationModelChange={setSubmittedPagination}
+          isLoading={submittedLoading}
+        />
+      ) : (
+        <IssueTable
+          originAllIssue={false}
+          issues={taggedIssues}
+          onIssueSelect={setSelectedIssue}
+          totalCount={taggedTotal}
+          paginationModel={taggedPagination}
+          onPaginationModelChange={setTaggedPagination}
+          isLoading={taggedLoading}
+        />
+      )}
 
       <IssueModal
         issue={selectedIssue}

@@ -25,10 +25,8 @@ import type {
   GridPaginationModel,
 } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 interface IssueTableProps {
-  title?: string;
   originAllIssue: boolean;
   issues: IssueData[];
   onIssueSelect: (issue: IssueData) => void;
@@ -49,7 +47,6 @@ const IssueStatusArr: IssueStatus[] = [
 const IssuePrioArr: IssuePriority[] = ['Low', 'Medium', 'High', 'Critical'];
 
 const IssueTableInner = ({
-  title,
   originAllIssue,
   issues,
   onIssueSelect,
@@ -163,12 +160,6 @@ const IssueTableInner = ({
 
   return (
     <Box sx={{ width: '100%' }}>
-      {title && (
-        <Typography variant="h5" sx={{ my: 2, fontWeight: 500 }}>
-          {title}
-        </Typography>
-      )}
-
       <Box
         sx={{
           maxHeight: '84vh',
