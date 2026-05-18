@@ -19,6 +19,9 @@ import rootRoute from './routes/index.js';
 import { databaseConnect, databaseDisconnect } from './lib/mongoose.js';
 import { initSocket } from './lib/socket.js';
 
+// Config
+import config from './config/env.js';
+
 // DNS fix
 import dns from 'node:dns/promises';
 dns.setServers(['1.1.1.1']); // Cloudflare DNS
@@ -27,15 +30,23 @@ dns.setServers(['1.1.1.1']); // Cloudflare DNS
 const app = express();
 const server = createServer(app);
 
-// CORS configuration - currently allows all origins in development mode
-const devMode = true;
+// CORS configuration - allows frontend URL and development origins
 const corsOptions: CorsOptions = {
   origin(requestOrigin, callback) {
-    if (devMode === true) {
-      // console.log(requestOrigin);
+    if (!requestOrigin) {
+      callback(null, true);
+      return;
+    }
+
+    const allowedOrigins = [config.FRONTEND_URL];
+    if (config.NODE_ENV === 'development') {
+      allowedOrigins.push('http://localhost:5173');
+    }
+
+    if (allowedOrigins.includes(requestOrigin)) {
       callback(null, true);
     } else {
-      console.log('Dev mode is false. Please configure CORS.');
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -47,7 +58,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const PORT = 3000;
+const PORT = config.PORT;
 
 /**
  * Initializes the server by connecting to the database, mounting routes,

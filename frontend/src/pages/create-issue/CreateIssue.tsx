@@ -15,6 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 // Components
 import Select from '../../components/atoms/CustomSelect';
 import PriorityTooltip from '../../components/atoms/PriorityTooltip';
+import PageLoader from '../../components/atoms/PageLoader';
 
 // Utils
 import { urgencyData, impactData } from '../../utils/priorityJustifyData';
@@ -34,7 +35,7 @@ export default function CreateIssue() {
   } = useCreateIssue();
 
   if (loading) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+    return <PageLoader message="Initializing issue form..." />;
   }
 
   return (

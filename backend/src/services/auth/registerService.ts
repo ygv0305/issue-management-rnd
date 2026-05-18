@@ -13,6 +13,9 @@ import VerificationToken from '../../models/verificationTokenSchema.js';
 // Utils
 import { sendEmail } from '../../utils/emailService.js';
 
+// Config
+import config from '../../config/env.js';
+
 /**
  * Checks if a user with the given email already exists in the database.
  *
@@ -58,7 +61,7 @@ export const generateAndSaveToken = async (email: string) => {
  * @throws May throw if the email service fails to send.
  */
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const createLink = `http://localhost:5173/create-password?token=${token}&email=${encodeURIComponent(email)}`;
+  const createLink = `${config.FRONTEND_URL}/create-password?token=${token}&email=${encodeURIComponent(email)}`;
   await sendEmail(
     email,
     'Complete Your Registration - AUT R&D Issue Management',

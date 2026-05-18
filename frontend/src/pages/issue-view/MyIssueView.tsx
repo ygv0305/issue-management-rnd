@@ -7,6 +7,7 @@ import { useMyIssues } from '../../hooks/issue/useMyIssues';
 // Components
 import IssueModal from '../../components/organisms/IssueModal';
 import IssueTable from '../../components/organisms/IssueTable';
+import PageLoader from '../../components/atoms/PageLoader';
 
 // MUI
 import Box from '@mui/material/Box';
@@ -36,7 +37,7 @@ export default function MyIssueView() {
   } = useMyIssues();
 
   if (submittedLoading || taggedLoading || isMounting) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+    return <PageLoader message="Loading your issues..." />;
   }
 
   return (

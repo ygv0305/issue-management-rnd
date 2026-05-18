@@ -11,6 +11,7 @@ import { useAllIssues } from '../../hooks/issue/useAllIssues';
 // Components
 import IssueModal from '../../components/organisms/IssueModal';
 import IssueTable from '../../components/organisms/IssueTable';
+import PageLoader from '../../components/atoms/PageLoader';
 
 // MUI
 import Box from '@mui/material/Box';
@@ -39,7 +40,7 @@ function AllIssueView() {
   } = useAllIssues();
 
   if (loading || isMounting) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+    return <PageLoader message="Loading issues..." />;
   }
 
   return (

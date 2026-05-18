@@ -6,6 +6,9 @@ import type { Server as HTTPServer } from 'http';
 import type { INotification } from '../models/notificationSchema.js';
 import type { IComment } from '../models/commentSchema.js';
 
+// Config
+import config from '../config/env.js';
+
 let io: Server;
 
 /**
@@ -13,11 +16,16 @@ let io: Server;
  * @param server - The HTTP server instance.
  */
 export const initSocket = (server: HTTPServer) => {
+  const allowedOrigins = [config.FRONTEND_URL];
+  if (config.NODE_ENV === 'development') {
+    allowedOrigins.push('http://localhost:5173');
+  }
+
   io = new Server(server, {
-    // CORS - currently allows all origins in development
     cors: {
-      origin: '*',
+      origin: allowedOrigins,
       methods: ['GET', 'POST'],
+      credentials: true,
     },
   });
 

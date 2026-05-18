@@ -8,7 +8,7 @@
 // Node modules
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 /**
  * Application configuration object containing environment variables.
@@ -19,7 +19,10 @@ dotenv.config();
  * @property {string} NODE_ENV - Current environment (development/production)
  */
 const config = {
+  PORT: process.env.PORT || '3000',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   MONGO_URI: process.env.MONGO_URI,
+  DB_NAME: process.env.DB_NAME || 'ims-main',
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET!,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET!,
   ADMIN_MAIL: process.env.ADMIN_MAIL,

@@ -1,8 +1,10 @@
 // Node modules
 import axios from 'axios';
 
+const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 const apiAuth = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: apiBaseURL,
   withCredentials: true, // allows cookies (for refreshToken) to be sent automatically
 });
 
@@ -73,7 +75,7 @@ apiAuth.interceptors.response.use(
       try {
         // Attempt to renew token
         const res = await axios.post(
-          'http://localhost:3000/api/auth/renew-token',
+          `${apiBaseURL}/auth/renew-token`,
           {},
           { withCredentials: true },
         );

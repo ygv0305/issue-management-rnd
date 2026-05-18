@@ -13,6 +13,9 @@ import VerificationToken from '../../models/verificationTokenSchema.js';
 // Utils
 import { sendEmail } from '../../utils/emailService.js';
 
+// Config
+import config from '../../config/env.js';
+
 /**
  * Finds a user by their email address.
  *
@@ -53,7 +56,7 @@ export const generateAndSaveResetToken = async (email: string) => {
  * @throws May throw if the email service fails to send.
  */
 export const sendResetEmail = async (email: string, token: string) => {
-  const resetLink = `http://localhost:5173/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  const resetLink = `${config.FRONTEND_URL}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
   await sendEmail(
     email,
     'Reset Your Password - AUT R&D Issue Management',

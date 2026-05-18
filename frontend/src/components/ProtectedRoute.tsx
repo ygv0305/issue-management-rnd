@@ -18,6 +18,9 @@
 // Node modules
 import { Navigate, Outlet } from 'react-router';
 
+// MUI
+import { Box, CircularProgress, Typography } from '@mui/material';
+
 // Lib
 import { useUser } from '../lib/context/UserContext';
 import { hasPermission } from '../lib/rbac/hasPermission';
@@ -31,7 +34,25 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useUser();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          gap: 2,
+        }}
+      >
+        <CircularProgress size={48} />
+        <Typography variant="body2" color="text.secondary">
+          Verifying session...
+        </Typography>
+      </Box>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/" replace />;
