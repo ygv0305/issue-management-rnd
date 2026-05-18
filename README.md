@@ -1,88 +1,118 @@
-# R&D Issue Management and Tracking System
+# AUT R&D Issue Management System
 
-## 🏛️ Organisation
+Issue tracking platform for the AUT R&D course, built as separate React and
+Express applications backed by MongoDB.
 
-**AUT University**
+## Stack
 
----
+- Frontend: React 19, TypeScript, Vite
+- Backend: Express 5, TypeScript, Socket.IO
+- Database: MongoDB
+- Runtime: Node.js 22
 
-## 🚀 Overview
+## Local Development
 
-The **R&D Issue Management and Tracking System** is a web application designed to streamline the reporting, tracking, and management of issues raised in the R&D course at AUT. Our goal is to provide a seamless experience for both paper leaders and stakeholders working in the R&D course.
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend:** [React](https://reactjs.org/)
-- **Backend:** [Express.js](https://expressjs.com/)
-- **Database:** [MongoDB](https://www.mongodb.com/)
-- **Runtime:** [Node.js](https://nodejs.org/)
-
----
-
-## 🚦 Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed on your machine:
-
-- [Node.js](https://nodejs.org/) (Version 14 or higher recommended)
-- [npm](https://www.npmjs.com/) (usually comes with Node.js)
-
-### Installation & Setup
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone <repository-url>
-   cd issue-management-rnd
-   ```
-
-2. **Frontend Setup:**
-   Open a terminal and navigate to the `frontend` directory:
-
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-
-   If the code runs without error (ask Jack if you have any error), you can **Ctrl (or Cmd on Mac) + Click** [http://localhost:5173/](http://localhost:5173/) to open the sample React app in a browser. When you are done, in the terminal, press `q + enter` to terminate the app.
-
-3. **Backend Setup:**
-   Open a separate terminal and navigate to the `backend` directory:
+1. Install dependencies:
 
    ```bash
    cd backend
    npm install
+   cd ../frontend
+   npm install
+   ```
+
+2. Create local environment files from the examples:
+
+   ```powershell
+   cd backend
+   Copy-Item .env.example .env.local
+   cd ../frontend
+   Copy-Item .env.example .env.local
+   ```
+
+3. Start the backend:
+
+   ```bash
+   cd backend
    npm run dev
    ```
 
-   If the code runs without error (ask Jack if you have any error), you will see `"Running on port 3000"`. Press **Ctrl (or Cmd on Mac) + C** to terminate the server.
+   The API health endpoint is `GET http://localhost:3000/api`.
 
-4. **Start Developing:**
-   Open another terminal and ensure you are in the `issue-management-rnd` root folder (not `backend` or `frontend`).
-   Run the following command to create a new branch:
+4. Start the frontend in a second terminal:
+
    ```bash
-   git checkout -b your-feature-name
+   cd frontend
+   npm run dev
    ```
-   Replace `your-feature-name` with a descriptive name for your task. You are now ready to start making changes to the code!
 
----
+## Deployment Configuration
 
-## ✨ Code Quality & Formatting
+Use separate HTTPS deployments for the frontend and backend.
 
-We use [Prettier](https://prettier.io/) to maintain consistent code style across the project.
+### Backend environment
 
-To format all files inside the `src` folder, run:
+The backend expects the following variables in production:
+
+- `PORT`
+- `FRONTEND_URL`
+- `MONGO_URI`
+- `DB_NAME`
+- `JWT_ACCESS_SECRET`
+- `JWT_REFRESH_SECRET`
+- `ADMIN_MAIL`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `NODE_ENV=production`
+
+See [backend/.env.example](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/backend/.env.example).
+
+### Frontend environment
+
+The frontend must be configured with:
+
+- `VITE_API_URL`
+- `VITE_SOCKET_URL`
+
+See [frontend/.env.example](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/frontend/.env.example).
+
+### Auth and cookie assumptions
+
+- Preferred deployment shape is same-site HTTPS subdomains such as
+  `https://app.example.com` and `https://api.example.com`.
+- The refresh token cookie is configured for that same-site setup.
+- If you must deploy the frontend and backend on unrelated domains, update the
+  cookie policy to `SameSite=None`, keep `Secure=true`, and keep backend CORS
+  restricted to exact allowed origins only.
+
+## Build and Validation
+
+Run these before shipping a change:
 
 ```bash
-npm run format
+cd backend
+npm run lint
+npm run build
+
+cd ../frontend
+npm run lint
+npm run build
 ```
 
----
+GitHub Actions also runs lint and build for both apps on every push and pull
+request via [.github/workflows/ci.yml](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/.github/workflows/ci.yml).
 
-## 📄 License
+## Release Checklist
 
-© 2026 AUT University. All rights reserved.
+- Backend deploy has the production environment variables set
+- Frontend deploy has `VITE_API_URL` and `VITE_SOCKET_URL` set
+- MongoDB is reachable from the deployed backend
+- JWT secrets are long, random, and different from each other
+- SMTP credentials are configured for the deployed backend
+- Registration and reset emails generate links that point to the deployed frontend
+- `POST /api/auth/request-login` rate limiting works from the deployed edge
+- `POST /api/auth/renew-token` works with the deployed cookie settings
+- Socket connections work from the deployed frontend origin

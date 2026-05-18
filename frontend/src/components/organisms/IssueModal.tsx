@@ -5,6 +5,7 @@ import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // Hooks
 import { useIssueModal } from '../../hooks/issue/useIssueModal';
@@ -19,6 +20,7 @@ import OverviewTab from '../molecules/issue-modal/OverviewTab';
 import CommentList from '../molecules/issue-modal/CommentList';
 import CommentInput from '../atoms/issue-modal/CommentInput';
 import ActionsPanel from '../molecules/issue-modal/ActionsPanel';
+import Typography from '@mui/material/Typography';
 
 interface IssueModalProps {
   issue: IssueData | null;
@@ -62,6 +64,9 @@ export default function IssueModal({
     isUpdating,
     isChanged,
     isPaperLeader,
+    isAssignedTo,
+    isAssignedToMe,
+    isAssigning,
     statusOptions,
     priorityOptions,
     setCommentMsg,
@@ -71,9 +76,15 @@ export default function IssueModal({
     setNewImpact,
     handlePostComment,
     handleUpdateIssue,
-  } = useIssueModal(issue, originAllIssue, open, onClose, onIssueUpdated);
+    handleAssignToMe,
+    fetchNextComments,
+    hasNextComments,
+    isFetchingNextComments,
+  } = useIssueModal(issue, originAllIssue, open, onIssueUpdated);
 
   if (!issue) return null;
+
+  const allowCommentInput = ['Resolved', 'Closed'];
 
   return (
     <Dialog
@@ -83,12 +94,20 @@ export default function IssueModal({
       fullWidth
       sx={{ '& .MuiDialog-paper': { borderRadius: 2, minHeight: '600px' } }}
     >
-      <IssueModalHeader issueId={issue._id} onClose={onClose} />
+      <IssueModalHeader
+        issueId={issue._id}
+        originAllIssue={originAllIssue}
+        isAssignedTo={isAssignedTo}
+        isAssignedToMe={isAssignedToMe}
+        isAssigning={isAssigning}
+        onClose={onClose}
+        onClick={handleAssignToMe}
+      />
 
       <IssueModalTabs
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        commentCount={localThread.length}
+        commentCount={issue.commentCount}
         showActionsTab={isPaperLeader}
       />
 
@@ -119,15 +138,51 @@ export default function IssueModal({
               <CommentList
                 comments={localThread}
                 isLoading={isLoadingComments}
+                fetchNextPage={fetchNextComments}
+                hasNextPage={hasNextComments}
+                isFetchingNextPage={isFetchingNextComments}
               />
             </Box>
 
-            <CommentInput
-              value={commentMsg}
-              onChange={setCommentMsg}
-              onSubmit={handlePostComment}
-              isSubmitting={isSubmitting}
-            />
+            {!allowCommentInput.includes(issue.status) ? (
+              <CommentInput
+                value={commentMsg}
+                onChange={setCommentMsg}
+                onSubmit={handlePostComment}
+                isSubmitting={isSubmitting}
+              />
+            ) : (
+              <Box
+                sx={{
+                  bgcolor: 'background.default',
+                  mb: 2,
+                  p: 2,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography>
+                  {`This issue is already ${issue.status}.`}
+                </Typography>
+                {issue.status === 'Resolved' && (
+                  <>
+                    <Typography>
+                      Consider re-opening it to post new comments.
+                    </Typography>
+                    {!originAllIssue && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ mt: 2 }}
+                        onClick={() => handleUpdateIssue(true)}
+                        disabled={isUpdating}
+                      >
+                        {isUpdating ? 'Re-Opening...' : 'Re-Open'}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </Box>
+            )}
           </Box>
         </TabPanel>
 
@@ -144,7 +199,7 @@ export default function IssueModal({
               onStatusChange={setNewStatus}
               onUrgencyChange={setNewUrgency}
               onImpactChange={setNewImpact}
-              onConfirm={handleUpdateIssue}
+              onConfirm={() => handleUpdateIssue(false)}
             />
           )}
         </TabPanel>

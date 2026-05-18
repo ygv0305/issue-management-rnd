@@ -95,7 +95,7 @@ export const getQuickStats = async (): Promise<QuickStatsResponse> => {
           },
         ],
 
-        // Issues in progress/reopen
+        // Issues InProgress/ReOpen
         issuesInProgress: [
           { $match: { status: { $in: ['InProgress', 'ReOpen'] } } },
           { $count: 'count' },

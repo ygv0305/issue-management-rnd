@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 
-// Icons
+// MUI Icons
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircle';
@@ -22,10 +22,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
-// Context
+// Lib
 import { useUser } from '../../../lib/context/UserContext';
-
-// RBAC
 import { hasPermission } from '../../../lib/rbac/hasPermission';
 import { PERMISSIONS } from '../../../lib/rbac/allPermission';
 
@@ -36,7 +34,7 @@ const DRAWER_WIDTH = 260;
 
 export default function SideBar() {
   const { user } = useUser();
-  const { handleLogout } = useSidebar();
+  const { handleLogout, isLoggingOut } = useSidebar();
 
   const getActiveStyle = (isActive: boolean) => ({
     color: isActive ? 'primary.main' : 'text.primary',
@@ -223,6 +221,7 @@ export default function SideBar() {
           color="secondary"
           startIcon={<LogoutIcon />}
           onClick={handleLogout}
+          disabled={isLoggingOut}
           sx={{ justifyContent: 'flex-start', py: 1 }}
         >
           Log Out

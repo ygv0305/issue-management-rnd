@@ -7,7 +7,7 @@
 import User from '../../models/userSchema.js';
 import VerificationToken from '../../models/verificationTokenSchema.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 /**

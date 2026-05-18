@@ -8,15 +8,20 @@ import Issue from '../../models/issueSchema.js';
 import Comment from '../../models/commentSchema.js';
 
 // Types
+import { NotiTypeEnum } from '../../models/notificationSchema.js';
+
+// Node modules
 import { Types } from 'mongoose';
 
-/** Parameters required to create a new comment. */
+// Services
+import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
+
+// Lib
+import { emitNewComment } from '../../lib/socket.js';
+
 interface CreateCommentParams {
-  /** The MongoDB ObjectId of the issue to comment on. */
   issueId: string;
-  /** The MongoDB ObjectId of the user creating the comment. */
   userId: string | Types.ObjectId;
-  /** The comment message text. */
   message: string;
 }
 
@@ -41,12 +46,66 @@ const createCommentService = async ({
     timestamp: new Date(),
   });
 
-  // Increment commentCount in Issue
-  await Issue.findByIdAndUpdate(issueId, {
-    $inc: { commentCount: 1 },
-  });
+  // Increment commentCount in Issue and fetch it for notification logic
+  const issue = await Issue.findByIdAndUpdate(
+    issueId,
+    { $inc: { commentCount: 1 } },
+    { returnDocument: 'after' },
+  );
 
-  return await newComment.populate('userId', 'email fullName');
+  // Send notifications
+  if (issue) {
+    try {
+      const actorId = userId.toString();
+      const authorId = issue.author.toString();
+      const assignedId = issue.assignedTo?.toString();
+      const taggedIds = issue.userTags?.map((u) => u.toString()) || [];
+
+      const recipientsSet = new Set<string>();
+
+      if (actorId === authorId) {
+        // Author comments -> Notify Assigned PaperLeader + Tagged
+        if (assignedId) recipientsSet.add(assignedId);
+        taggedIds.forEach((id) => recipientsSet.add(id));
+      } else if (assignedId && actorId === assignedId) {
+        // Assigned PaperLeader comments -> Notify Author + Tagged
+        recipientsSet.add(authorId);
+        taggedIds.forEach((id) => recipientsSet.add(id));
+      } else {
+        // Third party comments -> Notify Author + Assigned PaperLeader + Tagged
+        recipientsSet.add(authorId);
+        if (assignedId) recipientsSet.add(assignedId);
+        taggedIds.forEach((id) => recipientsSet.add(id));
+      }
+
+      // Convert Set back to Array
+      const recipients = Array.from(recipientsSet);
+
+      await dispatchBulkNotifications(
+        recipients,
+        actorId,
+        issue._id,
+        NotiTypeEnum.NewComment,
+        // `New comment on issue ${issue.subject}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        `New comment on issue ${issue.subject}.`,
+      );
+    } catch (error) {
+      console.error(
+        'Failed to dispatch notifications for new comment, ',
+        error,
+      );
+    }
+  }
+
+  const populatedComment = await newComment.populate(
+    'userId',
+    'email fullName',
+  );
+
+  // Emit to socket room for real-time update
+  emitNewComment(issueId, populatedComment);
+
+  return populatedComment;
 };
 
 export default createCommentService;

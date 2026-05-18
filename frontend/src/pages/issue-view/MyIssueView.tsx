@@ -1,19 +1,18 @@
 // Node modules
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // Hooks
 import { useMyIssues } from '../../hooks/issue/useMyIssues';
 
-// Types
-import type { IssueData } from '../../types/issueTypes';
-
 // Components
 import IssueModal from '../../components/organisms/IssueModal';
 import IssueTable from '../../components/organisms/IssueTable';
+import PageLoader from '../../components/atoms/PageLoader';
 
 // MUI
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 export default function MyIssueView() {
   const [isMounting, setIsMounting] = useState(true);
@@ -27,55 +26,76 @@ export default function MyIssueView() {
 
   const {
     submittedIssues,
-    assignedIssues,
     taggedIssues,
-    loading,
+    submittedLoading,
+    taggedLoading,
     selectedIssue,
-    canViewAssigned,
     setSelectedIssue,
+    handleIssueUpdated,
+    viewMode,
+    handleViewChange,
   } = useMyIssues();
 
-  // Ensures the onIssueSelect prop doesn’t create a new function on every render
-  const handleIssueSelect = useCallback(
-    (issue: IssueData) => setSelectedIssue(issue),
-    [setSelectedIssue],
-  );
-
-  if (loading || isMounting) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+  if (submittedLoading || taggedLoading || isMounting) {
+    return <PageLoader message="Loading your issues..." />;
   }
 
   return (
     <Box sx={{ p: 0, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-        My Issues Dashboard
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={handleViewChange}
+          aria-label="issue view mode"
+          sx={{
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            p: 0.5,
+            borderRadius: '12px',
+            '& .MuiToggleButton-root': {
+              px: 3,
+              py: 1,
+              borderRadius: '8px',
+              border: 'none',
+              textTransform: 'none',
+              fontWeight: 500,
+              gap: 1,
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              },
+            },
+          }}
+        >
+          <ToggleButton value="submitted">My Submitted Issues</ToggleButton>
+          <ToggleButton value="tagged">My Tagged Issues</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-      <IssueTable
-        title="My Submitted Issues"
-        issues={submittedIssues}
-        onIssueSelect={handleIssueSelect}
-      />
-
-      {canViewAssigned && (
+      {viewMode === 'submitted' ? (
         <IssueTable
-          title="My Assigned Issues"
-          issues={assignedIssues}
-          onIssueSelect={handleIssueSelect}
+          originAllIssue={false}
+          issues={submittedIssues}
+          onIssueSelect={setSelectedIssue}
+        />
+      ) : (
+        <IssueTable
+          originAllIssue={false}
+          issues={taggedIssues}
+          onIssueSelect={setSelectedIssue}
         />
       )}
-
-      <IssueTable
-        title="Issues I'm Tagged In"
-        issues={taggedIssues}
-        onIssueSelect={handleIssueSelect}
-      />
 
       <IssueModal
         issue={selectedIssue}
         originAllIssue={false}
         open={!!selectedIssue}
         onClose={() => setSelectedIssue(null)}
+        onIssueUpdated={handleIssueUpdated}
       />
     </Box>
   );

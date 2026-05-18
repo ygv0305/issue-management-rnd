@@ -5,7 +5,6 @@
  * - If not authenticated: redirects to home (/)
  * - If authenticated but lacks requiredPermission: redirects to /my-issues
  * - If authenticated and authorized: renders the route
- * - Syncs global data (issue types, projects) on mount
  *
  * Use this as a parent route wrapper in the router to protect nested routes.
  * Optionally pass requiredPermission to enforce role-based access control.
@@ -19,10 +18,11 @@
 // Node modules
 import { Navigate, Outlet } from 'react-router';
 
-// Context
-import { useUser } from '../lib/context/UserContext';
+// MUI
+import { Box, CircularProgress, Typography } from '@mui/material';
 
-// RBAC
+// Lib
+import { useUser } from '../lib/context/UserContext';
 import { hasPermission } from '../lib/rbac/hasPermission';
 
 interface ProtectedRouteProps {
@@ -34,7 +34,25 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useUser();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          gap: 2,
+        }}
+      >
+        <CircularProgress size={48} />
+        <Typography variant="body2" color="text.secondary">
+          Verifying session...
+        </Typography>
+      </Box>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/" replace />;

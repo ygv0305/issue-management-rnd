@@ -4,7 +4,7 @@
  * token, and sends a verification email to the user.
  */
 
-// Types
+// Node modules
 import type { Request, Response } from 'express';
 
 // Services
@@ -19,7 +19,6 @@ import config from '../../config/env.js';
 // Utils
 import { validateReqEmail } from '../../utils/validateReqEmail.js';
 
-/** Represents the expected shape of the registration request body. */
 interface RegisterData {
   email: string;
 }
@@ -27,10 +26,6 @@ interface RegisterData {
 /**
  * Handles the registration request by verifying the user exists,
  * generating a verification token, and sending a verification email.
- *
- * @param {Request} req - Express request object containing the user's email in the body.
- * @param {Response} res - Express response object used to send back the registration result.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body as RegisterData;
@@ -65,8 +60,4 @@ const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/**
- * Middleware pipeline for the registration endpoint.
- * Runs email validation, error handling, and the register controller in sequence.
- */
 export default [validateReqEmail, validationError, register];

@@ -8,8 +8,11 @@
 // Node modules
 import axios from 'axios';
 
+// Config
+import { API_BASE_URL } from '../../config/env';
+
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: API_BASE_URL,
 });
 
 export default api;

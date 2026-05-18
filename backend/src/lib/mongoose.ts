@@ -14,9 +14,9 @@ import config from '../config/env.js';
 // Types
 import type { ConnectOptions } from 'mongoose';
 
-/** Mongoose connection options with database name configuration */
+// Mongoose connection options with database name configuration
 const clientOptions: ConnectOptions = {
-  dbName: 'ims-main',
+  dbName: config.DB_NAME,
 };
 
 /**

@@ -1,9 +1,3 @@
-// MUI
-import { DataGrid } from '@mui/x-data-grid';
-import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-
 // Node modules
 import React, { useMemo } from 'react';
 
@@ -23,8 +17,13 @@ import { useIssueTypes } from '../../hooks/useProjectsAndTypes';
 // Utils
 import { calculatePriority } from '../../utils/calculatePriority';
 
+// MUI
+import { DataGrid } from '@mui/x-data-grid';
+import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+
 interface IssueTableProps {
-  title?: string;
+  originAllIssue: boolean;
   issues: IssueData[];
   onIssueSelect: (issue: IssueData) => void;
 }
@@ -39,7 +38,11 @@ const IssueStatusArr: IssueStatus[] = [
 
 const IssuePrioArr: IssuePriority[] = ['Low', 'Medium', 'High', 'Critical'];
 
-const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
+const IssueTableInner = ({
+  originAllIssue,
+  issues,
+  onIssueSelect,
+}: IssueTableProps) => {
   const { data: issueTypes = [] } = useIssueTypes();
   const IssueTypeArr = useMemo(
     () => issueTypes.map((t) => t.name),
@@ -110,6 +113,9 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         ),
         type: 'singleSelect',
         valueOptions: IssueStatusArr,
+        sortComparator: (v1: string, v2: string) =>
+          IssueStatusArr.indexOf(v1 as IssueStatus) -
+          IssueStatusArr.indexOf(v2 as IssueStatus),
       },
       {
         field: 'priority',
@@ -121,22 +127,29 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
         ),
         type: 'singleSelect',
         valueOptions: IssuePrioArr,
+        sortComparator: (v1: string, v2: string) =>
+          IssuePrioArr.indexOf(v1 as IssuePriority) -
+          IssuePrioArr.indexOf(v2 as IssuePriority),
       },
+      ...(originAllIssue
+        ? [
+            {
+              field: 'assignedTo',
+              headerName: 'Assigned To',
+              headerClassName: 'issue-table-header',
+              valueGetter: (_value, row) => row.assignedTo?.fullName || '',
+              width: 180,
+            } as GridColDef,
+          ]
+        : []),
     ],
-    [IssueTypeArr],
+    [IssueTypeArr, originAllIssue],
   );
 
   return (
-    <Box sx={{ width: '100%', mb: 4 }}>
-      {title && (
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 500 }}>
-          {title}
-        </Typography>
-      )}
-
+    <Box sx={{ width: '100%' }}>
       <Box
         sx={{
-          maxHeight: '80vh',
           width: '100%',
           bgcolor: 'background.paper',
           border: 1,
@@ -153,10 +166,10 @@ const IssueTableInner = ({ title, issues, onIssueSelect }: IssueTableProps) => {
           showToolbar
           initialState={{
             pagination: {
-              paginationModel: { pageSize: 15 },
+              paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[15, 30, 50]}
+          pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick
           sx={{
             border: 'none',

@@ -3,11 +3,11 @@
  * Revokes the refresh token and clears the HTTP-only cookie to end the session.
  */
 
-// Types
+// Node modules
 import type { Request, Response } from 'express';
 
 // Services
-import { revokeRefreshToken } from '../../services/auth/logoutService.js';
+import { removeRefreshToken } from '../../services/auth/renewTokenService.js';
 
 // Config
 import config from '../../config/env.js';
@@ -15,15 +15,11 @@ import config from '../../config/env.js';
 /**
  * Handles the logout request by revoking the refresh token from the database
  * and clearing the refreshToken cookie from the client.
- *
- * @param {Request} req - Express request object containing the refreshToken in cookies.
- * @param {Response} res - Express response object used to send back the logout result and clear cookies.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const logout = async (req: Request, res: Response): Promise<void> => {
   const refreshToken = req.cookies.refreshToken as string;
   try {
-    await revokeRefreshToken(refreshToken);
+    await removeRefreshToken(refreshToken);
 
     const devMode = config.NODE_ENV === 'development';
     res.clearCookie('refreshToken', {

@@ -1,14 +1,12 @@
 // Node modules
-import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
 
 // Lib
 import { useUser } from '../../lib/context/UserContext';
-import { PERMISSIONS } from '../../lib/rbac/allPermission';
-import { hasPermission } from '../../lib/rbac/hasPermission';
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
 
 // Types
@@ -16,56 +14,110 @@ import type { IssueData } from '../../types/issueTypes';
 
 interface UseMyIssuesReturn {
   submittedIssues: IssueData[];
-  assignedIssues: IssueData[];
   taggedIssues: IssueData[];
-  loading: boolean;
+  submittedLoading: boolean;
+  taggedLoading: boolean;
   selectedIssue: IssueData | null;
-  canViewAssigned: boolean;
   setSelectedIssue: (issue: IssueData | null) => void;
+  handleIssueUpdated: (updatedIssue: IssueData) => void;
+  viewMode: 'submitted' | 'tagged';
+  handleViewChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newView: 'submitted' | 'tagged' | null,
+  ) => void;
 }
 
 export const useMyIssues = (): UseMyIssuesReturn => {
   const { user } = useUser();
-  const [selectedIssue, setSelectedIssue] = useState<IssueData | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'submitted' | 'tagged'>('submitted');
+  const queryClient = useQueryClient();
 
-  const { data: myIssues = [], isLoading: loading } = useQuery({
-    queryKey: QUERY_KEYS.myIssues,
+  // Fetch only the issues created by the current user
+  const { data: submittedIssues = [], isLoading: submittedLoading } = useQuery({
+    queryKey: QUERY_KEYS.myIssues.mySubmitted,
     queryFn: async () => {
-      const res = await coreService.getMyIssues();
+      const res = await coreService.getMySubmittedIssues();
       return res.success ? res.data : [];
     },
+    enabled: !!user?._id,
   });
 
-  // Filter issues by submitted, assigned (PaperLeader only), tagged
-  const currentUserId = user?._id;
+  // Fetch only the issues where the current user is tagged
+  const { data: taggedIssues = [], isLoading: taggedLoading } = useQuery({
+    queryKey: QUERY_KEYS.myIssues.myTagged,
+    queryFn: async () => {
+      const res = await coreService.getMyTaggedIssues();
+      return res.success ? res.data : [];
+    },
+    enabled: !!user?._id,
+  });
 
-  const submittedIssues = useMemo(
-    () => myIssues.filter((issue) => issue.author._id === currentUserId),
-    [myIssues, currentUserId],
+  // Memoize the selected issue (check both lists)
+  const selectedIssue = useMemo(() => {
+    return (
+      submittedIssues.find((issue) => issue._id === selectedIssueId) ||
+      taggedIssues.find((issue) => issue._id === selectedIssueId) ||
+      null
+    );
+  }, [submittedIssues, taggedIssues, selectedIssueId]);
+
+  const setSelectedIssue = useCallback((issue: IssueData | null) => {
+    setSelectedIssueId(issue?._id || null);
+  }, []);
+
+  const handleIssueUpdated = useCallback(
+    (updatedIssue: IssueData) => {
+      queryClient.setQueryData(
+        QUERY_KEYS.myIssues.mySubmitted,
+        (old: IssueData[] = []) =>
+          old.map((issue) =>
+            issue._id === updatedIssue._id ? updatedIssue : issue,
+          ),
+      );
+      queryClient.setQueryData(
+        QUERY_KEYS.myIssues.myTagged,
+        (old: IssueData[] = []) =>
+          old.map((issue) =>
+            issue._id === updatedIssue._id ? updatedIssue : issue,
+          ),
+      );
+
+      // Update AllIssues page as well if current user is PaperLeader
+      if (user?.role === 'PaperLeader' && updatedIssue) {
+        queryClient.setQueryData(
+          QUERY_KEYS.allIssues,
+          (old: IssueData[] = []) =>
+            old.map((issue) =>
+              issue._id === updatedIssue._id ? updatedIssue : issue,
+            ),
+        );
+      }
+    },
+    [queryClient, user?.role],
   );
 
-  const assignedIssues = useMemo(
-    () => myIssues.filter((issue) => issue.assignedTo?._id === currentUserId),
-    [myIssues, currentUserId],
+  const handleViewChange = useCallback(
+    (
+      _event: React.MouseEvent<HTMLElement>,
+      newView: 'submitted' | 'tagged' | null,
+    ) => {
+      if (newView !== null) {
+        setViewMode(newView);
+      }
+    },
+    [],
   );
-
-  const taggedIssues = useMemo(
-    () =>
-      myIssues.filter((issue) =>
-        issue.userTags?.some((tag) => tag._id === currentUserId),
-      ),
-    [myIssues, currentUserId],
-  );
-
-  const canViewAssigned = hasPermission(user, PERMISSIONS.VIEW_ALL_ISSUE);
 
   return {
     submittedIssues,
-    assignedIssues,
     taggedIssues,
-    loading,
+    submittedLoading,
+    taggedLoading,
     selectedIssue,
-    canViewAssigned,
     setSelectedIssue,
+    handleIssueUpdated,
+    viewMode,
+    handleViewChange,
   };
 };

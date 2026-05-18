@@ -1,6 +1,3 @@
-/**
- * All system roles. Values must match the role strings returned by the backend.
- */
 export const ROLES = {
   STUDENT: 'Student',
   SUPERVISOR: 'Supervisor',
@@ -31,6 +28,7 @@ export const PERMISSIONS = {
   VIEW_ISSUETYPE: 'view:issueType',
   VIEW_PROJECT: 'view:project',
   VIEW_DASHBOARD: 'view:dashboard',
+  ASSIGN_ISSUE: 'assign:issue',
 };
 
 const BASE = [PERMISSIONS.CREATE_ISSUE, PERMISSIONS.VIEW_MY_ISSUE];
@@ -52,6 +50,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.VIEW_PROJECT,
     PERMISSIONS.VIEW_ISSUETYPE,
     PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.ASSIGN_ISSUE,
   ],
   [ROLES.ADMIN]: [
     ...BASE,

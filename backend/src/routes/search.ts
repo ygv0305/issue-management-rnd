@@ -10,10 +10,9 @@ import { Router } from 'express';
 // Controllers
 import searchUsers from '../controllers/search/searchUsersController.js';
 
-/** Router for search endpoints (requires authentication only) */
 const router = Router();
 
-/** GET /search/users - Return partially matched users fullName or email */
+// GET /search/users - Return partially matched users fullName or email
 router.get('/users', ...searchUsers);
 
 export default router;

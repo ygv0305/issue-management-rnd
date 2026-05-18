@@ -7,8 +7,9 @@
  * - createIssue(): Create a new issue with attachments
  * - createComment(): Add a comment to an issue
  * - fetchComments(): Get all comments for a specific issue
+ * - reOpenIssue(): Change an issue status from Resolved to ReOpen
  *
- * Available to all authenticated users (Student, Supervisor, Moderator, etc.)
+ * Available to all authenticated users.
  */
 
 // API
@@ -25,9 +26,16 @@ class CoreService {
     return response.data;
   }
 
-  async getMyIssues(): Promise<IssueTypes.GetIssuesResponse> {
+  async getMySubmittedIssues(): Promise<IssueTypes.GetIssuesResponse> {
     const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
-      '/core-base/my-issues',
+      '/core-base/my-submitted-issues',
+    );
+    return response.data;
+  }
+
+  async getMyTaggedIssues(): Promise<IssueTypes.GetIssuesResponse> {
+    const response = await apiAuth.get<IssueTypes.GetIssuesResponse>(
+      '/core-base/my-tagged-issues',
     );
     return response.data;
   }
@@ -48,10 +56,19 @@ class CoreService {
 
   async fetchComments(
     issueId: string,
+    page: number = 1,
+    limit: number = 10,
   ): Promise<IssueTypes.FetchCommentsResponse> {
     const response = await apiAuth.get<IssueTypes.FetchCommentsResponse>(
-      `/core-base/fetch-comments?issueId=${issueId}`,
+      `/core-base/fetch-comments?issueId=${issueId}&page=${page}&limit=${limit}`,
     );
+    return response.data;
+  }
+
+  async reOpenIssue(
+    data: IssueTypes.ChangeStatusData,
+  ): Promise<IssueTypes.ChangeStatusResponse> {
+    const response = await apiAuth.patch('/core-base/reopen-issue', data);
     return response.data;
   }
 }

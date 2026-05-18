@@ -6,22 +6,37 @@
 // Models
 import Issue from '../../models/issueSchema.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 /**
- * Fetches all issues where the given user is either the author or the
- * assignee or being tagged. Populates related fields (author, type, userTags) with
- * relevant user details.
+ * Fetches issues authored by the given user.
  *
- * @param userId - The MongoDB ObjectId of the user whose issues to fetch.
+ * @param userId - The MongoDB ObjectId of the user.
  * @returns An array of Issue documents with populated references.
  * @async
  */
-export const fetchMyIssues = async (userId: string | Types.ObjectId) => {
-  return await Issue.find({
-    $or: [{ author: userId }, { assignedTo: userId }, { userTags: userId }],
-  })
+export const fetchMySubmittedIssues = async (
+  userId: string | Types.ObjectId,
+) => {
+  return await Issue.find({ author: userId })
+    .sort({ createdAt: -1 })
+    .populate('author', 'fullName email')
+    .populate('type', 'name')
+    .populate('userTags', 'fullName email')
+    .lean()
+    .exec();
+};
+
+/**
+ * Fetches issues where the given user is tagged.
+ *
+ * @param userId - The MongoDB ObjectId of the user.
+ * @returns An array of Issue documents with populated references.
+ * @async
+ */
+export const fetchMyTaggedIssues = async (userId: string | Types.ObjectId) => {
+  return await Issue.find({ userTags: userId })
     .sort({ createdAt: -1 })
     .populate('author', 'fullName email')
     .populate('type', 'name')

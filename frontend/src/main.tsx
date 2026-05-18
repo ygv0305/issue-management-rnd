@@ -2,10 +2,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
+
+// MUI
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-// Custom global modules
+// Custom modules
 import { router } from './router.tsx';
 import theme from './theme.ts';
 

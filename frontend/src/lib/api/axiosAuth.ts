@@ -1,12 +1,15 @@
 // Node modules
 import axios from 'axios';
 
+// Config
+import { API_BASE_URL } from '../../config/env';
+
 const apiAuth = axios.create({
-  baseURL: 'http://localhost:3000/api',
-  withCredentials: true, // allows cookies (refreshToken) to be sent automatically
+  baseURL: API_BASE_URL,
+  withCredentials: true, // allows cookies (for refreshToken) to be sent automatically
 });
 
-// Request Interceptor: Attach access token
+/* Request Interceptor: Attach access token */
 apiAuth.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -18,12 +21,14 @@ apiAuth.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// Response Interceptor: Renew token on 401 (accessToken expired)
-//
-// When a 401 is received, a single token-refresh request is made.
-// Any other requests that arrive while the refresh is in-flight are held in
-// `failedQueue`. Once the refresh resolves, `processQueue` either retries them
-// with the new token or rejects them all if the refresh failed.
+/**
+ * Response Interceptor: Renew token on 401 (accessToken expired)
+ *
+ * When a 401 is received, a single token-refresh request is made.
+ * Any other requests that arrive while the refresh is in-flight are held in
+ * `failedQueue`. Once the refresh resolves, `processQueue` either retries them
+ * with the new token or rejects them all if the refresh failed.
+ */
 let isRefreshing = false;
 let failedQueue: {
   resolve: (token: string | null) => void;
@@ -71,7 +76,7 @@ apiAuth.interceptors.response.use(
       try {
         // Attempt to renew token
         const res = await axios.post(
-          'http://localhost:3000/api/auth/renew-token',
+          `${API_BASE_URL}/auth/renew-token`,
           {},
           { withCredentials: true },
         );
@@ -79,7 +84,7 @@ apiAuth.interceptors.response.use(
         const newAccessToken = res.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
 
-        // Update authorization header and retry original request
+        // Update authorisation header and retry original request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         processQueue(null, newAccessToken);
         return apiAuth(originalRequest);

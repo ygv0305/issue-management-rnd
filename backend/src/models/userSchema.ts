@@ -1,6 +1,6 @@
 /**
  * @fileoverview User schema definition and related utilities.
- * Defines the structure of user documents in MongoDB, including authentication
+ * Defines the structure of user documents, including authentication
  * fields, role management, and project associations. Includes automatic
  * password hashing via Mongoose pre-save middleware.
  * @module models/userSchema
@@ -10,10 +10,6 @@
 import { Schema, Types, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-/**
- * Enum representing the available roles within the system.
- * @enum {string}
- */
 export enum SystemRoles {
   Student = 'Student',
   Supervisor = 'Supervisor',
@@ -23,24 +19,15 @@ export enum SystemRoles {
   Client = 'Client',
 }
 
-/**
- * Interface representing a user document in the database.
- * @interface
- */
 export interface IUser {
-  /** User's email address, used for login */
   email: string;
-  /** Hashed password (auto-hashed on save) */
   password: string;
-  /** User's role within the system */
   role: SystemRoles;
-  /** User's full display name */
   fullName: string;
-  /** Reference to the user's associated project (optional) */
+  // Reference to the user's associated project (Student role only)
   project?: Types.ObjectId;
 }
 
-/** Mongoose schema for User documents */
 const userSchema = new Schema<IUser>(
   {
     email: {
@@ -71,6 +58,9 @@ const userSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
+userSchema.index({ fullName: 'text', email: 'text' });
+userSchema.index({ project: 1 });
+
 /**
  * Pre-save middleware that automatically hashes the password before
  * storing it in the database. Only runs when the password field is modified.
@@ -82,5 +72,4 @@ userSchema.pre('save', async function () {
   }
 });
 
-/** Mongoose model for User documents */
 export default model<IUser>('User', userSchema);

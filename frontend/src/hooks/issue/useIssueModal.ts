@@ -1,6 +1,11 @@
 // Node modules
-import { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from '@tanstack/react-query';
 
 // Services
 import coreService from '../../services/coreService';
@@ -9,6 +14,7 @@ import pLeaderService from '../../services/pLeaderService';
 // Lib
 import { useUser } from '../../lib/context/UserContext';
 import { QUERY_KEYS } from '../../lib/react-query/queryKeys';
+import { getCommentSocket } from '../../lib/socket';
 
 // Types
 import type {
@@ -16,6 +22,7 @@ import type {
   CommentData,
   IssueStatus,
   IssueUrgencyAndImpact,
+  FetchCommentsResponse,
 } from '../../types/issueTypes';
 
 type ActiveTab = 'details' | 'comments' | 'actions';
@@ -32,6 +39,9 @@ interface UseIssueModalReturn {
   isUpdating: boolean;
   isChanged: boolean;
   isPaperLeader: boolean;
+  isAssignedTo?: string;
+  isAssignedToMe: boolean;
+  isAssigning: boolean;
   statusOptions: IssueStatus[];
   priorityOptions: IssueUrgencyAndImpact[];
   showTaggedUsers: boolean;
@@ -43,14 +53,17 @@ interface UseIssueModalReturn {
   setNewImpact: (impact: IssueUrgencyAndImpact) => void;
   setShowTaggedUsers: React.Dispatch<React.SetStateAction<boolean>>;
   handlePostComment: (e: React.SubmitEvent) => Promise<void>;
-  handleUpdateIssue: () => Promise<void>;
+  handleUpdateIssue: (isReopen: boolean) => Promise<void>;
+  handleAssignToMe: () => void;
+  fetchNextComments: () => void;
+  hasNextComments: boolean;
+  isFetchingNextComments: boolean;
 }
 
 export const useIssueModal = (
   issue: IssueData | null,
   originAllIssue: boolean,
   open: boolean,
-  onClose: () => void,
   onIssueUpdated?: (updatedIssue: IssueData) => void,
 ): UseIssueModalReturn => {
   const { user } = useUser();
@@ -58,7 +71,7 @@ export const useIssueModal = (
   const [commentMsg, setCommentMsg] = useState('');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
-  // Actions Tab State
+  // Actions tab states
   const [newStatus, setNewStatus] = useState<IssueStatus | ''>(
     issue?.status ?? '',
   );
@@ -69,7 +82,7 @@ export const useIssueModal = (
     issue?.impact ?? '',
   );
 
-  // Tagged Users State
+  // Tagged users states
   const [showTaggedUsers, setShowTaggedUsers] = useState(false);
   const taggedUsersRef = useRef<HTMLDivElement>(null);
 
@@ -91,18 +104,86 @@ export const useIssueModal = (
     }
   }
 
-  // Fetch comments
-  const { data: localThread = [], isLoading: isLoadingComments } = useQuery({
+  // Fetch comments with infinite query (for infinite scrolling)
+  const {
+    data: commentData,
+    fetchNextPage: fetchNextComments,
+    hasNextPage: hasNextComments,
+    isFetchingNextPage: isFetchingNextComments,
+    isLoading: isLoadingComments,
+  } = useInfiniteQuery({
     queryKey: QUERY_KEYS.comments(issue?._id ?? ''),
-    queryFn: async () => {
-      if (!issue) return [];
-      const res = await coreService.fetchComments(issue._id);
-      return res.success ? res.data : [];
+    queryFn: async ({ pageParam = 1 }) => {
+      if (!issue)
+        return {
+          data: [],
+          pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            limit: 10,
+          },
+        };
+      const res = await coreService.fetchComments(
+        issue._id,
+        pageParam as number,
+        10,
+      );
+      return res;
     },
-    enabled: !!issue && open,
+    getNextPageParam: (lastPage) => {
+      // Backend returns newest first, so page 2 contains older comments
+      const { currentPage, totalPages } = lastPage.pagination;
+      return currentPage < totalPages ? (currentPage as number) + 1 : undefined;
+    },
+    initialPageParam: 1,
+    enabled: !!issue && open && activeTab === 'comments',
   });
 
-  // Post Comment Mutation
+  const localThread = useMemo(() => {
+    // Flatten paginated results
+    const allComments = commentData?.pages.flatMap((page) => page.data) || [];
+    // The backend returns newest first for efficient pagination (skip/limit).
+    // However to display in a chat-like interface, we need oldest first (bottom of list).
+    return [...allComments].reverse();
+  }, [commentData]);
+
+  // Real-time and fetch comments logic
+  useEffect(() => {
+    if (!issue || !open || activeTab !== 'comments') return;
+
+    const issueId = issue._id;
+    const socket = getCommentSocket();
+    socket.emit('joinIssue', issueId);
+
+    const handleNewComment = (newComment: CommentData) => {
+      queryClient.setQueryData<InfiniteData<FetchCommentsResponse>>(
+        QUERY_KEYS.comments(issueId),
+        (prev) => {
+          if (!prev) return prev;
+
+          // Add new comment to the first page (newest)
+          const updatedPages = [...prev.pages];
+          const firstPage = { ...updatedPages[0] };
+
+          if (firstPage.data.some((c) => c._id === newComment._id)) return prev;
+
+          firstPage.data = [newComment, ...firstPage.data];
+          updatedPages[0] = firstPage;
+          return { ...prev, pages: updatedPages };
+        },
+      );
+    };
+
+    socket.on('newComment', handleNewComment);
+
+    return () => {
+      socket.emit('leaveIssue', issueId);
+      socket.off('newComment', handleNewComment);
+    };
+  }, [issue, open, activeTab, queryClient]);
+
+  // Post comment mutation
   const postCommentMutation = useMutation({
     mutationFn: async (message: string) => {
       if (!issue) return;
@@ -113,44 +194,63 @@ export const useIssueModal = (
     },
     onSuccess: (res) => {
       if (res?.success) {
-        // Optimistically update comments or invalidate
-        queryClient.setQueryData(
+        queryClient.setQueryData<InfiniteData<FetchCommentsResponse>>(
           QUERY_KEYS.comments(issue?._id ?? ''),
-          (old: CommentData[] = []) => [...old, res.data],
+          (prev) => {
+            if (!prev) return prev;
+
+            const updatedPages = [...prev.pages];
+            const firstPage = { ...updatedPages[0] };
+
+            if (firstPage.data.some((c) => c._id === res.data._id)) return prev;
+
+            firstPage.data = [res.data, ...firstPage.data];
+            updatedPages[0] = firstPage;
+            return { ...prev, pages: updatedPages };
+          },
         );
         setCommentMsg('');
       }
     },
   });
 
-  // Update Issue Mutation
+  // Update issue mutation
   const updateIssueMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (isReopen: boolean) => {
       if (!issue) return;
-      return await pLeaderService.changeStatus({
-        issueId: issue._id,
-        ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
-        ...(newUrgency !== issue.urgency &&
-          newUrgency !== '' && { newUrgency }),
-        ...(newImpact !== issue.impact && newImpact !== '' && { newImpact }),
-      });
+      if (isReopen) {
+        return await coreService.reOpenIssue({
+          issueId: issue._id,
+          newStatus: 'ReOpen',
+        });
+      } else {
+        return await pLeaderService.changeStatus({
+          issueId: issue._id,
+          ...(newStatus !== issue.status && newStatus !== '' && { newStatus }),
+          ...(newUrgency !== issue.urgency &&
+            newUrgency !== '' && { newUrgency }),
+          ...(newImpact !== issue.impact && newImpact !== '' && { newImpact }),
+        });
+      }
     },
     onSuccess: (res) => {
       if (res?.success) {
         if (onIssueUpdated) {
           onIssueUpdated(res.data);
         }
-        onClose();
       }
     },
   });
 
+  // Check if actions tab states are changed (used to disable 'Confirm/Submit' button if unchanged)
   const isChanged =
     !!issue &&
     (newStatus !== issue.status ||
       newUrgency !== issue.urgency ||
       newImpact !== issue.impact);
   const isPaperLeader = user?.role === 'PaperLeader' && originAllIssue;
+  const isAssignedTo = issue?.assignedTo?.fullName;
+  const isAssignedToMe = issue?.assignedTo?._id === user?._id;
 
   const statusOptions: IssueStatus[] = [
     'New',
@@ -169,11 +269,47 @@ export const useIssueModal = (
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue as ActiveTab);
+    // Refetch comments every time we navigate to 'Discussion' tab
+    if (newValue === 'comments' && issue) {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments(issue._id),
+      });
+    }
   };
 
-  const handleUpdateIssue = async () => {
-    if (!isChanged || !issue) return;
-    updateIssueMutation.mutate();
+  // isReopen: Check if it is triggered by "ReOpen" from Discussion tab
+  const handleUpdateIssue = async (isReopen: boolean) => {
+    if (!issue) return;
+    if (!isReopen) {
+      if (!isChanged) return;
+      if (newStatus === 'New') {
+        alert('You can not change an issue status back to "New".');
+        return;
+      }
+    }
+    updateIssueMutation.mutate(isReopen);
+  };
+
+  const assignIssueMutation = useMutation({
+    mutationFn: async () => {
+      if (!issue) return;
+      return await pLeaderService.assignToMe({
+        issueId: issue._id,
+        isUnassign: isAssignedToMe,
+      });
+    },
+    onSuccess: (res) => {
+      if (res?.success) {
+        if (onIssueUpdated) {
+          onIssueUpdated(res.data);
+        }
+      }
+    },
+  });
+
+  const handleAssignToMe = () => {
+    if (!issue) return;
+    assignIssueMutation.mutate();
   };
 
   return {
@@ -188,6 +324,9 @@ export const useIssueModal = (
     isUpdating: updateIssueMutation.isPending,
     isChanged,
     isPaperLeader,
+    isAssignedTo,
+    isAssignedToMe,
+    isAssigning: assignIssueMutation.isPending,
     statusOptions,
     priorityOptions,
     showTaggedUsers,
@@ -200,5 +339,9 @@ export const useIssueModal = (
     setShowTaggedUsers,
     handlePostComment,
     handleUpdateIssue,
+    handleAssignToMe,
+    fetchNextComments,
+    hasNextComments,
+    isFetchingNextComments,
   };
 };

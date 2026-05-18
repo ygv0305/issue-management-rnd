@@ -19,23 +19,23 @@ import autoLogin from '../controllers/auth/autoLoginController.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
+import requestLoginRateLimit from '../middlewares/requestLoginRateLimit.js';
 
-/** Router for authentication endpoints */
 const router = Router();
 
-/** POST /auth/request-login - Authenticate user and return tokens */
-router.post('/request-login', ...requestLogin);
-/** POST /auth/logout - Revoke refresh token and clear cookie */
+// POST /auth/request-login - Authenticate user and return tokens (rate limited)
+router.post('/request-login', requestLoginRateLimit, ...requestLogin);
+// POST /auth/logout - Revoke refresh token and clear cookie
 router.post('/logout', authenticateToken, logout);
-/** POST /auth/renew-token - Refresh access token using valid refresh token */
+// POST /auth/renew-token - Refresh access token using valid refresh token
 router.post('/renew-token', ...renewToken);
-/** POST /auth/register - Initiate user registration flow */
+// POST /auth/register - Initiate user registration flow
 router.post('/register', ...register);
-/** POST /auth/forgot-password - Request password reset email */
+// POST /auth/forgot-password - Request password reset email
 router.post('/forgot-password', ...forgotPassword);
-/** POST /auth/set-password - Set or reset password using verification token */
+// POST /auth/set-password - Set or reset password using verification token
 router.post('/set-password', ...setPassword);
-/** POST /auth/auto-login - Auto-login using valid access token */
+// POST /auth/auto-login - Auto-login using valid access token
 router.post('/auto-login', authenticateToken, autoLogin);
 
 export default router;

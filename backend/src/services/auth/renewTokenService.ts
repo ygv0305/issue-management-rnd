@@ -9,7 +9,7 @@ import RefreshToken from '../../models/refreshTokenSchema.js';
 // Lib
 import { genAccessToken, verifyRefreshToken } from '../../lib/jwt.js';
 
-// Types
+// Node modules
 import type { Types } from 'mongoose';
 
 /**

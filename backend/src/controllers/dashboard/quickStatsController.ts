@@ -1,4 +1,4 @@
-// Types
+// Node modules
 import type { Request, Response } from 'express';
 
 // Services

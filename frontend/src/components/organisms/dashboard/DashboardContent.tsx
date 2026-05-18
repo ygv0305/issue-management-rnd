@@ -14,6 +14,7 @@ import QuickStatsGroup from '../../molecules/dashboard/QuickStatsGroup';
 import PriorityMatrixFrame from '../../molecules/dashboard/PriorityMatrixFrame';
 import IssuesByTypeChart from '../../molecules/dashboard/IssuesByTypeChart';
 import IssueTypePieChart from '../../molecules/dashboard/TypePercentageChart';
+import IssueTrendsChart from '../../molecules/dashboard/IssueTrendsChart';
 
 const DashboardContent = () => {
   const queryClient = useQueryClient();
@@ -81,6 +82,11 @@ const DashboardContent = () => {
         {/* Row 3: Bar Chart */}
         <Grid size={12}>
           <IssuesByTypeChart />
+        </Grid>
+
+        {/* Row 4: Line Chart */}
+        <Grid size={12}>
+          <IssueTrendsChart />
         </Grid>
       </Grid>
     </Box>

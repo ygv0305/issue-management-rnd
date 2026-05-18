@@ -5,29 +5,30 @@
  */
 
 // Types
-import type { Request, Response } from 'express';
-import { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
+import { IssuePriority } from '../../models/issueSchema.js';
 
 // Services
 import { updateIssueStatus } from '../../services/p-leader/changeStatusService.js';
 
 // Node modules
 import { body } from 'express-validator';
+import type { Request, Response } from 'express';
 
 // Middlewares
 import validationError from '../../middlewares/validationError.js';
 
-/**
- * Validation rules for the change status request body.
- * - `issueId`: Required, must be a valid MongoDB ObjectId.
- * - `newStatus`: Optional, must be a valid IssueStatus enum value.
- * - `newPriority`: Optional, must be a valid IssuePriority enum value.
- */
+export enum PLeaderStatusChange {
+  InProgress = 'InProgress',
+  Resolved = 'Resolved',
+  ReOpen = 'ReOpen',
+  Closed = 'Closed',
+}
+
 export const changeStatusRules = [
   body('issueId').isMongoId().withMessage('Invalid issue ID'),
   body('newStatus')
     .optional()
-    .isIn(Object.values(IssueStatus))
+    .isIn(Object.values(PLeaderStatusChange))
     .withMessage('Invalid status value'),
   body('newUrgency')
     .optional()
@@ -39,28 +40,26 @@ export const changeStatusRules = [
     .withMessage('Invalid impact value'),
 ];
 
-/** Represents the expected shape of the change status request body. */
 interface ChangeStatusData {
   issueId: string;
-  newStatus?: IssueStatus;
+  newStatus?: PLeaderStatusChange;
   newUrgency?: IssuePriority;
   newImpact?: IssuePriority;
 }
 
 /**
  * Handles the request to update an issue's status and/or priority.
- *
- * @param {Request} req - Express request object containing issueId, newStatus, and newPriority in the body.
- * @param {Response} res - Express response object used to send back the updated issue data.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
  */
 const changeStatus = async (req: Request, res: Response): Promise<void> => {
   const { issueId, newStatus, newUrgency, newImpact } =
     req.body as ChangeStatusData;
+  const userId = req.userId;
 
   try {
     const updatedIssue = await updateIssueStatus(
       issueId,
+      false,
+      userId,
       newStatus,
       newUrgency,
       newImpact,
@@ -88,8 +87,4 @@ const changeStatus = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/**
- * Middleware pipeline for the change status endpoint.
- * Runs body validation, error handling, and the change status controller.
- */
 export default [changeStatusRules, validationError, changeStatus];

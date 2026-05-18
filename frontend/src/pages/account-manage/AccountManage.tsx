@@ -1,7 +1,7 @@
 // Hooks
 import { useAccountManage } from '../../hooks/account-manage/useAccountManage';
 
-// RBAC
+// Lib
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
@@ -20,6 +20,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 
 // Components
 import Select from '../../components/atoms/CustomSelect';
+import PageLoader from '../../components/atoms/PageLoader';
 
 function AccountManage() {
   const {
@@ -34,7 +35,7 @@ function AccountManage() {
   } = useAccountManage();
 
   if (loading) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+    return <PageLoader message="Loading settings..." />;
   }
 
   return (

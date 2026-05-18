@@ -3,20 +3,22 @@
  * user's assigned issues. Retrieves all issues associated with the user's ID.
  */
 
-// Types
+// Node modules
 import type { Request, Response } from 'express';
 
 // Services
-import { fetchMyIssues } from '../../services/core/getMyIssuesService.js';
+import {
+  fetchMySubmittedIssues,
+  fetchMyTaggedIssues,
+} from '../../services/core/getMyIssuesService.js';
 
 /**
- * Handles the request to fetch all issues assigned to the authenticated user.
- *
- * @param {Request} req - Express request object containing the userId (attached by auth middleware).
- * @param {Response} res - Express response object used to send back the list of issues.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
+ * Handles the request to fetch issues submitted by the authenticated user.
  */
-const getMyIssues = async (req: Request, res: Response): Promise<void> => {
+export const getMySubmittedIssues = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const userId = req.userId;
     if (!userId) {
@@ -27,15 +29,15 @@ const getMyIssues = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const myIssues = await fetchMyIssues(userId);
+    const data = await fetchMySubmittedIssues(userId);
 
     res.status(200).json({
       success: true,
-      message: 'Issues fetched successfully',
-      data: myIssues,
+      message: 'Submitted issues fetched successfully',
+      data: data,
     });
   } catch (error) {
-    console.error('Error fetching my issues, ', error);
+    console.error('Error fetching submitted issues, ', error);
     res.status(500).json({
       message: 'Internal server error',
       success: false,
@@ -43,4 +45,35 @@ const getMyIssues = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default getMyIssues;
+/**
+ * Handles the request to fetch issues where the authenticated user is tagged.
+ */
+export const getMyTaggedIssues = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({
+        message: 'User is not authenticated',
+        success: false,
+      });
+      return;
+    }
+
+    const data = await fetchMyTaggedIssues(userId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Tagged issues fetched successfully',
+      data: data,
+    });
+  } catch (error) {
+    console.error('Error fetching tagged issues, ', error);
+    res.status(500).json({
+      message: 'Internal server error',
+      success: false,
+    });
+  }
+};

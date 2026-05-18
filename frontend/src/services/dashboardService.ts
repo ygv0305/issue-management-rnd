@@ -7,6 +7,7 @@ import type {
   PriorityMatrixItem,
   IssuesByTypeItem,
   IssueTypePercentageItem,
+  TrendItem,
 } from '../types/dashboardTypes';
 
 export const getQuickStats = async (): Promise<QuickStatsResponse> => {
@@ -28,5 +29,10 @@ export const getIssueTypePercentage = async (): Promise<
   IssueTypePercentageItem[]
 > => {
   const response = await apiAuth.get('/dashboard/issue-type-percentage');
+  return response.data.data;
+};
+
+export const getTrends = async (): Promise<TrendItem[] | null> => {
+  const response = await apiAuth.get('/dashboard/trends');
   return response.data.data;
 };

@@ -4,7 +4,31 @@
  */
 
 // Models
-import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
+import Issue, { type IssuePriority } from '../../models/issueSchema.js';
+
+// Types
+import { PLeaderStatusChange } from '../../controllers/p-leader/changeStatusController.js';
+import { NotiTypeEnum } from '../../models/notificationSchema.js';
+
+// Node modules
+import type { Types } from 'mongoose';
+
+// Services
+import { dispatchBulkNotifications } from '../notification/notiDispatcherService.js';
+
+interface UpdateData {
+  status?: PLeaderStatusChange;
+  urgency?: IssuePriority;
+  impact?: IssuePriority;
+  resolvedAt?: Date;
+}
+
+interface HistoryEntry {
+  status?: PLeaderStatusChange;
+  urgency?: IssuePriority;
+  impact?: IssuePriority;
+  timestamp: Date;
+}
 
 /**
  * Update the status of an issue and log the change in the history array.
@@ -18,24 +42,11 @@ import Issue, { IssueStatus, IssuePriority } from '../../models/issueSchema.js';
  *          or the original issue if no updates were provided.
  * @async
  */
-
-interface UpdateData {
-  status?: IssueStatus;
-  urgency?: IssuePriority;
-  impact?: IssuePriority;
-  resolvedAt?: Date;
-}
-
-interface HistoryEntry {
-  status?: IssueStatus;
-  urgency?: IssuePriority;
-  impact?: IssuePriority;
-  timestamp: Date;
-}
-
 export const updateIssueStatus = async (
   issueId: string,
-  newStatus?: IssueStatus,
+  isReopen: boolean,
+  actorId?: Types.ObjectId,
+  newStatus?: PLeaderStatusChange,
   newUrgency?: IssuePriority,
   newImpact?: IssuePriority,
 ) => {
@@ -63,11 +74,13 @@ export const updateIssueStatus = async (
     return await Issue.findById(issueId)
       .populate('author', 'fullName email')
       .populate('type', 'name')
+      .populate('assignedTo', 'fullName email')
+      .populate('userTags', 'fullName email')
       .lean()
       .exec();
   }
 
-  return await Issue.findByIdAndUpdate(
+  const updatedIssue = await Issue.findByIdAndUpdate(
     issueId,
     {
       $set: updateData,
@@ -77,6 +90,38 @@ export const updateIssueStatus = async (
   )
     .populate('author', 'fullName email')
     .populate('type', 'name')
+    .populate('assignedTo', 'fullName email')
+    .populate('userTags', 'fullName email')
     .lean()
     .exec();
+
+  // Send notifications
+  if (updatedIssue && actorId && (newStatus || newUrgency || newImpact)) {
+    try {
+      const recipients = [
+        updatedIssue.author._id,
+        ...(updatedIssue.userTags?.map((u) => u._id) || []),
+      ];
+
+      if (isReopen && updatedIssue.assignedTo) {
+        recipients.push(updatedIssue.assignedTo._id);
+      }
+
+      let message = `Issue updated: ${updatedIssue.subject}. `;
+      if (newStatus) message += `Status changed to ${newStatus}. `;
+      if (newUrgency || newImpact) message += `Priority changed.`;
+
+      await dispatchBulkNotifications(
+        recipients,
+        actorId,
+        updatedIssue._id,
+        NotiTypeEnum.StatusChanged,
+        message.trim(),
+      );
+    } catch (error) {
+      console.error('Failed to dispatch notifications, ', error);
+    }
+  }
+
+  return updatedIssue;
 };

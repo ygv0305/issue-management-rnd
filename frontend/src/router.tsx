@@ -1,8 +1,9 @@
 // Node modules
 import { createBrowserRouter, Outlet } from 'react-router';
 
-// Context
+// Lib
 import { UserProvider } from './lib/context/UserContext';
+import { PERMISSIONS } from './lib/rbac/allPermission';
 
 // Pages
 import Auth from './pages/auth/Auth';
@@ -13,9 +14,6 @@ import AllIssueView from './pages/issue-view/AllIssueView';
 import Dashboard from './pages/dashboard/Dashboard';
 import ProjectManage from './pages/project/ProjectManage';
 import AccountManage from './pages/account-manage/AccountManage';
-
-// RBAC
-import { PERMISSIONS } from './lib/rbac/allPermission';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';

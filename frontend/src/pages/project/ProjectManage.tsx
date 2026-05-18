@@ -1,9 +1,12 @@
-// RBAC
+// Lib
 import withPermission from '../../lib/rbac/withPermission';
 import { PERMISSIONS } from '../../lib/rbac/allPermission';
 
 // Hooks
 import { useProjectManage } from '../../hooks/project/useProjectManage';
+
+// Components
+import PageLoader from '../../components/atoms/PageLoader';
 
 // MUI
 import Box from '@mui/material/Box';
@@ -27,7 +30,7 @@ function ProjectManage() {
   } = useProjectManage();
 
   if (loading) {
-    return <Box sx={{ p: 3 }}>Loading...</Box>;
+    return <PageLoader message="Loading projects..." />;
   }
 
   return (

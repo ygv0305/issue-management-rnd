@@ -6,17 +6,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-// Hooks
-import { useEffect, useRef, useState, useCallback } from 'react';
-
 // Types
 import type { CommentData } from '../../../types/issueTypes';
 
-// Utils
-import {
-  scrollToBottom,
-  isAtBottom,
-} from '../../../utils/scrollToBottomComment';
+// Hooks
+import { useCommentList } from '../../../hooks/issue/useCommentList';
 
 // Components
 import CommentItem from './CommentItem';
@@ -24,28 +18,32 @@ import CommentItem from './CommentItem';
 interface CommentListProps {
   comments: CommentData[];
   isLoading: boolean;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
-export default function CommentList({ comments, isLoading }: CommentListProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
+export default function CommentList({
+  comments,
+  isLoading,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+}: CommentListProps) {
+  const {
+    scrollContainerRef,
+    showScrollButton,
+    handleScroll,
+    handleScrollToBottom,
+  } = useCommentList({
+    comments,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  });
 
-  const handleScroll = useCallback(() => {
-    setShowScrollButton(!isAtBottom(scrollContainerRef));
-  }, []);
-
-  const handleScrollToBottom = () => {
-    scrollToBottom(scrollContainerRef);
-  };
-
-  // Auto-scroll to bottom when new comments are added
-  useEffect(() => {
-    if (comments.length > 0 && !isLoading) {
-      scrollToBottom(scrollContainerRef, 'auto');
-    }
-  }, [comments.length, isLoading]);
-
-  if (isLoading) {
+  if (isLoading && !isFetchingNextPage) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
         <CircularProgress size={24} />
@@ -75,6 +73,8 @@ export default function CommentList({ comments, isLoading }: CommentListProps) {
           height: '100%',
           py: 2,
           overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
           '&::-webkit-scrollbar': { width: '8px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'grey.300',
@@ -82,6 +82,12 @@ export default function CommentList({ comments, isLoading }: CommentListProps) {
           },
         }}
       >
+        {isFetchingNextPage && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+            <CircularProgress size={16} />
+          </Box>
+        )}
+
         {comments.map((comment) => (
           <CommentItem key={comment._id} comment={comment} />
         ))}
