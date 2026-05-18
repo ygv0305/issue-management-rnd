@@ -9,6 +9,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { createServer } from 'http';
 import type { CorsOptions } from 'cors';
 
@@ -29,6 +30,14 @@ dns.setServers(['1.1.1.1']); // Cloudflare DNS
 // Express application instance
 const app = express();
 const server = createServer(app);
+
+app.disable('x-powered-by');
+
+if (config.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+app.use(helmet());
 
 // CORS configuration - allows frontend URL and development origins
 const corsOptions: CorsOptions = {

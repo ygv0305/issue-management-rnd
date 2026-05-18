@@ -15,24 +15,7 @@ This document contains sample data for the AUT RnD Issue Management System, base
 
 ---
 
-## 2. Users
-
-| \_id (Mock) | Full Name     | Email             | Role          | Project ID |
-| :---------- | :------------ | :---------------- | :------------ | :--------- |
-| `u1`        | Alice Johnson | alice@aut.ac.nz   | `Admin`       | -          |
-| `u2`        | Bob Smith     | bob@aut.ac.nz     | `PaperLeader` | `p1`       |
-| `u3`        | Charlie Brown | charlie@aut.ac.nz | `Student`     | `p1`       |
-| `u4`        | David Wilson  | david@aut.ac.nz   | `Supervisor`  | `p2`       |
-| `u5`        | Eve Davis     | eve@aut.ac.nz     | `Student`     | `p2`       |
-| `u6`        | Frank Miller  | frank@aut.ac.nz   | `Client`      | `p3`       |
-| `u7`        | Grace Lee     | grace@aut.ac.nz   | `Student`     | `p3`       |
-| `u8`        | Henry Taylor  | henry@aut.ac.nz   | `Supervisor`  | `p3`       |
-| `u9`        | Ivy Chen      | ivy@aut.ac.nz     | `Student`     | `p4`       |
-| `u10`       | Jack White    | jack@aut.ac.nz    | `PaperLeader` | `p4`       |
-
----
-
-## 3. Issue Types
+## 2. Issue Types
 
 | \_id (Mock) | Name                         |
 | :---------- | :--------------------------- |
@@ -40,11 +23,10 @@ This document contains sample data for the AUT RnD Issue Management System, base
 | `it2`       | Requirements & Documentation |
 | `it3`       | Funding & Resources          |
 | `it4`       | Supervision & Support        |
-| `it5`       | Ethics & Compliance          |
 
 ---
 
-## 4. Issues
+## 3. Issues
 
 | Subject                      | Description                                                                                                                                 | Type ID | Status       | Priority   | Author ID |
 | :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ | :------ | :----------- | :--------- | :-------- |
@@ -67,61 +49,3 @@ This document contains sample data for the AUT RnD Issue Management System, base
 | Budget for Survey Incentives | Requesting a small budget to provide $5 vouchers as incentives for survey participants.                                                     | `it3`   | `New`        | `Medium`   | `u5`      |
 
 ---
-
-## 5. Thread Example (for Issue "Missing Team Member")
-
-| User ID | Message                                                                       | Timestamp              |
-| :------ | :---------------------------------------------------------------------------- | :--------------------- |
-| `u3`    | We've tried emailling and contacting him in Teams but no luck so far.         | `2024-04-05T09:00:00Z` |
-| `u2`    | I will check the enrollment list and see if any late students are unassigned. | `2024-04-05T10:30:00Z` |
-| `u3`    | Thank you. We will need someone before the sprint starts next Monday.         | `2024-04-05T11:15:00Z` |
-
----
-
-## 6. History Example (for Issue "Missing Team Member")
-
-| Status       | Timestamp              |
-| :----------- | :--------------------- |
-| `New`        | `2024-04-05T09:00:00Z` |
-| `InProgress` | `2024-04-05T10:35:00Z` |
-
----
-
-## 7. JSON format (For Seeding)
-
-### Users.json
-
-```json
-[
-  {
-    "fullName": "Alice Johnson",
-    "email": "alice@aut.ac.nz",
-    "role": "Admin"
-  },
-  {
-    "fullName": "Bob Smith",
-    "email": "bob@aut.ac.nz",
-    "role": "PaperLeader"
-  },
-  {
-    "fullName": "Charlie Brown",
-    "email": "charlie@aut.ac.nz",
-    "role": "Student"
-  }
-]
-```
-
-### Projects.json
-
-```json
-[
-  {
-    "name": "AI Ethics Framework",
-    "members": []
-  },
-  {
-    "name": "Blockchain Supply Chain",
-    "members": []
-  }
-]
-```

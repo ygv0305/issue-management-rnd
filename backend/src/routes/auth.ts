@@ -19,11 +19,12 @@ import autoLogin from '../controllers/auth/autoLoginController.js';
 
 // Middlewares
 import authenticateToken from '../middlewares/authenticateToken.js';
+import requestLoginRateLimit from '../middlewares/requestLoginRateLimit.js';
 
 const router = Router();
 
-// POST /auth/request-login - Authenticate user and return tokens
-router.post('/request-login', ...requestLogin);
+// POST /auth/request-login - Authenticate user and return tokens (rate limited)
+router.post('/request-login', requestLoginRateLimit, ...requestLogin);
 // POST /auth/logout - Revoke refresh token and clear cookie
 router.post('/logout', authenticateToken, logout);
 // POST /auth/renew-token - Refresh access token using valid refresh token
