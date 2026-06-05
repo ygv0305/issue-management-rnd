@@ -46,47 +46,12 @@ Express applications backed by MongoDB.
    npm run dev
    ```
 
-## Deployment Configuration
+## Project Documentation
 
-Use separate HTTPS deployments for the frontend and backend.
+For operational guidance and handover context, use these documents:
 
-### Backend environment
-
-The backend expects the following variables in production:
-
-- `PORT`
-- `FRONTEND_URL`
-- `MONGO_URI`
-- `DB_NAME`
-- `JWT_ACCESS_SECRET`
-- `JWT_REFRESH_SECRET`
-- `ADMIN_MAIL`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
-- `NODE_ENV=production`
-
-See [backend/.env.example](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/backend/.env.example).
-
-### Frontend environment
-
-The frontend must be configured with:
-
-- `VITE_API_URL`
-- `VITE_SOCKET_URL`
-
-See [frontend/.env.example](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/frontend/.env.example).
-
-### Auth and cookie assumptions
-
-- Preferred deployment shape is same-site HTTPS subdomains such as
-  `https://app.example.com` and `https://api.example.com`.
-- The refresh token cookie is configured for that same-site setup.
-- If you must deploy the frontend and backend on unrelated domains, update the
-  cookie policy to `SameSite=None`, keep `Secure=true`, and keep backend CORS
-  restricted to exact allowed origins only.
+- [user-manual.md](/user-manual.md) explains how end users access the system, navigate key features, and complete common tasks.
+- [handover-plan.md](/handover-plan.md) outlines the knowledge transfer, environment checklist, deployment handoff steps, and follow-up considerations for the incoming team.
 
 ## Build and Validation
 
@@ -103,7 +68,7 @@ npm run build
 ```
 
 GitHub Actions also runs lint and build for both apps on every push and pull
-request via [.github/workflows/ci.yml](/E:/IT/Projects/AUT%20RnD%20Issue%20Management%20System/issue-management-rnd/.github/workflows/ci.yml).
+request via [.github/workflows/ci.yml](/.github/workflows/ci.yml).
 
 ## Release Checklist
 
@@ -113,6 +78,4 @@ request via [.github/workflows/ci.yml](/E:/IT/Projects/AUT%20RnD%20Issue%20Manag
 - JWT secrets are long, random, and different from each other
 - SMTP credentials are configured for the deployed backend
 - Registration and reset emails generate links that point to the deployed frontend
-- `POST /api/auth/request-login` rate limiting works from the deployed edge
-- `POST /api/auth/renew-token` works with the deployed cookie settings
 - Socket connections work from the deployed frontend origin
