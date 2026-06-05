@@ -1,77 +1,81 @@
-# R&D Issue Management and Tracking System
+# AUT R&D Issue Management System
 
-## 🏛️ Organisation
+Issue tracking platform for the AUT R&D course, built as separate React and
+Express applications backed by MongoDB.
 
-**AUT University**
+## Stack
 
----
+- Frontend: React 19, TypeScript, Vite
+- Backend: Express 5, TypeScript, Socket.IO
+- Database: MongoDB
+- Runtime: Node.js 22
 
-## 🚀 Overview
+## Local Development
 
-The **R&D Issue Management and Tracking System** is a robust web application designed to streamline the reporting, tracking, and management of issues raised in the R&D course at AUT. Built with modern technologies, it provides a seamless experience for both administrators and users.
+1. Install dependencies:
 
----
-
-## 🛠️ Tech Stack
-
-This project utilizes a powerful full-stack architecture:
-
-- **Frontend:** [React](https://reactjs.org/)
-- **Backend:** [Express.js](https://expressjs.com/)
-- **Database:** [MongoDB](https://www.mongodb.com/)
-- **Runtime:** [Node.js](https://nodejs.org/)
-
----
-
-## 🚦 Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed on your machine:
-
-- [Node.js](https://nodejs.org/) (Version 14 or higher recommended)
-- [npm](https://www.npmjs.com/) (usually comes with Node.js)
-
-### Installation & Setup
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone <repository-url>
-   cd issue-management-rnd
-   ```
-
-2. **Frontend Setup:**
-   Open a terminal and navigate to the `frontend` directory:
-
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-
-3. **Backend Setup:**
-   Open a separate terminal and navigate to the `backend` directory:
    ```bash
    cd backend
    npm install
+   cd ../frontend
+   npm install
+   ```
+
+2. Create local environment files from the examples:
+
+   ```powershell
+   cd backend
+   Copy-Item .env.example .env.local
+   cd ../frontend
+   Copy-Item .env.example .env.local
+   ```
+
+3. Start the backend:
+
+   ```bash
+   cd backend
    npm run dev
    ```
 
----
+   The API health endpoint is `GET http://localhost:3000/api`.
 
-## ✨ Code Quality & Formatting
+4. Start the frontend in a second terminal:
 
-We use [Prettier](https://prettier.io/) to maintain consistent code style across the project.
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 
-To format all files inside the `src` folder, run:
+## Project Documentation
+
+For operational guidance and handover context, use these documents:
+
+- [user-manual.md](/user-manual.md) explains how end users access the system, navigate key features, and complete common tasks.
+- [handover-plan.md](/handover-plan.md) outlines the knowledge transfer, environment checklist, deployment handoff steps, and follow-up considerations for the incoming team.
+
+## Build and Validation
+
+Run these before shipping a change:
 
 ```bash
-npm run format
+cd backend
+npm run lint
+npm run build
+
+cd ../frontend
+npm run lint
+npm run build
 ```
 
----
+GitHub Actions also runs lint and build for both apps on every push and pull
+request via [.github/workflows/ci.yml](/.github/workflows/ci.yml).
 
-## 📄 License
+## Release Checklist
 
-© 2026 AUT University. All rights reserved.
+- Backend deploy has the production environment variables set
+- Frontend deploy has `VITE_API_URL` and `VITE_SOCKET_URL` set
+- MongoDB is reachable from the deployed backend
+- JWT secrets are long, random, and different from each other
+- SMTP credentials are configured for the deployed backend
+- Registration and reset emails generate links that point to the deployed frontend
+- Socket connections work from the deployed frontend origin
